@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronDown, FaChevronLeft, FaChevronRight, FaHamburger } from 'react-icons/fa';
-import MobileBottomMenu from '../MobileBottomMenu/MobileBottomMenu';
 
 const Layout = ({ children, showMenuSlider = false }) => {
     const navigate = useNavigate();
@@ -235,8 +234,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                 {children}
             </main>
 
-            {/* Mobile Bottom Menu */}
-            {showMenuSlider && <MobileBottomMenu />}
+            
         </div>
     );
 };

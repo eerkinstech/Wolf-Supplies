@@ -251,8 +251,8 @@ const Header = ({ hideMenu = false }) => {
                                 )} */}
 
                                 {/* Wishlist */}
-                                <Link to="/wishlist" className="relative text-gray-700 hover:text-gray-900 transition duration-300 p-2 hover:bg-gray-200 rounded-lg">
-                                    <FaHeart className="text-lg md:text-xl" />
+                                <Link to="/wishlist" className="relative text-gray-700 hidden lg:block hover:text-gray-900 transition duration-300 p-2 hover:bg-gray-200 rounded-lg">
+                                    <FaHeart className="text-lg  md:text-xl" />
                                     {wishlistCount > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                             {wishlistCount}

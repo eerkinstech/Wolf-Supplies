@@ -45,44 +45,29 @@ import RouteTransition from './components/Transition/RouteTransition'
 
 const AppContent = () => {
   const location = useLocation();
-  const [displayLocation, setDisplayLocation] = useState(location);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { isEditing: isElementorEditing } = useElementorBuilder();
 
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/admin/login' || location.pathname === '/register';
 
-  // When location changes, show transition for non-admin/auth pages then swap the displayed location
+  // Show transition overlay when navigating (except on admin/auth pages)
   useEffect(() => {
-    // If admin or auth pages, don't animate: immediately show
     if (isAdminRoute || isAuthPage) {
-      setDisplayLocation(location);
       setIsTransitioning(false);
       return;
     }
 
-    // Start transition overlay
     setIsTransitioning(true);
-
-    // Duration for overlay before switching page (ms)
-    const delayBeforeSwap = 300;
-    const delayAfterSwap = 100;
-
-    const t1 = setTimeout(() => {
-      setDisplayLocation(location);
-      // small extra delay so overlay remains briefly after content swap to make transition smoother
-      const t2 = setTimeout(() => setIsTransitioning(false), delayAfterSwap);
-      return () => clearTimeout(t2);
-    }, delayBeforeSwap);
-
-    return () => clearTimeout(t1);
-  }, [location]);
+    const timer = setTimeout(() => setIsTransitioning(false), 400);
+    return () => clearTimeout(timer);
+  }, [location.pathname, isAdminRoute, isAuthPage]);
 
   return (
     <div className="flex flex-col min-h-screen">
       {!isAdminRoute && !isAuthPage && !isElementorEditing && <Header hideMenu={location.pathname === '/'} />}
       <main className="grow">
-        <Routes location={displayLocation}>
+        <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Homepage />} />
           <Route path="/products" element={<ProductsPage />} />
@@ -124,9 +109,9 @@ const AppContent = () => {
           <Route path="/admin/products/edit/:id" element={<AdminRoute><AdminAddProductPage /></AdminRoute>} />
         </Routes>
       </main>
-      {/* Scroll to top whenever the displayed location changes */}
-      {/* This ensures each page starts at the top after navigation */}
-      <ScrollToTopOnChange when={displayLocation} />
+
+      {/* Scroll to top on location change */}
+      <ScrollToTop location={location} />
 
       {/* ElementorBuilder overlay */}
       <ElementorBuilder />
@@ -139,15 +124,16 @@ const AppContent = () => {
     </div>
   );
 };
-// Small helper component to scroll to top when `when` changes
-const ScrollToTopOnChange = ({ when }) => {
+
+// Scroll to top on location change
+const ScrollToTop = ({ location }) => {
   useEffect(() => {
     try {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     } catch (e) {
       // ignore in SSR or non-browser envs
     }
-  }, [when]);
+  }, [location.pathname]);
 
   return null;
 };
