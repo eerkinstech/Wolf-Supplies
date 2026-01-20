@@ -1,6 +1,7 @@
 // Backup of client wishlist slice
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -14,11 +15,10 @@ const initialState = {
 export const fetchWishlist = createAsyncThunk('wishlist/fetchWishlist', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`${API}/api/wishlist`, {
+    const res = await axios.get(`${API}/api/wishlist`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    if (!res.ok) throw new Error('Failed to fetch wishlist');
-    const data = await res.json();
+    const data = res.data;
     // normalize items: prefer snapshot if present, otherwise product
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
@@ -43,16 +43,12 @@ export const addItemToServer = createAsyncThunk('wishlist/addItemToServer', asyn
     if (typeof payload === 'string') body.productId = payload;
     else body = payload || {};
 
-    const res = await fetch(`${API}/api/wishlist`, {
-      method: 'POST',
+    const res = await axios.post(`${API}/api/wishlist`, body, {
       headers: {
-        'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error('Failed to add to wishlist');
-    const data = await res.json();
+    const data = res.data;
     // normalize return items like fetchWishlist
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
@@ -83,12 +79,10 @@ export const removeItemFromServer = createAsyncThunk('wishlist/removeItemFromSer
     if (!productId) throw new Error('productId is required to remove wishlist item');
 
     const url = variantId ? `${API}/api/wishlist/${productId}?variantId=${encodeURIComponent(variantId)}` : `${API}/api/wishlist/${productId}`;
-    const res = await fetch(url, {
-      method: 'DELETE',
+    const res = await axios.delete(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    if (!res.ok) throw new Error('Failed to remove from wishlist');
-    const data = await res.json();
+    const data = res.data;
     // normalize items similar to fetchWishlist / addItemToServer
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
@@ -107,11 +101,9 @@ export const removeItemFromServer = createAsyncThunk('wishlist/removeItemFromSer
 export const clearWishlistServer = createAsyncThunk('wishlist/clearWishlistServer', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`${API}/api/wishlist`, {
-      method: 'DELETE',
+    const res = await axios.delete(`${API}/api/wishlist`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    if (!res.ok) throw new Error('Failed to clear wishlist');
     return [];
   } catch (err) {
     return rejectWithValue(err.message);

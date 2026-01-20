@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -6,9 +7,10 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) 
   const token = localStorage.getItem('token');
   if (!token) return [];
   try {
-    const res = await fetch(`${API}/api/cart`, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return [];
-    const data = await res.json();
+    const res = await axios.get(`${API}/api/cart`, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    });
+    const data = res.data;
     // Normalize server items to client shape
     const items = (data.items || []).map((it) => {
       const product = it.product || null;
@@ -54,13 +56,11 @@ export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI
       image: it.image || '',
     }));
 
-    const res = await fetch(`${API}/api/cart`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ items: serverItems }),
-    });
-    if (!res.ok) return items;
-    const data = await res.json();
+    const res = await axios.post(`${API}/api/cart`, 
+      { items: serverItems },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = res.data;
     // Normalize returned items to client shape just like fetchCart
     const returned = (data.items || []).map((it) => {
       const product = it.product || null;
@@ -85,9 +85,10 @@ export const clearServerCart = createAsyncThunk('cart/clearServerCart', async (_
   const token = localStorage.getItem('token');
   if (!token) return [];
   try {
-    const res = await fetch(`${API}/api/cart`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return [];
-    const data = await res.json();
+    const res = await axios.delete(`${API}/api/cart`, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    });
+    const data = res.data;
     return data.items || [];
   } catch (err) {
     console.error('clearServerCart error', err);

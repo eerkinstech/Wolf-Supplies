@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -18,11 +19,10 @@ export const fetchProducts = createAsyncThunk(
   'product/fetchProducts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API}/api/products`);
-      if (!response.ok) throw new Error('Failed to fetch products');
-      return await response.json();
+      const response = await axios.get(`${API}/api/products`);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -31,12 +31,10 @@ export const fetchProductById = createAsyncThunk(
   'product/fetchProductById',
   async (id, { rejectWithValue, getState }) => {
     try {
-      // Fetch product from API
-      const response = await fetch(`${API}/api/products/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch product');
-      return await response.json();
+      const response = await axios.get(`${API}/api/products/${id}`);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -45,16 +43,18 @@ export const fetchProductBySlug = createAsyncThunk(
   'product/fetchProductBySlug',
   async (slug, { rejectWithValue }) => {
     try {
-      let response = await fetch(`${API}/api/products/slug/${slug}`);
-      // If slug-specific route not available or returns 404, try generic endpoint which supports slug fallback
-      if (!response.ok) {
-        // try the generic product endpoint which may accept either id or slug
-        response = await fetch(`${API}/api/products/${encodeURIComponent(slug)}`);
+      try {
+        const response = await axios.get(`${API}/api/products/slug/${slug}`);
+        return response.data;
+      } catch (error) {
+        if (error.response?.status === 404) {
+          const response = await axios.get(`${API}/api/products/${encodeURIComponent(slug)}`);
+          return response.data;
+        }
+        throw error;
       }
-      if (!response.ok) throw new Error('Failed to fetch product');
-      return await response.json();
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

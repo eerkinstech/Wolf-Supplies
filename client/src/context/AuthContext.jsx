@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import axios from 'axios';
 import { setCart, clearCart as clearCartAction, fetchCart } from '../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
 
@@ -20,25 +21,18 @@ export const AuthProvider = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
-          const response = await fetch(`${API}/api/users/profile`, {
+          const response = await axios.get(`${API}/api/users/profile`, {
             headers: { Authorization: `Bearer ${storedToken}` },
           });
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data);
-            setToken(storedToken);
-            setIsAdmin(data.role === 'admin');
-            // hydrate cart from server via thunk
-            try {
-              dispatch(fetchCart());
-            } catch (err) {
-              console.error('Failed to dispatch fetchCart', err);
-            }
-          } else {
-            localStorage.removeItem('token');
-            setToken(null);
-            setUser(null);
-            setIsAdmin(false);
+          const data = response.data;
+          setUser(data);
+          setToken(storedToken);
+          setIsAdmin(data.role === 'admin');
+          // hydrate cart from server via thunk
+          try {
+            dispatch(fetchCart());
+          } catch (err) {
+            console.error('Failed to dispatch fetchCart', err);
           }
         } catch (error) {
           console.error('Token verification failed:', error);
@@ -57,18 +51,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API}/api/users/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
-      }
-
-      const data = await response.json();
+      const response = await axios.post(`${API}/api/users/login`, { email, password });
+      const data = response.data;
       localStorage.setItem('token', data.token);
       setToken(data.token);
       setUser(data.user || data);
@@ -82,8 +66,9 @@ export const AuthProvider = ({ children }) => {
       toast.success('Login successful!');
       return { success: true, user: data.user || data };
     } catch (error) {
-      toast.error(error.message);
-      return { success: false, error: error.message };
+      const message = error.response?.data?.message || error.message || 'Login failed';
+      toast.error(message);
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }
@@ -92,18 +77,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API}/api/users/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Registration failed');
-      }
-
-      const data = await response.json();
+      const response = await axios.post(`${API}/api/users/register`, { name, email, password });
+      const data = response.data;
       localStorage.setItem('token', data.token);
       setToken(data.token);
       setUser(data.user || data);
@@ -117,8 +92,9 @@ export const AuthProvider = ({ children }) => {
       toast.success('Registration successful!');
       return { success: true, user: data.user || data };
     } catch (error) {
-      toast.error(error.message);
-      return { success: false, error: error.message };
+      const message = error.response?.data?.message || error.message || 'Registration failed';
+      toast.error(message);
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }
@@ -137,27 +113,17 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (profileData) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API}/api/users/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(profileData),
+      const response = await axios.put(`${API}/api/users/profile`, profileData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Profile update failed');
-      }
-
-      const data = await response.json();
+      const data = response.data;
       setUser(data);
       toast.success('Profile updated successfully!');
       return { success: true, user: data };
     } catch (error) {
-      toast.error(error.message);
-      return { success: false, error: error.message };
+      const message = error.response?.data?.message || error.message || 'Profile update failed';
+      toast.error(message);
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }

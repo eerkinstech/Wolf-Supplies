@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -15,11 +16,10 @@ export const fetchCategories = createAsyncThunk(
   'category/fetchCategories',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API}/api/categories`);
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      return await response.json();
+      const response = await axios.get(`${API}/api/categories`);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -28,12 +28,10 @@ export const fetchCategoryBySlug = createAsyncThunk(
   'category/fetchCategoryBySlug',
   async (slug, { rejectWithValue, getState }) => {
     try {
-      // Fetch category by slug via backend
-      const response = await fetch(`${API}/api/categories/slug/${slug}`);
-      if (!response.ok) throw new Error('Failed to fetch category');
-      return await response.json();
+      const response = await axios.get(`${API}/api/categories/slug/${slug}`);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

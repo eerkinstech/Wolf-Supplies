@@ -1,4 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import axios from 'axios';
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export const usePageSections = (pageName = 'home') => {
     // Initialize state with default values
@@ -28,18 +31,12 @@ export const usePageSections = (pageName = 'home') => {
 
         const loadFromAPI = async () => {
             try {
-                const response = await fetch(`/api/page-config/${pageName}`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
-                        setSectionsState(data.sections);
-                        localStorage.setItem(`page-${pageName}`, JSON.stringify(data.sections));
-                        return;
-                    }
+                const response = await axios.get(`${API}/api/page-config/${pageName}`);
+                const data = response.data;
+                if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
+                    setSectionsState(data.sections);
+                    localStorage.setItem(`page-${pageName}`, JSON.stringify(data.sections));
+                    return;
                 }
             } catch (err) {
             }
@@ -70,21 +67,12 @@ export const usePageSections = (pageName = 'home') => {
         // Try to save to API (but don't fail if it doesn't work)
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/page-config/${pageName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token && { 'Authorization': `Bearer ${token}` })
-                },
-                body: JSON.stringify({
-                    pageName,
-                    sections: toSave
-                })
+            const response = await axios.post(`${API}/api/page-config/${pageName}`, {
+                pageName,
+                sections: toSave
+            }, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
             });
-
-            if (response.ok) {
-            } else {
-            }
         } catch (err) {
         }
 
