@@ -1,0 +1,80 @@
+@import "@fortawesome/fontawesome-free/css/all.css";
+@import "@fortawesome/fontawesome-free/css/v4-shims.css";
+@import "tailwindcss";
+
+:root {
+    --color-primary-dark: #2F2F2F;
+    --color-primary-light: #6B6B6B;
+    --color-accent: #000000;
+    --color-accent-dark: #1F1F1F;
+    --color-bg-light: #FFFFFF;
+    --color-bg-section: #E5E5E5;
+    --color-border: #D0D0D0;
+    --color-text-primary: #2F2F2F;
+    --color-text-secondary: #6B6B6B;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Space Grotesk", sans-serif;
+    /* font-family: 'Poppins', sans-serif; */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Font Awesome Global Styles - Ensure icons render properly */
+i[class*="fa-"] {
+    display: inline-block;
+}
+
+.fa-solid {
+    font-weight: 900 !important;
+}
+
+/* Slider Animations */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fadeInLeft {
+    animation: fadeInLeft 0.8s ease-out;
+}
+
+.animate-fadeInRight {
+    animation: fadeInRight 0.8s ease-out;
+}
+
+.animate-fade-in-left {
+    animation: fadeInLeft 0.8s ease-out;
+}
+
+.animate-fade-in-right {
+    animation: fadeInRight 0.8s ease-out;
+}
+
+button {
+    cursor: pointer;
+}

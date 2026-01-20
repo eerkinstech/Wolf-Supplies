@@ -1,0 +1,266 @@
+/* Rich Text Content Styling for Product Detail Page */
+
+.prose {
+    --tw-prose-body: 1.125rem;
+    --tw-prose-headings: #2F2F2F;
+    --tw-prose-lead: #6B6B6B;
+    --tw-prose-links: #000000;
+    --tw-prose-bold: #2F2F2F;
+    --tw-prose-counters: #6B6B6B;
+    --tw-prose-bullets: #D0D0D0;
+    --tw-prose-hr: #E5E5E5;
+    --tw-prose-quotes: #2F2F2F;
+    --tw-prose-quote-borders: #D0D0D0;
+    --tw-prose-captions: #6B6B6B;
+    --tw-prose-code: #2F2F2F;
+    --tw-prose-pre-code: #FFFFFF;
+    --tw-prose-pre-bg: #1F2937;
+    --tw-prose-th-borders: #D0D0D0;
+    --tw-prose-td-borders: #E5E5E5;
+}
+
+.prose h1 {
+    font-size: 2.25em;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 0.8888889em;
+    line-height: 1.1111111;
+}
+
+.prose h2 {
+    font-size: 1.875em;
+    font-weight: 700;
+    margin-top: 0.5263158em;
+    margin-bottom: 0.5263158em;
+    line-height: 1.2631579;
+}
+
+.prose h3 {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-top: 0.6666667em;
+    margin-bottom: 0.3333333em;
+    line-height: 1.3333333;
+}
+
+.prose h4 {
+    font-weight: 600;
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+    line-height: 1.5;
+}
+
+.prose h5 {
+    font-weight: 600;
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+}
+
+.prose h6 {
+    font-weight: 600;
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+}
+
+.prose p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    line-height: 1.75;
+}
+
+.prose p:first-child {
+    margin-top: 0;
+}
+
+.prose p:last-child {
+    margin-bottom: 0;
+}
+
+.prose ul {
+    margin: 1.25em 0;
+    padding-left: 1.625em;
+}
+
+.prose ul li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.prose ol {
+    margin: 1.25em 0;
+    padding-left: 1.625em;
+}
+
+.prose ol li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+/* Ensure list markers are visible and styled to match the theme */
+.prose ul,
+.prose ol {
+    list-style-position: outside;
+}
+
+.prose ul li::marker {
+    color: gray-400;
+    /* gray-400 */
+    font-weight: 700;
+}
+
+.prose ol li::marker {
+    color: gray-400;
+    /* gray-400 */
+    font-weight: 700;
+}
+
+/* Slightly darker markers for nested lists */
+.prose ul ul li::marker,
+.prose ol ol li::marker,
+.prose ul ol li::marker,
+.prose ol ul li::marker {
+    color: #4b5563;
+    /* gray-600 */
+}
+
+/* Stronger rules to override other global styles that may hide markers */
+.prose ul {
+    list-style-type: disc !important;
+    list-style-position: outside !important;
+    padding-left: 1.625em !important;
+}
+
+.prose ol {
+    list-style-type: decimal !important;
+    list-style-position: outside !important;
+    padding-left: 1.625em !important;
+}
+
+.prose li {
+    display: list-item !important;
+}
+
+.prose ul li::marker,
+.prose ol li::marker {
+    color: gray-400 !important;
+    font-weight: 700 !important;
+}
+
+.prose ul ul li::marker,
+.prose ol ol li::marker,
+.prose ul ol li::marker,
+.prose ol ul li::marker {
+    color: #4b5563 !important;
+}
+
+.prose li p {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+}
+
+.prose blockquote {
+    border-left-width: 0.25em;
+    border-left-color: #000000;
+    padding-left: 1em;
+    margin: 1.6666667em 0;
+    font-style: italic;
+    color: #2F2F2F;
+}
+
+.prose code {
+    color: #2F2F2F;
+    background-color: #E5E5E5;
+    padding: 0.25em 0.4375em;
+    border-radius: 0.3125em;
+    font-weight: 600;
+    font-size: 0.875em;
+}
+
+.prose pre {
+    background-color: #1f2937;
+    color: #f3f4f6;
+    overflow-x: auto;
+    padding: 1.25em;
+    border-radius: 0.375em;
+    margin: 1.6666667em 0;
+}
+
+.prose pre code {
+    color: inherit;
+    background-color: transparent;
+    padding: 0;
+    font-weight: 400;
+    font-size: inherit;
+    border-radius: 0;
+}
+
+.prose strong {
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.prose em {
+    font-style: italic;
+    color: #6B6B6B;
+}
+
+.prose hr {
+    border-color: #e5e7eb;
+    border-top-width: 1px;
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+/* Text Alignment Support */
+.prose>[style*="text-align: center"] {
+    text-align: center;
+}
+
+.prose>[style*="text-align: right"] {
+    text-align: right;
+}
+
+.prose>[style*="text-align: left"] {
+    text-align: left;
+}
+
+.prose>[style*="text-align: justify"] {
+    text-align: justify;
+}
+
+/* Nested Lists */
+.prose ul ul,
+.prose ul ol,
+.prose ol ul,
+.prose ol ol {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+}
+
+/* Table Styling (if needed) */
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+}
+
+.prose thead {
+    border-bottom-width: 1px;
+    border-bottom-color: #d1d5db;
+}
+
+.prose tbody tr {
+    border-bottom-width: 1px;
+    border-bottom-color: #e5e7eb;
+}
+
+.prose th {
+    padding: 0.5714286em 0.5714286em;
+    text-align: left;
+    font-weight: 600;
+    background-color: #f9fafb;
+}
+
+.prose td {
+    padding: 0.5714286em 0.5714286em;
+}
