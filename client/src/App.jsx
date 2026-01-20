@@ -65,8 +65,8 @@ const AppContent = () => {
     setIsTransitioning(true);
 
     // Duration for overlay before switching page (ms)
-    const delayBeforeSwap = 700;
-    const delayAfterSwap = 120;
+    const delayBeforeSwap = 300;
+    const delayAfterSwap = 100;
 
     const t1 = setTimeout(() => {
       setDisplayLocation(location);
@@ -76,7 +76,7 @@ const AppContent = () => {
     }, delayBeforeSwap);
 
     return () => clearTimeout(t1);
-  }, [location, isAdminRoute, isAuthPage]);
+  }, [location]);
 
   return (
     <div className="flex flex-col min-h-screen">
