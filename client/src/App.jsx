@@ -63,11 +63,16 @@ const AppContent = () => {
     return () => clearTimeout(timer);
   }, [location.pathname, isAdminRoute, isAuthPage]);
 
+  // Scroll to top whenever location changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <div className="flex flex-col min-h-screen">
       {!isAdminRoute && !isAuthPage && !isElementorEditing && <Header hideMenu={location.pathname === '/'} />}
       <main className="grow">
-        <Routes>
+        <Routes key={location.pathname}>
           {/* Public Routes */}
           <Route path="/" element={<Homepage />} />
           <Route path="/products" element={<ProductsPage />} />
@@ -110,9 +115,6 @@ const AppContent = () => {
         </Routes>
       </main>
 
-      {/* Scroll to top on location change */}
-      <ScrollToTop location={location} />
-
       {/* ElementorBuilder overlay */}
       <ElementorBuilder />
 
@@ -125,18 +127,6 @@ const AppContent = () => {
   );
 };
 
-// Scroll to top on location change
-const ScrollToTop = ({ location }) => {
-  useEffect(() => {
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    } catch (e) {
-      // ignore in SSR or non-browser envs
-    }
-  }, [location.pathname]);
-
-  return null;
-};
 const App = () => {
   return (
     <Provider store={store}>
