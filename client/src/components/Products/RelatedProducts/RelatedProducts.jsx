@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProductCard from '../ProductCard/ProductCard';
 import { FaChevronRight } from 'react-icons/fa';
 
-const RelatedProducts = ({ currentProductId, currentCategory, limit = 5 }) => {
+const RelatedProducts = ({ currentProductId, currentCategory }) => {
+  const navigate = useNavigate();
   const { products } = useSelector((state) => state.product);
 
   // Filter related products from same category, excluding current product
@@ -46,7 +48,7 @@ const RelatedProducts = ({ currentProductId, currentCategory, limit = 5 }) => {
 
       <div className="mt-12 text-center">
         <button
-          onClick={() => window.location.href = `/products?category=${currentCategory}`}
+          onClick={() => navigate(`/products?category=${currentCategory}`)}
           className="inline-flex items-center gap-3 bg-gradient-to-r from-gray-800 to-black hover:from-black hover:to-gray-900 text-white px-10 py-4 rounded-xl font-bold text-lg transition duration-300 transform hover:scale-105 shadow-lg"
         >
           View All {currentCategory} Products

@@ -72,13 +72,13 @@ const AppContent = () => {
     <div className="flex flex-col min-h-screen">
       {!isAdminRoute && !isAuthPage && !isElementorEditing && <Header hideMenu={location.pathname === '/'} />}
       <main className="grow">
-        <Routes key={`routes-${location.pathname}`}>
+        <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Homepage key="home" />} />
-          <Route path="/products" element={<ProductsPage key="products" />} />
-          <Route path="/product/:slug" element={<ProductDetailPage key="product-detail" />} />
-          <Route path="/categories" element={<CategoriesPage key="categories" />} />
-          <Route path="/category/:slug" element={<CategoryDetailPage key="category-detail" />} />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/product/:slug" element={<ProductDetailPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/category/:slug" element={<CategoryDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />

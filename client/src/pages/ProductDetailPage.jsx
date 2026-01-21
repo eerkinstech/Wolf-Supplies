@@ -1022,19 +1022,19 @@ const ProductDetailPage = () => {
               <div className="p-4 bg-white rounded-lg border border-gray-200 text-center hover:border-gray-400 transition">
                 <FaTruck className="text-2xl text-gray-900 mx-auto mb-2" />
                 <p className="text-sm font-semibold text-gray-900">
-                  <Link href="/policies/shipping" className="hover:text-gray-400">Free Shipping (UK)</Link>
+                  <Link to="/policies/shipping" className="hover:text-gray-400">Free Shipping (UK)</Link>
                 </p>
               </div>
               <div className="p-4 bg-white rounded-lg border border-gray-200 text-center hover:border-gray-400 transition">
                 <FaUndoAlt className="text-2xl text-gray-900 mx-auto mb-2" />
                 <p className="text-sm font-semibold text-gray-900">
-                  <Link href="/policies/returns-refund" className="hover:text-gray-400">31 Days Return & Refund</Link>
+                  <Link to="/policies/returns-refund" className="hover:text-gray-400">31 Days Return & Refund</Link>
                 </p>
               </div>
               <div className="p-4 bg-white rounded-lg border border-gray-200 text-center hover:border-gray-400 transition">
                 <FaStar className="text-2xl text-gray-900 mx-auto mb-2" />
                 <p className="text-sm font-semibold text-gray-900">
-                  <Link href="/policies/secure-checkout" className="hover:text-gray-400">Secure Checkout</Link>
+                  <Link to="/policies/secure-checkout" className="hover:text-gray-400">Secure Checkout</Link>
                 </p>
               </div>
 

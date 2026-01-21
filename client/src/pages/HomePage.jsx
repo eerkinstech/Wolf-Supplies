@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useElementorBuilder } from '../context/ElementorBuilderContext';
 import ElementorBuilder from '../components/ElementorBuilder/ElementorBuilder';
 import Layout from '../components/Layout/Layout';
@@ -12,7 +11,6 @@ import { fetchProducts } from '../redux/slices/productSlice';
 import { fetchCategories } from '../redux/slices/categorySlice';
 
 const HomePage = () => {
-  const location = useLocation();
   const { isEditing, loadPage } = useElementorBuilder();
   const dispatch = useDispatch();
 
@@ -20,32 +18,34 @@ const HomePage = () => {
   const [featuredProductsConfig, setFeaturedProductsConfig] = useState([]);
 
   /**
-   * Fetch data only when pathname is /
+   * Load home page data once on component mount
    */
   useEffect(() => {
-    if (location.pathname === '/') {
-      dispatch(fetchCategories());
-      dispatch(fetchProducts());
-      loadPage('home');
-      window.scrollTo(0, 0);
+    dispatch(fetchCategories());
+    dispatch(fetchProducts());
+    loadPage('home');
+    window.scrollTo(0, 0);
+  }, [dispatch, loadPage]);
 
-      // Load featured collections
-      const loadFeaturedCollections = async () => {
-        try {
-          const response = await fetch('/api/settings/featured-collections');
-          const data = await response.json();
-          setFeaturedCategoriesConfig(data?.featuredCategories || null);
-          setFeaturedProductsConfig(
-            Array.isArray(data?.featuredProducts) ? data.featuredProducts : []
-          );
-        } catch (error) {
-          console.error('Error loading featured collections:', error);
-        }
-      };
+  /**
+   * Load featured collections once on component mount
+   */
+  useEffect(() => {
+    const loadFeaturedCollections = async () => {
+      try {
+        const response = await fetch('/api/settings/featured-collections');
+        const data = await response.json();
+        setFeaturedCategoriesConfig(data?.featuredCategories || null);
+        setFeaturedProductsConfig(
+          Array.isArray(data?.featuredProducts) ? data.featuredProducts : []
+        );
+      } catch (error) {
+        console.error('Error loading featured collections:', error);
+      }
+    };
 
-      loadFeaturedCollections();
-    }
-  }, [location.pathname, dispatch, loadPage]);
+    loadFeaturedCollections();
+  }, []);
 
   /**
    * Elementor edit mode
