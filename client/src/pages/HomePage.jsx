@@ -57,8 +57,9 @@ const HomePage = () => {
     <Layout showMenuSlider={true}>
       <div className="w-full bg-white">
         {/* Featured Categories Section - from Admin Collections */}
-        <section className="py-4 px-4 ">
+        <section className="py-4 px-4 " key={`categories-${location.pathname}`}>
           <FeaturedCategories
+            key={`featured-categories-${location.pathname}`}
             editorContent={featuredCategoriesConfig}
           />
         </section>
@@ -66,15 +67,16 @@ const HomePage = () => {
         {/* Featured Products Sections - from Admin Collections */}
         {featuredProductsConfig && featuredProductsConfig.length > 0 ? (
           featuredProductsConfig.map((productConfig, index) => (
-            <section key={index} className="py-4 px-4">
+            <section key={`products-${index}-${location.pathname}`} className="py-4 px-4">
               <FeaturedProducts
+                key={`featured-products-${index}-${location.pathname}`}
                 editorContent={productConfig}
               />
             </section>
           ))
         ) : (
-          <section className="py-4 px-4">
-            <FeaturedProducts />
+          <section className="py-4 px-4" key={`default-products-${location.pathname}`}>
+            <FeaturedProducts key={`default-featured-products-${location.pathname}`} />
           </section>
         )}
 
