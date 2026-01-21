@@ -118,8 +118,8 @@ const AppContent = () => {
       {/* ElementorBuilder overlay */}
       <ElementorBuilder />
 
-      {/* Transition overlay (shows centered cart + spinner) */}
-      <RouteTransition visible={isTransitioning && !isAdminRoute && !isAuthPage && !isElementorEditing} />
+      {/* Transition overlay disabled - was blocking page content from loading */}
+      {/* <RouteTransition visible={isTransitioning && !isAdminRoute && !isAuthPage && !isElementorEditing} /> */}
 
       {!isAdminRoute && !isAuthPage && !isElementorEditing && <Footer />}
       <Toaster position="top-right" />
