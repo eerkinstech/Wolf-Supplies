@@ -72,7 +72,7 @@ const AppContent = () => {
     <div className="flex flex-col min-h-screen">
       {!isAdminRoute && !isAuthPage && !isElementorEditing && <Header hideMenu={location.pathname === '/'} />}
       <main className="grow">
-        <Routes key={location.pathname}>
+        <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Homepage />} />
           <Route path="/products" element={<ProductsPage />} />

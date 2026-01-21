@@ -71,6 +71,13 @@ const ProductDetailPage = () => {
   }, [API]);
 
   useEffect(() => {
+    // Reset quantity and selections when slug/id changes
+    setQuantity(1);
+    setSelectedSize(null);
+    setSelectedColor(null);
+    setSelectedVariants({});
+    setCurrentImageIndex(0);
+    
     const ident = slug || id;
     if (ident) {
       if (slug) dispatch(fetchProductBySlug(slug));

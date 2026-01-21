@@ -20,7 +20,9 @@ const CategoryDetailPage = () => {
   const [subcategories, setSubcategories] = React.useState([]);
 
   useEffect(() => {
-    // Fetch both category and products on mount/slug change
+    // Reset filter state and fetch category and products on mount/slug change
+    setFilteredProducts([]);
+    setSubcategories([]);
     dispatch(fetchCategoryBySlug(slug));
     dispatch(fetchProducts());
     window.scrollTo(0, 0);
