@@ -41,27 +41,13 @@ import AdminRoute from './components/AdminRoute/AdminRoute'
 import { ElementorBuilder, useElementorBuilder } from './components/ElementorBuilder'
 
 import { Toaster } from 'react-hot-toast'
-import RouteTransition from './components/Transition/RouteTransition'
 
 const AppContent = () => {
   const location = useLocation();
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const { isEditing: isElementorEditing } = useElementorBuilder();
 
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/admin/login' || location.pathname === '/register';
-
-  // Show transition overlay when navigating (except on admin/auth pages)
-  useEffect(() => {
-    if (isAdminRoute || isAuthPage) {
-      setIsTransitioning(false);
-      return;
-    }
-
-    setIsTransitioning(true);
-    const timer = setTimeout(() => setIsTransitioning(false), 400);
-    return () => clearTimeout(timer);
-  }, [location]);
 
   // Scroll to top whenever location changes
   useEffect(() => {
@@ -117,9 +103,6 @@ const AppContent = () => {
 
       {/* ElementorBuilder overlay */}
       <ElementorBuilder />
-
-      {/* Transition overlay disabled - was blocking page content from loading */}
-      {/* <RouteTransition visible={isTransitioning && !isAdminRoute && !isAuthPage && !isElementorEditing} /> */}
 
       {!isAdminRoute && !isAuthPage && !isElementorEditing && <Footer />}
       <Toaster position="top-right" />
