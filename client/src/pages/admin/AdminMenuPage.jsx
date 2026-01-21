@@ -106,7 +106,7 @@ const AdminMenuPage = () => {
     const saveMenu = async () => {
         try {
             const payload = menuItems.map((m) => ({ id: m.id, name: m.name, link: m.link, sub: (m.sub || []).map((s) => ({ id: s.id, name: s.name, link: s.link })) }));
-            const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API = import.meta.env.VITE_API_URL || '';
             const token = localStorage.getItem('token');
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -136,7 +136,7 @@ const AdminMenuPage = () => {
     useEffect(() => {
         const loadMenu = async () => {
             try {
-                const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const API = import.meta.env.VITE_API_URL || '';
                 const res = await fetch(`${API}/api/settings/menu`);
                 if (!res.ok) return; // ignore if cannot load
                 const data = await res.json();

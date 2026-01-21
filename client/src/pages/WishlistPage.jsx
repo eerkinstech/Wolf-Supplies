@@ -13,7 +13,7 @@ const WishlistPage = () => {
   const dispatch = useDispatch();
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const [sortBy, setSortBy] = useState('newest');
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API = import.meta.env.VITE_API_URL || '';
 
   const getImgSrc = (img) => {
     if (!img) return '';

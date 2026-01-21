@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 const ReviewManagement = () => {
     const [activeTab, setActiveTab] = useState('all'); // 'all' | 'by-product' | 'filter-all' | 'filter-approved' | 'filter-pending'

@@ -5,7 +5,7 @@ import { addToCart, syncCart } from '../../../redux/slices/cartSlice';
 import { useAuth } from '../../../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();

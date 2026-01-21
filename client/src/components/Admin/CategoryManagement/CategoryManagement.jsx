@@ -6,7 +6,7 @@ import { fetchCategories } from '../../../redux/slices/categorySlice';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 // Extract CategoryModal as separate component to prevent re-render on formData change
 const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handleAddCategory, handleImageUpload, editingCategory }) => {

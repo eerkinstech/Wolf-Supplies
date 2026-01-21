@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 export const AuthContext = createContext();
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);

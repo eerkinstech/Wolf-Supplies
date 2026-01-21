@@ -39,7 +39,7 @@ const CartPage = () => {
 
   // persist removal to backend
   const persistCart = async (newItems) => {
-    const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const API = import.meta.env.VITE_API_URL || '';
     if (!token) return;
     try {
       await fetch(`${API}/api/cart`, {

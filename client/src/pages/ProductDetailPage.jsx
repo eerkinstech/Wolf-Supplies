@@ -46,7 +46,7 @@ const ProductDetailPage = () => {
   const { token, user } = useAuth();
   const cartItems = useSelector((state) => state.cart.items);
 
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API = import.meta.env.VITE_API_URL || '';
 
   // Helper to get absolute image URL
   const getImgSrc = (img) => {

@@ -14,7 +14,7 @@ if (STRIPE_KEY) {
     console.warn('Stripe secret key not set. Stripe payment endpoints will return errors until STRIPE_SECRET_KEY is configured.');
 }
 // Base URL for building absolute image paths. Prefer server API URL if available.
-const SERVER_BASE = process.env.SERVER_URL || process.env.VITE_API_URL || process.env.CLIENT_URL || 'http://localhost:5000';
+const SERVER_BASE = process.env.SERVER_URL || process.env.VITE_API_URL || process.env.CLIENT_URL;
 
 // Create an order and Stripe Checkout session
 export const createCheckoutSession = async (req, res, next) => {

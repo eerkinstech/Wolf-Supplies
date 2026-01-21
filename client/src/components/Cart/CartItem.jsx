@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaTrash, FaBox, FaTag, FaCheck } from 'react-icons/fa';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 const getImgSrc = (img) => {
   if (!img) return null;

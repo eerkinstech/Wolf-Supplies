@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../../redux/slices/productSlice';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 const ProductManagement = () => {
   const dispatch = useDispatch();

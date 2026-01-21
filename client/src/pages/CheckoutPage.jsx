@@ -14,7 +14,7 @@ const CheckoutPage = () => {
   const shippingCost = totalPrice > 50 ? 0 : 5.99;
   const finalTotal = totalPrice + shippingCost;
 
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API = import.meta.env.VITE_API_URL || '';
   const getImgSrc = (img) => {
     if (!img) return 'https://via.placeholder.com/150';
     if (Array.isArray(img)) {
@@ -267,7 +267,7 @@ const CheckoutPage = () => {
       if (!stripeReady) {
         // fallback: create hosted Checkout session
         const token = localStorage.getItem('token');
-        const resSession = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/create-checkout-session`, {
+        const resSession = await fetch(`${import.meta.env.VITE_API_URL }/api/payments/create-checkout-session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -285,7 +285,7 @@ const CheckoutPage = () => {
       }
 
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/create-payment-intent`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL }/api/payments/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

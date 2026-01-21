@@ -6,7 +6,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import RichTextEditor from '../../components/RichTextEditor/RichTextEditor';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '';
 
 const AdminAddProductPage = () => {
   const navigate = useNavigate();
