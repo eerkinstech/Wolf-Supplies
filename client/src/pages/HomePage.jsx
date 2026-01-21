@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useElementorBuilder } from '../context/ElementorBuilderContext';
 import ElementorBuilder from '../components/ElementorBuilder/ElementorBuilder';
 import NodeRenderer from '../components/ElementorBuilder/NodeRenderer';
@@ -15,6 +16,7 @@ import { fetchCategories } from '../redux/slices/categorySlice';
 
 
 const HomePage = () => {
+  const location = useLocation();
   const { isEditing, rootNode, loadPage } = useElementorBuilder();
   const dispatch = useDispatch();
   const [featuredCategoriesConfig, setFeaturedCategoriesConfig] = useState(null);
@@ -24,7 +26,8 @@ const HomePage = () => {
     dispatch(fetchCategories());
     dispatch(fetchProducts());
     loadPage('home');
-  }, [dispatch, loadPage]);
+    window.scrollTo(0, 0);
+  }, [dispatch, loadPage, location.pathname]);
 
   // Fetch featured collections from admin settings
   useEffect(() => {
@@ -44,7 +47,7 @@ const HomePage = () => {
       }
     };
     loadFeaturedCollections();
-  }, []);
+  }, [location.pathname]);
 
   if (isEditing) {
     return <ElementorBuilder pageId="home" />;
