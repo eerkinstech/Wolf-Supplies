@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useElementorBuilder } from '../context/ElementorBuilderContext';
-import ElementorBuilder from '../components/ElementorBuilder/ElementorBuilder';
 import Layout from '../components/Layout/Layout';
 import FeaturedCategories from '../components/Categories/FeaturedCategories/FeaturedCategories';
 import FeaturedProducts from '../components/Products/FeaturedProducts/FeaturedProducts';
@@ -11,7 +9,6 @@ import { fetchProducts } from '../redux/slices/productSlice';
 import { fetchCategories } from '../redux/slices/categorySlice';
 
 const HomePage = () => {
-  const { isEditing, loadPage } = useElementorBuilder();
   const dispatch = useDispatch();
 
   const [featuredCategoriesConfig, setFeaturedCategoriesConfig] = useState(null);
@@ -23,9 +20,8 @@ const HomePage = () => {
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchProducts());
-    loadPage('home');
     window.scrollTo(0, 0);
-  }, [dispatch, loadPage]);
+  }, [dispatch]);
 
   /**
    * Load featured collections once on component mount
@@ -46,13 +42,6 @@ const HomePage = () => {
 
     loadFeaturedCollections();
   }, []);
-
-  /**
-   * Elementor edit mode
-   */
-  if (isEditing) {
-    return <ElementorBuilder pageId="home" />;
-  }
 
   return (
     <Layout showMenuSlider={true}>
