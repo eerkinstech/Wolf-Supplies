@@ -61,12 +61,12 @@ const AppContent = () => {
     setIsTransitioning(true);
     const timer = setTimeout(() => setIsTransitioning(false), 400);
     return () => clearTimeout(timer);
-  }, [location.pathname, isAdminRoute, isAuthPage]);
+  }, [location]);
 
   // Scroll to top whenever location changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location]);
 
   return (
     <div className="flex flex-col min-h-screen">
