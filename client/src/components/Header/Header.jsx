@@ -322,17 +322,17 @@ const Header = ({ hideMenu = false }) => {
                                         {/* Left Sidebar - Always Visible */}
                                         <div className="w-72 border-r-4 border-gray-400 max-h-full overflow-y-auto bg-white">
                                             {menuSource.map((item, idx) => (
-                                                <button
+                                                <Link
                                                     key={item.id || `m_${idx}`}
+                                                    to={item.url || item.link || '/'}
                                                     onMouseEnter={() => setActiveMenuIndex(idx)}
-                                                    onClick={() => navigate(item.url || item.link || '#')}
                                                     className={`block w-full text-left px-6 py-4 border-b border-gray-100 transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-gray-100 text-gray-900' : 'bg-white text-gray-900 hover:bg-gray-50'}`}
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <span>{item.label || item.name}</span>
                                                         <FaChevronDown className="text-xs text-gray-400" />
                                                     </div>
-                                                </button>
+                                                </Link>
                                             ))}
                                         </div>
 
