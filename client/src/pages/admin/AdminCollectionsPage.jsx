@@ -4,7 +4,7 @@ import { fetchProducts } from '../../redux/slices/productSlice';
 import { fetchCategories } from '../../redux/slices/categorySlice';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
-import AdminSidebar from '../../components/Admin/AdminSidebar/AdminSidebar.jsx';
+import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout.jsx';
 import FeaturedProducts from '../../components/Products/FeaturedProducts/FeaturedProducts.jsx';
 import FeaturedCategories from '../../components/Categories/FeaturedCategories/FeaturedCategories.jsx';
 
@@ -160,9 +160,8 @@ const AdminCollectionsPage = () => {
     };
 
     return (
-        <div className="flex">
-            <AdminSidebar />
-            <main className="ml-64 flex-1 w-full py-8 px-6 bg-gradient-to-br from-gray-50 to-black-100 min-h-screen">
+        <AdminLayout activeTab="collections">
+            <main className="py-8 px-6 bg-white min-h-screen">
                 {/* Header */}
                 <div className="mb-10">
                     <div className="flex items-center justify-between">
@@ -342,7 +341,7 @@ const AdminCollectionsPage = () => {
                             {featuredProductsSections.map((section, idx) => (
                                 <div key={idx} className="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-gray-400 transition">
                                     {/* Section Header */}
-                                    <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200 px-8 py-5">
+                                    <div className="bg-gray-50 border-b border-gray-200 px-8 py-5">
                                         <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
                                             <span className="inline-flex items-center justify-center w-8 h-8 bg-gray-800 text-white rounded-full font-bold text-sm">
                                                 {idx + 1}
@@ -470,7 +469,7 @@ const AdminCollectionsPage = () => {
                             ))}
 
                             {/* Save All Button */}
-                            <div className="bg-gradient-to-r from-gray-50 to-grey-100 border-2 border-gray-300 rounded-xl p-8">
+                            <div className="bg-gray-50 border-2 border-gray-300 rounded-xl p-8">
                                 <button
                                     onClick={handleSaveFeaturedProducts}
                                     className="w-full bg-black hover:bg-gray-700 text-white font-bold py-4 rounded-lg transition shadow-lg text-lg flex items-center justify-center gap-3"
@@ -482,7 +481,7 @@ const AdminCollectionsPage = () => {
                     </div>
                 )}
             </main>
-        </div>
+        </AdminLayout>
     );
 };
 

@@ -19,21 +19,41 @@ const ContactUsPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast.error('Please fill in all fields');
       return;
     }
-    // Here you would typically send the form data to a backend API
-    toast.success('Message sent successfully! We will get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+
+    try {
+      const response = await fetch('/api/forms/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.message || 'Failed to send message');
+        return;
+      }
+
+      toast.success('Message sent successfully! We will get back to you soon.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast.error('Failed to send message. Please try again.');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-700 to-black text-white py-12 md:py-16">
+      <div className="bg-gray-900 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
@@ -52,9 +72,7 @@ const ContactUsPage = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-3">Call Us</h3>
             <p className="text-gray-700 mb-2">
               <a href="tel:+447398998101" className="hover:text-gray-400 transition">
-                <a href="tel:+447398998101" className="hover:text-gray-400 transition">
                 +44 7398 998101
-              </a>
               </a>
             </p>
             <p className="text-sm text-gray-600">Monday - Friday, 9 AM - 6 PM GMT</p>
@@ -151,7 +169,7 @@ const ContactUsPage = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-gray-700 to-black hover:from-gray-900 hover:to-grey-700 text-white font-bold py-3 rounded-lg transition duration-300 flex items-center justify-center gap-2 transform hover:scale-105 shadow-lg"
+                className="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 rounded-lg transition duration-300 flex items-center justify-center gap-2 shadow-lg"
               >
                 <FaPaperPlane /> Send Message
               </button>
@@ -183,7 +201,7 @@ const ContactUsPage = () => {
             </div>
 
             {/* Quick Support */}
-            <div className="bg-gradient-to-br from-gray-50 to-grey-100 rounded-lg shadow-lg p-8 border-2 border-gray-200">
+            <div className="bg-gray-50 rounded-lg shadow-lg p-8 border-2 border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <FaHeadset className="text-gray-400" />
                 Quick Support

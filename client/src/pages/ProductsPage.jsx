@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { fetchProducts, setFilter } from '../redux/slices/productSlice';
 import ProductCard from '../components/Products/ProductCard/ProductCard';
 import ProductFilter from '../components/Products/ProductFilter/ProductFilter';
@@ -7,25 +8,67 @@ import { FaSpinner } from 'react-icons/fa';
 
 const ProductsPage = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { products, loading, filters } = useSelector((state) => state.product);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Extract search query from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('search') || '';
+    setSearchQuery(q);
+
+    // Update the search filter in Redux
+    if (q) {
+      dispatch(setFilter({ ...filters, search: q }));
+    }
+  }, [location.search, dispatch]);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  // Separate and organize products: exact matches first, then partial matches, then others
   useEffect(() => {
     let result = products;
+    const searchTerm = filters.search?.toLowerCase() || '';
 
-    if (filters.search) {
-      result = result.filter((p) =>
-        p.name.toLowerCase().includes(filters.search.toLowerCase())
+    // Categorize products
+    let exactMatches = [];
+    let partialMatches = [];
+    let otherProducts = [];
+
+    result.forEach((p) => {
+      const productName = p.name.toLowerCase();
+      const productCategory = Array.isArray(p.categories)
+        ? p.categories.map(c => (c.name || c).toLowerCase()).join(' ')
+        : (p.category || '').toLowerCase();
+
+      // Check if product matches search
+      const searchMatches = searchTerm && (
+        productName.includes(searchTerm) ||
+        productCategory.includes(searchTerm)
       );
-    }
 
+      // Categorize search results
+      if (searchMatches) {
+        if (productName.startsWith(searchTerm)) {
+          exactMatches.push(p);
+        } else {
+          partialMatches.push(p);
+        }
+      } else {
+        otherProducts.push(p);
+      }
+    });
+
+    // Start with search results (exact + partial), then other products
+    let organizingResult = [...exactMatches, ...partialMatches, ...otherProducts];
+
+    // Apply category filter
     if (filters.category) {
-      // Support both new categories array and legacy single category
-      result = result.filter((p) => {
+      organizingResult = organizingResult.filter((p) => {
         if (Array.isArray(p.categories)) {
           return p.categories.some(c => c._id === filters.category || c.name === filters.category);
         }
@@ -33,12 +76,21 @@ const ProductsPage = () => {
       });
     }
 
-    result = result.filter(
+    // Apply price filter
+    organizingResult = organizingResult.filter(
       (p) => p.price >= filters.price.min && p.price <= filters.price.max
     );
 
-    setFilteredProducts(result);
+    setFilteredProducts(organizingResult);
   }, [products, filters]);
+
+  const hasSearchResults = searchQuery && filteredProducts.length > 0;
+  const exactMatchCount = useMemo(() => {
+    if (!searchQuery) return 0;
+    return filteredProducts.filter(p =>
+      p.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+    ).length;
+  }, [filteredProducts, searchQuery]);
 
   return (
     <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
@@ -46,7 +98,20 @@ const ProductsPage = () => {
         {/* Header */}
         <div className="mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Our Products</h1>
-          <p className="text-xl text-gray-600">Browse our amazing collection of products</p>
+          {searchQuery ? (
+            <div className="space-y-2">
+              <p className="text-xl text-gray-600">
+                Search results for: <span className="font-bold text-gray-900">"{searchQuery}"</span>
+              </p>
+              {hasSearchResults && (
+                <p className="text-sm text-green-600 font-semibold">
+                  ✓ Found {filteredProducts.length} matching product{filteredProducts.length !== 1 ? 's' : ''} (Showing best matches first)
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-xl text-gray-600">Browse our amazing collection of products</p>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-6 gap-10">
@@ -71,20 +136,50 @@ const ProductsPage = () => {
               </div>
             ) : filteredProducts.length > 0 ? (
               <div>
-                <p className="text-gray-600 mb-8 text-lg">
-                  Showing <span className="font-bold text-gray-400">{filteredProducts.length}</span> products
-                </p>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Results Summary */}
+                <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <p className="text-gray-700">
+                    Showing <span className="font-bold text-gray-900">{filteredProducts.length}</span> product{filteredProducts.length !== 1 ? 's' : ''}
+                    {searchQuery && (
+                      <span> matching "<span className="font-bold text-blue-600">{searchQuery}</span>"</span>
+                    )}
+                  </p>
+                  {searchQuery && exactMatchCount > 0 && (
+                    <p className="text-sm text-green-700 mt-2">
+                      💡 {exactMatchCount} exact match{exactMatchCount !== 1 ? 'es' : ''} shown first
+                    </p>
+                  )}
+                </div>
+
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredProducts.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="text-center py-24 bg-white rounded-2xl shadow-lg">
+              <div className="text-center py-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg border border-gray-200">
                 <div className="text-6xl mb-6">🔍</div>
                 <p className="text-2xl text-gray-600 font-semibold mb-2">No products found</p>
-                <p className="text-gray-900 text-lg">Try adjusting your filters</p>
+                {searchQuery ? (
+                  <div>
+                    <p className="text-gray-700 text-lg mb-4">
+                      We couldn't find any products matching "<span className="font-bold">{searchQuery}</span>"
+                    </p>
+                    <button
+                      onClick={() => {
+                        dispatch(setFilter({ ...filters, search: '' }));
+                        setSearchQuery('');
+                      }}
+                      className="inline-block px-6 py-2 bg-black text-white font-bold rounded-lg hover:bg-gray-900 transition duration-300"
+                    >
+                      View All Products
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-gray-700 text-lg">Try adjusting your filters</p>
+                )}
               </div>
             )}
           </div>

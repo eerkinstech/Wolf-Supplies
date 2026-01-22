@@ -31,7 +31,7 @@ const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-700 to-black text-white py-12 md:py-16">
+      <div className="bg-gray-900 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
@@ -58,7 +58,7 @@ const AboutUsPage = () => {
                 Today, Wolf Supplies LTD continues to expand its product range and improve its services, always keeping our customers at the heart of everything we do.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-gray-100 to-grey-50 rounded-lg p-8 border-2 border-gray-200">
+            <div className="bg-gray-50 rounded-lg p-8 border-2 border-gray-200">
               <div className="text-center">
                 <div className="text-6xl mb-4">🛍️</div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Wolf Supplies LTD</h3>
@@ -143,7 +143,7 @@ const AboutUsPage = () => {
             ].map((stat, idx) => {
               const IconComponent = stat.icon;
               return (
-                <div key={idx} className="bg-gradient-to-br from-gray-50 to-grey-100 rounded-lg p-6 text-center border-2 border-gray-200">
+                <div key={idx} className="bg-white rounded-lg p-6 text-center border-2 border-gray-200">
                   <IconComponent className="text-3xl text-gray-400 mx-auto mb-3" />
                   <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.number}</h3>
                   <p className="text-gray-700 font-semibold">{stat.label}</p>
@@ -212,7 +212,7 @@ const AboutUsPage = () => {
                   {warehouseImages[i] ? (
                     <img src={warehouseImages[i]} alt={`Warehouse ${i+1}`} className="object-cover w-full h-full" />
                   ) : (
-                    <div className={`h-full w-full flex items-center justify-center ${i===1? 'bg-gradient-to-br from-gray-700 to-black-400' : i===2 ? 'bg-gradient-to-br from-purple-400 to-purple-600' : i===3 ? 'bg-gradient-to-br from-gray-700 to-black-400' : 'bg-gradient-to-br from-red-400 to-black'}`}>
+                    <div className={`h-full w-full flex items-center justify-center ${i===1? 'bg-gray-700' : i===2 ? 'bg-purple-600' : i===3 ? 'bg-gray-700' : 'bg-red-600'}`}>
                       <div className="text-5xl">{i===1? '📦' : i===2? '✅' : i===3? '📮' : '🚚'}</div>
                     </div>
                   )}
@@ -223,7 +223,7 @@ const AboutUsPage = () => {
           </div>
 
           {/* Warehouse Stats */}
-          <div className="mt-12 bg-gradient-to-r from-blue-50 to-grey-50 rounded-lg p-8 border-2 border-gray-300">
+          <div className="mt-12 bg-gray-50 rounded-lg p-8 border-2 border-gray-300">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <p className="text-3xl font-bold text-gray-700 mb-2">50,000+</p>
@@ -255,14 +255,14 @@ const AboutUsPage = () => {
         </section>
 
         {/* Contact CTA */}
-        <section className="bg-gradient-to-r from-gray-700 to-black text-white rounded-lg p-12 text-center">
+        <section className="bg-gray-900 text-white rounded-lg p-12 text-center">
           <h2 className="text-3xl font-bold mb-4">Have Questions About Wolf Supplies?</h2>
-          <p className="text-lg text-white mb-8">
+          <p className="text-lg text-gray-100 mb-8">
             Get in touch with our team. We'd love to hear from you!
           </p>
           <Link
             to="/contact"
-            className="inline-block bg-white text-gray-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition duration-300 shadow-lg"
           >
             Contact Us
           </Link>

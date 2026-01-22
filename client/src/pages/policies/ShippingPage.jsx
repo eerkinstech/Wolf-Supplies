@@ -6,7 +6,7 @@ const PoliciesShippingPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-700 to-black text-white py-8 md:py-12">
+      <div className="bg-gray-900 text-white py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-200 w-fit">
             <FaArrowLeft /> Back to Home

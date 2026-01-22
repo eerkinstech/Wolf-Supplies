@@ -34,6 +34,8 @@ import AdminCategoriesPage from './pages/admin/AdminCategoriesPage'
 import AdminOrdersPage from './pages/admin/AdminOrdersPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminMenuPage from './pages/admin/AdminMenuPage'
+import AdminChatPage from './pages/admin/AdminChatPage'
+import PaymentOptionsPage from './pages/PaymentOptionsPage'
 
 // Route Protection Components
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
@@ -81,6 +83,7 @@ const AppContent = () => {
           <Route path="/policies/privacy" element={<PoliciesPrivacyPage />} />
           <Route path="/policies/terms" element={<PoliciesTermsPage />} />
           <Route path="/policies/faq" element={<PoliciesFAQPage />} />
+          <Route path="/payment-options" element={<PaymentOptionsPage />} />
 
           {/* Protected User Routes */}
           <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
@@ -96,6 +99,7 @@ const AppContent = () => {
           <Route path="/admin/reviews" element={<AdminRoute><AdminReviewsPage /></AdminRoute>} />
           <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
           <Route path="/admin/menu" element={<AdminRoute><AdminMenuPage /></AdminRoute>} />
+          <Route path="/admin/chat" element={<AdminRoute><AdminChatPage /></AdminRoute>} />
           <Route path="/admin/products/add" element={<AdminRoute><AdminAddProductPage /></AdminRoute>} />
           <Route path="/admin/products/edit/:id" element={<AdminRoute><AdminAddProductPage /></AdminRoute>} />
         </Routes>

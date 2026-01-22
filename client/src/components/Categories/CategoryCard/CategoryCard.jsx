@@ -9,7 +9,6 @@ const getImgSrc = (img) => {
 };
 
 const CategoryCard = ({ category }) => {
-  const bgColor = category?.color || 'from-gray-500/60 to-black-400/40';
   const imageSrc = category?.image || '';
 
   return (
@@ -20,7 +19,7 @@ const CategoryCard = ({ category }) => {
     >
       <div className="group text-center">
         {/* Circle Icon Container */}
-        <div className={`relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-4 rounded-full overflow-hidden shadow-lg hover:shadow-xl transition duration-300 bg-gradient-to-br ${bgColor} flex items-center justify-center`}>
+        <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-4 rounded-full overflow-hidden shadow-md hover:shadow-lg transition duration-300 bg-white border-2 border-gray-300 flex items-center justify-center">
           {imageSrc ? (
             <img
               src={getImgSrc(imageSrc)}
@@ -32,11 +31,11 @@ const CategoryCard = ({ category }) => {
             <div className="text-6xl md:text-7xl">{category?.icon}</div>
           )}
           {/* Soft overlay */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${bgColor} opacity-20 group-hover:opacity-10 transition duration-300`}></div>
+          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition duration-300"></div>
         </div>
 
         {/* Category Name */}
-        <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-400 transition duration-300">
+        <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 group-hover:text-gray-600 transition duration-300">
           {category?.name}
         </h3>
 

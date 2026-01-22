@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProductById, fetchProductBySlug } from '../redux/slices/productSlice';
 import { addToCart, syncCart } from '../redux/slices/cartSlice';
 import { addToWishlist, removeFromWishlist, addItemToServer, removeItemFromServer } from '../redux/slices/wishlistSlice';
-import { FaStar, FaRegStar, FaStarHalfAlt, FaSpinner,FaSearchPlus, FaArrowLeft, FaArrowRight, FaShoppingCart,  FaCheck, FaHeart, FaShareAlt, FaTruck, FaUndoAlt, FaArrowAltCircleLeft, FaSync, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaStarHalfAlt, FaSpinner, FaSearchPlus, FaArrowLeft, FaArrowRight, FaShoppingCart, FaCheck, FaHeart, FaShareAlt, FaTruck, FaUndoAlt, FaArrowAltCircleLeft, FaSync, FaArrowUp, FaArrowDown, FaBox, FaLock } from 'react-icons/fa';
 import { GiShield } from 'react-icons/gi';
 import toast from 'react-hot-toast';
 import RelatedProducts from '../components/Products/RelatedProducts/RelatedProducts';
@@ -12,6 +12,7 @@ import Reviews from '../components/Products/Reviews/Reviews';
 import { useAuth } from '../context/AuthContext';
 import './ProductDetailPage.css';
 import { Link } from 'react-router-dom';
+import stripLogos from '../assets/Strip Logos.png';
 
 
 const ProductDetailPage = () => {
@@ -77,7 +78,7 @@ const ProductDetailPage = () => {
     setSelectedColor(null);
     setSelectedVariants({});
     setCurrentImageIndex(0);
-    
+
     const ident = slug || id;
     if (ident) {
       if (slug) dispatch(fetchProductBySlug(slug));
@@ -547,7 +548,7 @@ const ProductDetailPage = () => {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
         <p className="text-3xl text-gray-600 mb-6">Product not found</p>
-        <button onClick={() => navigate('/products')} className="bg-gradient-to-r from-gray-700 to-black text-white px-8 py-3 rounded-lg font-bold hover:from-gray-900 hover:to-grey-700 transition duration-300 transform hover:scale-105">
+        <button onClick={() => navigate('/products')} className="bg-gray-700 hover:bg-gray-800 text-white px-8 py-3 rounded-lg font-bold transition duration-300">
           Browse Products
         </button>
       </div>
@@ -687,14 +688,14 @@ const ProductDetailPage = () => {
                     {/* Scroll Up Button - Circular */}
                     <button
                       onClick={() => setThumbStart(Math.max(0, thumbStart - 1))}
-                      className="bg-gradient-to-br from-gray-400 to-gray-600 hover:from-gray-500 hover:to-gray-700 text-white p-3 rounded-full shadow-lg transition mb-3 flex items-center justify-center"
+                      className="bg-gray-700 hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition mb-3 flex items-center justify-center"
                       aria-label="Scroll up"
                     >
                       <FaArrowUp className="text-sm " />
                     </button>
 
                     {/* Thumbnails Container - Vertical Scroll */}
-                    <div 
+                    <div
                       ref={thumbContainerRef}
                       className="flex flex-col gap-4 max-h-80 overflow-hidden px-1"
                     >
@@ -704,11 +705,10 @@ const ProductDetailPage = () => {
                           <button
                             key={actualIndex}
                             onClick={() => setCurrentImageIndex(actualIndex)}
-                            className={`flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:scale-110 ${
-                              currentImageIndex === actualIndex
-                                ? 'border-black '
-                                : 'border-gray-300 hover:border-gray-400 shadow-md'
-                            }`}
+                            className={`flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:scale-110 ${currentImageIndex === actualIndex
+                              ? 'border-black '
+                              : 'border-gray-300 hover:border-gray-400 shadow-md'
+                              }`}
                           >
                             <img
                               src={getImgSrc(img)}
@@ -724,7 +724,7 @@ const ProductDetailPage = () => {
                     {/* Scroll Down Button - Circular */}
                     <button
                       onClick={() => setThumbStart(Math.min(Math.max(0, displayImages.length - THUMB_VISIBLE), thumbStart + 1))}
-                      className="bg-gradient-to-br from-gray-400 to-gray-600 hover:from-gray-500 hover:to-gray-700 text-white p-3 rounded-full shadow-lg transition mt-3 flex items-center justify-center"
+                      className="bg-gray-700 hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition mt-3 flex items-center justify-center"
                       aria-label="Scroll down"
                     >
                       <FaArrowDown className="text-sm " />
@@ -735,15 +735,14 @@ const ProductDetailPage = () => {
                 {/* Right Side: Main Image */}
                 <div className="flex-1">
                   {/* 3D Perspective Main Image Container */}
-                  <div 
-                    className="relative w-full aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden group cursor-zoom-in flex items-center justify-center"
-                   
+                  <div
+                    className="relative w-full aspect-square bg-white rounded-xl overflow-hidden group cursor-zoom-in flex items-center justify-center border border-gray-200"
                     onClick={() => { setZoomImageIndex(currentImageIndex); setShowZoomModal(true); }}
                   >
                     {/* 3D Tilted Image Container */}
                     <div
                       className="relative w-full h-full flex items-center justify-center"
-                  
+
                     >
                       {/* Main Image with Shadow Effect */}
                       <div className="relative w-full h-full shadow-2xl rounded-lg overflow-hidden">
@@ -754,7 +753,7 @@ const ProductDetailPage = () => {
                           onError={(e) => { e.target.style.display = 'none'; }}
                         />
 
-                       
+
                         {/* Navigation Arrows */}
                         {displayImages.length > 1 && (
                           <>
@@ -789,7 +788,7 @@ const ProductDetailPage = () => {
                           </>
                         )}
 
-                     
+
                       </div>
                     </div>
                   </div>
@@ -931,7 +930,7 @@ const ProductDetailPage = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={!isAvailable}
-                  className={`flex-1 px-8 py-4 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-3 text-lg shadow-lg transform ${isAvailable ? 'bg-gradient-to-r from-gray-700 to-black hover:from-gray-900 hover:to-grey-700 text-white hover:scale-105' : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}
+                  className={`flex-1 px-8 py-4 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-3 text-lg shadow-lg ${isAvailable ? 'bg-gray-700 hover:bg-gray-800 text-white' : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}
                 >
                   <FaShoppingCart /> {isAvailable ? 'Add to Cart' : 'Sold Out'}
                 </button>
@@ -980,64 +979,56 @@ const ProductDetailPage = () => {
                 <button
                   onClick={handleWishlist}
                   className={`py-3 px-4 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2 ${isInWishlist
-                    ? 'bg-gradient-to-r from-red-500 to-black text-white hover:from-red-600 hover:to-grey-700'
-                    : 'bg-black hover:bg-gray-700 text-white'
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'bg-gray-700 hover:bg-gray-800 text-white'
                     }`}
                 >
                   <FaHeart /> {isInWishlist ? 'Saved' : 'Save'}
                 </button>
                 <button
                   onClick={handleShare}
-                  className="py-3 px-4 rounded-lg font-bold bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:from-blue-500 hover:to-blue-700 transition duration-300 flex items-center justify-center gap-2"
+                  className="py-3 px-4 rounded-lg font-bold bg-gray-700 text-white hover:bg-gray-800 transition duration-300 flex items-center justify-center gap-2"
                 >
                   <FaShareAlt /> Share
                 </button>
               </div>
             </div>
 
-            {/* Shipping & Returns Info Boxes */}
-            <div className="grid grid-cols-1 gap-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
+            {/* Shipping, Returns & Payment Info */}
+            <div className="grid grid-cols-1 gap-0 bg-white border border-gray-200 rounded-lg overflow-hidden">
               {/* Shipping Info */}
-              <div className="flex gap-4 items-start">
-                <div className="text-2xl text-gray-900"><FaTruck /></div>
+              <div className="flex gap-4 items-center p-6 border-b border-gray-200">
+                <div className="text-3xl text-gray-900 flex-shrink-0"><FaTruck /></div>
                 <div>
-                  <p className="font-bold text-gray-900 text-sm">Standard Shipping: 3-5 Business Days Standard</p>
-                  <p className="text-gray-600 text-xs">Shipping: 1-2 Business Days</p>
-                  <p className="text-gray-600 text-xs">Ships within the United Kingdom only. <Link to="/policies/shipping" className="text-gray-600 hover:underline font-semibold">See details →</Link></p>
+                  <p className="font-bold text-gray-900 text-sm leading-tight">Free Shipping: 2-4 Business Days</p>
+                  <p className="text-gray-600 text-xs mt-1">Ships within the United Kingdom only. <Link to="/policies/shipping" className="text-blue-600 hover:underline font-semibold">See details →</Link></p>
                 </div>
               </div>
 
               {/* Returns Info */}
-              <div className="flex gap-4 items-start border-t pt-4 mt-2">
-                <div className="text-2xl text-gray-900"><FaSync /></div>
+              <div className="flex gap-4 items-center p-6 border-b border-gray-200">
+                <div className="text-3xl text-gray-900 flex-shrink-0"><FaBox /></div>
                 <div>
-                  <p className="font-bold text-gray-900 text-sm">31 Days Returns Policy.</p>
-                  <p className="text-gray-600 text-xs"><Link to="/policies/returns-refund" className="text-gray-600 hover:underline font-semibold">See details →</Link></p>
+                  <p className="font-bold text-gray-900 text-sm leading-tight">31 Days Return & Refunds Policy</p>
+                  <p className="text-gray-600 text-xs mt-1">Full refund within 31 days of purchase.
+                    <Link to="/policies/returns-refund" className="text-blue-600 hover:underline font-semibold"> See details →</Link></p>
                 </div>
               </div>
-            </div>
 
-        
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-4 bg-white rounded-lg border border-gray-200 text-center hover:border-gray-400 transition">
-                <FaTruck className="text-2xl text-gray-900 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-gray-900">
-                  <Link to="/policies/shipping" className="hover:text-gray-400">Free Shipping (UK)</Link>
-                </p>
+              {/* Payment Methods */}
+              <div className="flex gap-4 items-center p-6">
+                <div className="text-3xl text-gray-900 flex-shrink-0"><FaLock /></div>
+                <div className="flex-1">
+                  <div className="">
+                    <img
+                      src={stripLogos}
+                      alt="Payment methods"
+                      className="h-8 object-contain"
+                    />
+                  </div>
+                  <p className="text-gray-600 text-xs leading-relaxed">All payments are processed securely in £ (£).</p>
+                </div>
               </div>
-              <div className="p-4 bg-white rounded-lg border border-gray-200 text-center hover:border-gray-400 transition">
-                <FaUndoAlt className="text-2xl text-gray-900 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-gray-900">
-                  <Link to="/policies/returns-refund" className="hover:text-gray-400">31 Days Return & Refund</Link>
-                </p>
-              </div>
-              <div className="p-4 bg-white rounded-lg border border-gray-200 text-center hover:border-gray-400 transition">
-                <FaStar className="text-2xl text-gray-900 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-gray-900">
-                  <Link to="/policies/secure-checkout" className="hover:text-gray-400">Secure Checkout</Link>
-                </p>
-              </div>
-
             </div>
 
             {/* Key Benefits (dynamic when available) */}
@@ -1072,13 +1063,13 @@ const ProductDetailPage = () => {
             <div className="flex space-x-3">
               <button
                 onClick={() => setActiveTab('description')}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${activeTab === 'description' ? 'bg-gradient-to-r from-gray-700 to-black text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${activeTab === 'description' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
               >
                 Product Description
               </button>
               <button
                 onClick={() => setActiveTab('reviews')}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${activeTab === 'reviews' ? 'bg-gradient-to-r from-gray-700 to-black text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${activeTab === 'reviews' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
               >
                 Reviews ({product.numReviews || product.reviews?.length || 0})
               </button>

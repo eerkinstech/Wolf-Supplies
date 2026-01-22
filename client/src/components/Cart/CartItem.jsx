@@ -34,7 +34,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
         {/* Product Main Info */}
         <div className="flex flex-col sm:flex-row gap-6 mb-4">
           {/* Product Image */}
-          <div className="relative w-32 h-32 bg-linear-to-br from-gray-100 to-black-200 rounded-xl shrink-0 overflow-hidden group flex items-center justify-center">
+          <div className="relative w-32 h-32 bg-linear-to-br from-gray-100 to-black-200 rounded-xl flex-shrink-0 overflow-hidden group flex items-center justify-center">
             {getImgSrc(item.image) ? (
               <img
                 src={getImgSrc(item.image)}

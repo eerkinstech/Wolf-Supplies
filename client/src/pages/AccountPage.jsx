@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserOrders } from '../redux/slices/orderSlice';
 import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
+import UserMessages from '../components/Account/UserMessages';
 import { Link } from 'react-router-dom';
 
 const AccountPageContent = () => {
@@ -81,6 +82,9 @@ const AccountPageContent = () => {
                     </div>
                 )}
             </section>
+
+            {/* User Messages Section */}
+            <UserMessages />
 
         </div>
     );

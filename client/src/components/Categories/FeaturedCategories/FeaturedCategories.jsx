@@ -145,9 +145,16 @@ const FeaturedCategories = ({
                 filtered = flattenCategories(categories);
             }
 
-            // In grid mode: show all filtered categories (no limit)
-            // In carousel mode: don't apply limit here, carousel handles showing 5 at a time
-            setFilteredCategories(filtered);
+            // Only update state if filtered categories actually changed
+            setFilteredCategories((prev) => {
+                // Check if arrays are different before updating
+                if (prev.length !== filtered.length) return filtered;
+                if (prev.length === 0) return filtered;
+                // Quick check if it's the same data
+                const prevIds = prev.map(c => c._id).join(',');
+                const filteredIds = filtered.map(c => c._id).join(',');
+                return prevIds === filteredIds ? prev : filtered;
+            });
         }
     }, [categories, categoryNames, showAllIfEmpty]);
 
@@ -164,14 +171,14 @@ const FeaturedCategories = ({
 
     if (loading && categories.length === 0) {
         return (
-            <section className="py-4 px-4 bg-gradient-to-b from-white via-gray-50 to-white">
+            <section className="py-4 px-4 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-12">
                         <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">{title}</h2>
-                        <div className="h-1 w-20 bg-gradient-to-r from-gray-700 to-black-400 rounded-full"></div>
+                        <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
                     </div>
                     {layout === 'grid' ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
                             {[...Array(limit)].map((_, index) => (
                                 <div key={index} className="flex flex-col items-center gap-6 py-8">
                                     <div className="w-48 h-48 bg-gradient-to-br from-gray-200 to-black-300 rounded-full animate-pulse"></div>
@@ -189,11 +196,11 @@ const FeaturedCategories = ({
 
     if (filteredCategories.length === 0) {
         return (
-            <section className="py-4 px-4 bg-gradient-to-b from-white via-gray-50 to-white">
+            <section className="py-4 px-4 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-12">
                         <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">{categoryNames.length > 0 ? title : 'Featured Categories'}</h2>
-                        <div className="h-1 w-20 bg-gradient-to-r from-gray-700 to-black-400 rounded-full"></div>
+                        <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
                     </div>
                     <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-gray-300">
                         <p className="text-gray-600 text-xl font-medium">
@@ -208,16 +215,16 @@ const FeaturedCategories = ({
     }
 
     return (
-        <section className="py-4 px-4 bg-gradient-to-b from-white via-gray-50 to-white">
+        <section className="py-4 px-4 bg-white">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12">
                     <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">{title}</h2>
-                    <div className="h-1 w-20 bg-gradient-to-r from-gray-700 to-black-400 rounded-full"></div>
+                    <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
                 </div>
 
                 {layout === 'grid' ? (
                     // Grid Layout
-                    <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${getColumnsClass(columns)} ${getSpacingClass(spacing)}`}>
+                    <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${getColumnsClass(columns)} gap-1 sm:gap-2 md:gap-4 lg:gap-8`}>
                         {filteredCategories.map((category) => (
                             <div key={category._id} className="transform hover:scale-105 transition duration-300">
                                 <CategoryCard category={category} />
@@ -226,15 +233,15 @@ const FeaturedCategories = ({
                     </div>
                 ) : (
                     // Carousel Layout - 5 items with overlay chevrons
-                    <div className="relative py-12">
+                    <div className="relative py-6">
                         {/* Left Chevron - Overlay */}
                         <button
                             onClick={handlePrevious}
                             disabled={currentIndex === 0}
-                            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
+                            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
                             aria-label="Previous categories"
                         >
-                            <FaChevronLeft className="text-2xl" />
+                            <FaChevronLeft className="text-lg" />
                         </button>
 
                         {/* Grid Container - Full Width */}
@@ -258,10 +265,10 @@ const FeaturedCategories = ({
                         <button
                             onClick={handleNext}
                             disabled={currentIndex >= filteredCategories.length - ITEMS_PER_SLIDE}
-                            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
+                            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
                             aria-label="Next categories"
                         >
-                            <FaChevronRight className="text-2xl" />
+                            <FaChevronRight className="text-lg" />
                         </button>
 
                         {/* Carousel Indicators */}

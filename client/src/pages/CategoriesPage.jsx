@@ -88,7 +88,7 @@ const CategoriesPage = () => {
             <p className="text-gray-600 mb-8 text-lg">
               Showing <span className="font-bold text-gray-400">{filteredCategories.length}</span> categor{filteredCategories.length === 1 ? 'y' : 'ies'}
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
               {filteredCategories.map((category) => (
                 <CategoryCard key={category._id} category={category} />
               ))}

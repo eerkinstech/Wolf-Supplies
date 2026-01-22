@@ -7,6 +7,7 @@ import { FaChevronRight } from 'react-icons/fa';
 const RelatedProducts = ({ currentProductId, currentCategory }) => {
   const navigate = useNavigate();
   const { products } = useSelector((state) => state.product);
+  const limit = 5; // Number of related products to display
 
   // Filter related products from same category, excluding current product
   const relatedProducts = useMemo(() => {
@@ -38,7 +39,7 @@ const RelatedProducts = ({ currentProductId, currentCategory }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {relatedProducts.map((product) => (
           <div key={product._id} className="h-full">
             <ProductCard product={product} />

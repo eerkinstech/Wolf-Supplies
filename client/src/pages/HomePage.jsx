@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import FeaturedCategories from '../components/Categories/FeaturedCategories/FeaturedCategories';
 import FeaturedProducts from '../components/Products/FeaturedProducts/FeaturedProducts';
 import Newsletter from '../components/Newsletter/Newsletter';
 import AboutSection from '../components/About/AboutSection';
+import FeaturesSection from '../components/Features/FeaturesSection';
 import { useDispatch } from 'react-redux';
 import { fetchProducts } from '../redux/slices/productSlice';
 import { fetchCategories } from '../redux/slices/categorySlice';
 
 const HomePage = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [featuredCategoriesConfig, setFeaturedCategoriesConfig] = useState(null);
   const [featuredProductsConfig, setFeaturedProductsConfig] = useState([]);
@@ -46,6 +49,8 @@ const HomePage = () => {
   return (
     <Layout showMenuSlider={true}>
       <div className="w-full bg-white">
+        {/* Features Section */}
+        <FeaturesSection />
 
         {/* Featured Categories */}
         <section className="py-4 px-4">
@@ -69,6 +74,7 @@ const HomePage = () => {
         <section className="py-4 px-4">
           <Newsletter />
         </section>
+
 
         {/* About */}
         <section>

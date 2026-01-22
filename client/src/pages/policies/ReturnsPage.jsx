@@ -6,14 +6,14 @@ const PoliciesReturnsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-700 to-black text-white py-12 md:py-16">
+      <div className="bg-gray-900 text-white py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
           </Link>
           <div className="flex items-center gap-4 mb-4">
             <FaUndoAlt className="text-4xl" />
-            <h1 className="text-4xl md:text-5xl font-bold">Returns & Refund Policy</h1>
+            <h1 className="text-4xl md:text-5xl font-bold">Return & Refunds Policy</h1>
           </div>
           <p className="text-gray-100 text-lg">31 Days Return & Refund - UK</p>
         </div>

@@ -15,6 +15,7 @@ import wishlistRoutes from './routes/wishlistRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import pageConfigRoutes from './routes/pageConfigRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
+import formRoutes from './routes/formRoutes.js';
 import paymentController from './controllers/paymentController.js';
 
 dotenv.config();
@@ -68,6 +69,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/page-config', pageConfigRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/forms', formRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

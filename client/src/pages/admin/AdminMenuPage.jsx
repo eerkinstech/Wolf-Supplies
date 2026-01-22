@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FaPlus, FaTrash, FaGripLines, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import AdminSidebar from '../../components/Admin/AdminSidebar/AdminSidebar';
+import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout';
 
 const AdminMenuPage = () => {
     // menuItems: [{ id, name, link, sub: [{ id, name, link }] }]
@@ -149,10 +149,8 @@ const AdminMenuPage = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <AdminSidebar activeTab="menu" />
-
-            <div className="p-8 max-w-6xl mx-auto ml-64">
+        <AdminLayout activeTab="menu">
+            <div className="p-8 max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold">Admin — Browse Menu</h1>
                     <div className="flex items-center gap-3">
@@ -239,7 +237,7 @@ const AdminMenuPage = () => {
                     )}
                 </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 };
 

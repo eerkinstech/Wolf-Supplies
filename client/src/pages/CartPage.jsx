@@ -98,7 +98,7 @@ const CartPage = () => {
             <p className="text-xl text-gray-600 mb-12">Add some items to your cart to get started!</p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-gray-700 to-black hover:from-gray-900 hover:to-grey-700 text-white px-10 py-4 rounded-lg font-bold text-lg transition duration-300 transform hover:scale-105 shadow-lg"
+              className="inline-flex items-center gap-3 bg-gray-700 hover:bg-gray-800 text-white px-10 py-4 rounded-lg font-bold text-lg transition duration-300 shadow-lg"
             >
               <FaArrowLeft /> Continue Shopping
             </Link>

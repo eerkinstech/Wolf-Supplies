@@ -232,7 +232,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
     return (
         <div className="left-panel h-full flex flex-col overflow-hidden bg-white">
             {/* Main Tab Buttons */}
-            <div className="flex border-b border-gray-200 bg-gray-50 shrink-0">
+            <div className="flex border-b border-gray-200 bg-gray-50 flex-shrink-0">
                 <button
                     onClick={() => setActiveTab('library')}
                     className={`flex-1 px-3 py-3 text-sm font-medium transition border-b-2 flex flex-col  items-center justify-center gap-2 ${activeTab==='library'

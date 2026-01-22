@@ -7,7 +7,7 @@ import wolfLogo from '../../assets/Wolf Supplies LTD.png';
 import {
     FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt,
     FaChevronDown, FaSearch, FaPhone, FaHeart,
-    FaList, FaUserShield, FaCog, FaEdit, FaEnvelope
+    FaList, FaUserShield, FaCog, FaEdit, FaEnvelope, FaMicrophone
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
@@ -15,6 +15,9 @@ const Header = ({ hideMenu = false }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [mobileSearchQuery, setMobileSearchQuery] = useState('');
+    const [desktopSearchQuery, setDesktopSearchQuery] = useState('');
+    const [isListening, setIsListening] = useState(false);
+    const [isMobileListening, setIsMobileListening] = useState(false);
     const navigate = useNavigate();
     const { logout, isAuthenticated, user, isAdmin } = useAuth();
     const { toggleEditMode } = useElementorBuilder();
@@ -22,6 +25,8 @@ const Header = ({ hideMenu = false }) => {
     const { totalItems: wishlistCount } = useSelector((state) => state.wishlist);
     const { categories } = useSelector((state) => state.category);
     const dispatch = useDispatch();
+    const desktopSearchRef = useRef(null);
+    const mobileSearchRef = useRef(null);
 
     // local saved menu from settings (fetched below)
     const [browseMenu, setBrowseMenu] = useState([]);
@@ -49,6 +54,83 @@ const Header = ({ hideMenu = false }) => {
         } else {
             navigate('/products');
         }
+    };
+
+    const handleDesktopSearchSubmit = (e) => {
+        e?.preventDefault();
+        const q = desktopSearchQuery?.trim();
+        if (q) {
+            navigate(`/products?search=${encodeURIComponent(q)}`);
+        } else {
+            navigate('/products');
+        }
+    };
+
+    // Voice Search Handler
+    const startVoiceSearch = (isMobile = false) => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            toast.error('Voice search is not supported in your browser');
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        if (isMobile) {
+            setIsMobileListening(true);
+        } else {
+            setIsListening(true);
+        }
+
+        recognition.onstart = () => {
+            console.log('Voice search started...');
+        };
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            if (isMobile) {
+                setMobileSearchQuery(finalTranscript || interimTranscript);
+            } else {
+                setDesktopSearchQuery(finalTranscript || interimTranscript);
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Voice search error:', event.error);
+            if (event.error !== 'no-speech') {
+                toast.error('Error in voice search. Please try again.');
+            }
+            if (isMobile) {
+                setIsMobileListening(false);
+            } else {
+                setIsListening(false);
+            }
+        };
+
+        recognition.onend = () => {
+            if (isMobile) {
+                setIsMobileListening(false);
+            } else {
+                setIsListening(false);
+            }
+        };
+
+        recognition.start();
     };
 
     // Close mobile menu/search on Escape and prevent background scroll when open
@@ -120,7 +202,7 @@ const Header = ({ hideMenu = false }) => {
     return (
         <header className="w-full bg-white z-50">
             {/* Top Navigation Bar */}
-            <div className="bg-black text-white">
+            <div className="bg-gray-900 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
                     <div className="flex justify-between items-center text-xs sm:text-sm md:text-base">
                         <div className="flex items-center gap-4 sm:gap-6">
@@ -208,28 +290,42 @@ const Header = ({ hideMenu = false }) => {
 
 
                                 {/* Logo */}
-                                <Link to="/" className="flex items-center gap-2 shrink-0">
+                                <Link to="/" className="flex items-center gap-2 flex-shrink-0">
                                     <img src={wolfLogo} alt="Wolf Supplies LTD" className="h-24 w-auto object-contain" />
                                 </Link>
                             </div>
 
                             {/* Search Bar - Main */}
                             <div className="flex-1 mx-4 md:mx-6 hidden lg:block">
-                                <div className="relative w-full flex items-center">
+                                <form onSubmit={handleDesktopSearchSubmit} className="relative w-full flex items-center">
                                     <input
+                                        ref={desktopSearchRef}
                                         type="text"
+                                        value={desktopSearchQuery}
+                                        onChange={(e) => setDesktopSearchQuery(e.target.value)}
                                         placeholder="Search for a product or brand"
                                         className="w-full h-12 md:h-14 px-6 rounded-l-full border border-gray-200 placeholder-gray-400 text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-200 bg-white"
                                     />
-                                    <button className="h-12 md:h-14 bg-gradient-to-r from-gray-700 to-black hover:from-gray-900 hover:to-grey-700 text-white px-5 rounded-r-full flex items-center justify-center shadow-md -ml-1 transition duration-300">
+                                    <button
+                                        type="button"
+                                        onClick={() => startVoiceSearch(false)}
+                                        className={`h-12 md:h-14 px-4 flex items-center justify-center transition duration-300 ${isListening ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                        title="Voice Search"
+                                        aria-label="Voice search"
+                                    >
+                                        <FaMicrophone className="text-lg" />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="h-12 md:h-14 bg-gray-700 hover:bg-black text-white px-5 rounded-r-full flex items-center justify-center shadow-md transition duration-300">
                                         <FaSearch className="text-lg md:text-xl" />
                                     </button>
-                                </div>
+                                </form>
                             </div>
 
 
                             {/* Right Actions */}
-                            <div className="flex items-center gap-3 md:gap-4 shrink-0">
+                            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
                                 {/* Mobile Search Toggle */}
                                 <button
                                     onClick={() => { setMobileMenuOpen(false); setMobileSearchOpen(true); setMobileSearchQuery(''); }}
@@ -271,7 +367,7 @@ const Header = ({ hideMenu = false }) => {
                                 </Link>
 
                                 {/* Phone - Hidden on Mobile */}
-                                <div className="hidden md:flex items-center gap-2 bg-black text-white px-3 md:px-4 py-2 rounded-lg whitespace-nowrap">
+                                <div className="hidden md:flex items-center gap-2 bg-[#2563eb] text-white px-3 md:px-4 py-2 rounded-lg whitespace-nowrap">
                                     <FaPhone className="text-base md:text-lg" />
                                     <span className="font-bold text-sm md:text-base">
                                         <a href="tel:+447398998101">
@@ -556,28 +652,38 @@ const Header = ({ hideMenu = false }) => {
                     <div className="flex items-start gap-2">
                         <form onSubmit={handleMobileSearchSubmit} className="flex-1 w-full">
                             <label id="mobile-search-title" className="sr-only">Search products</label>
-                            <div className="flex items-center">
+                            <div className="flex items-center gap-2">
                                 <input
-                                    ref={searchInputRef}
+                                    ref={mobileSearchRef}
                                     type="text"
                                     value={mobileSearchQuery}
                                     onChange={(e) => setMobileSearchQuery(e.target.value)}
                                     placeholder="Search products, brands..."
-                                    className="w-full h-12 px-4 rounded-l-full border border-gray-200 placeholder-gray-400 text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-200 text-sm"
+                                    className="flex-1 h-12 px-4 rounded-l-full border border-gray-200 placeholder-gray-400 text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-200 text-sm"
                                 />
 
                                 {mobileSearchQuery.length > 0 && (
                                     <button
                                         type="button"
-                                        onClick={() => { setMobileSearchQuery(''); if (searchInputRef.current) searchInputRef.current.focus(); }}
+                                        onClick={() => { setMobileSearchQuery(''); if (mobileSearchRef.current) mobileSearchRef.current.focus(); }}
                                         aria-label="Clear search"
-                                        className="-ml-10 z-10 text-gray-900 hover:text-gray-700 p-2"
+                                        className="text-gray-900 hover:text-gray-700 p-2 hidden sm:block"
                                     >
                                         ✕
                                     </button>
                                 )}
 
-                                <button type="submit" className="h-12 bg-black hover:bg-black text-white px-4 rounded-r-full ml-2 flex items-center justify-center">
+                                <button
+                                    type="button"
+                                    onClick={() => startVoiceSearch(true)}
+                                    className={`h-12 px-3 flex items-center justify-center transition duration-300 rounded-full ${isMobileListening ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                    title="Voice Search"
+                                    aria-label="Voice search"
+                                >
+                                    <FaMicrophone />
+                                </button>
+
+                                <button type="submit" className="h-12 bg-black hover:bg-gray-900 text-white px-4 rounded-r-full flex items-center justify-center">
                                     <FaSearch />
                                 </button>
                             </div>

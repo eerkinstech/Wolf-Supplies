@@ -108,7 +108,6 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                 key={item.id || `m_${idx}`}
                                 to={item.url || item.link || '/'}
                                 onMouseEnter={() => setActiveMenuIndex(idx)}
-                                onMouseLeave={() => setActiveMenuIndex(-1)}
                                 className={`block w-full text-left px-6 py-4 border-b border-gray-300 transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-900 hover:bg-gray-50'}`}
                             >
                                 <div className="flex items-center justify-between">
@@ -144,7 +143,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                             <p className="text-lg mb-8 leading-relaxed max-w-md">{slide.description}</p>
                                             <Link
                                                 to={slide.buttonLink}
-                                                className="inline-block bg-gradient-to-r from-gray-700 to-black hover:from-gray-900 hover:to-grey-700 text-white font-bold px-8 py-3 rounded-lg transition duration-300 shadow-lg transform hover:scale-105"
+                                                className="inline-block bg-gray-700 hover:bg-gray-800 text-white font-bold px-8 py-3 rounded-lg transition duration-300 shadow-lg"
                                             >
                                                 {slide.buttonText}
                                             </Link>
@@ -190,7 +189,11 @@ const Layout = ({ children, showMenuSlider = false }) => {
 
                         {/* Menu Content - Overlaid with Z-index */}
                         {activeMenuIndex >= 0 && (
-                            <div className="absolute inset-0 bg-white shadow-2xl z-50 flex flex-col">
+                            <div 
+                                className="absolute inset-0 bg-white shadow-2xl z-50 flex flex-col"
+                                onMouseEnter={() => setActiveMenuIndex(activeMenuIndex)}
+                                onMouseLeave={() => setActiveMenuIndex(-1)}
+                            >
                                 {/* Top Category Tabs */}
                                 <div className="border-b border-gray-900 px-6 py-4 flex gap-6 overflow-x-auto">
                                     {menuItems.map((item, idx) => (

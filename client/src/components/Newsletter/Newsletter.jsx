@@ -32,7 +32,7 @@ const Newsletter = ({ content = {} }) => {
     { id: '3', value: '30%', label: 'Average Savings' }
   ];
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,7 +43,23 @@ const Newsletter = ({ content = {} }) => {
 
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/forms/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.message || 'Failed to subscribe');
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(false);
       setIsSubscribed(true);
       setEmail('');
@@ -52,7 +68,11 @@ const Newsletter = ({ content = {} }) => {
       setTimeout(() => {
         setIsSubscribed(false);
       }, 3000);
-    }, 1000);
+    } catch (error) {
+      console.error('Error subscribing to newsletter:', error);
+      setIsLoading(false);
+      toast.error('Failed to subscribe. Please try again.');
+    }
   };
 
   // ====== LAYOUT 1: Vertical with Icon ======
@@ -60,32 +80,34 @@ const Newsletter = ({ content = {} }) => {
     return (
       <section style={{
         padding: `${padding}px 16px`,
-        background: `linear-gradient(to right, ${bgColor}, white)`
+        background: 'bg-white',
+        backgroundColor: '#ffffff'
       }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <div className="flex justify-center mb-4">
-              <div style={{ backgroundColor: `${accentColor}20`, padding: '16px', borderRadius: '9999px' }}>
-                <FaEnvelope style={{ fontSize: '36px', color: accentColor }} />
+              <div style={{ backgroundColor: '#f3f4f6', padding: '16px', borderRadius: '9999px' }}>
+                <FaEnvelope style={{ fontSize: '36px', color: '#374151' }} />
               </div>
             </div>
 
             <h2 style={{
               fontSize: '32px',
               fontWeight: 'bold',
-              color: textColor,
+              color: '#1f2937',
               marginBottom: '8px'
             }}>
               {title}
             </h2>
-            {subtitle && <p style={{ color: textColor, marginBottom: '12px', fontSize: '18px' }}>{subtitle}</p>}
-            <p style={{ color: '#666', maxWidth: '512px', margin: '0 auto' }}>{description}</p>
+            {subtitle && <p style={{ color: '#374151', marginBottom: '12px', fontSize: '18px' }}>{subtitle}</p>}
+            <p style={{ color: '#4b5563', maxWidth: '512px', margin: '0 auto' }}>{description}</p>
           </div>
 
           <div style={{
             backgroundColor: 'white',
             borderRadius: `${borderRadius}px`,
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #d1d5db',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             padding: '40px'
           }}>
             {!isSubscribed ? (
@@ -101,13 +123,14 @@ const Newsletter = ({ content = {} }) => {
                       style={{
                         width: '100%',
                         padding: '12px 20px',
-                        border: `2px solid #D0D0D0`,
+                        border: `2px solid #d1d5db`,
                         borderRadius: '8px',
                         fontSize: '16px',
-                        outline: 'none'
+                        outline: 'none',
+                        color: '#374151'
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#000000'}
-                      onBlur={(e) => e.target.style.borderColor = '#D0D0D0'}
+                      onFocus={(e) => e.target.style.borderColor = '#374151'}
+                      onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                       disabled={isLoading}
                     />
                   </div>
@@ -116,7 +139,7 @@ const Newsletter = ({ content = {} }) => {
                     type="submit"
                     disabled={isLoading}
                     style={{
-                      backgroundColor: accentColor,
+                      backgroundColor: '#374151',
                       color: 'white',
                       padding: '12px 24px',
                       borderRadius: '8px',
@@ -145,15 +168,15 @@ const Newsletter = ({ content = {} }) => {
                   </button>
                 </div>
 
-                <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-100">
+                <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-200">
                   {benefits.map((benefit) => (
                     <div key={benefit.id} className="flex items-center gap-3">
-                      <div style={{ backgroundColor: `${accentColor}15`, padding: '12px', borderRadius: '9999px' }}>
-                        <FaCheckCircle style={{ color: accentColor, fontSize: '18px' }} />
+                      <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '9999px' }}>
+                        <FaCheckCircle style={{ color: '#374151', fontSize: '18px' }} />
                       </div>
                       <div>
-                        <p style={{ fontWeight: '600', color: textColor }}>{benefit.title}</p>
-                        <p style={{ fontSize: '14px', color: '#666' }}>{benefit.description}</p>
+                        <p style={{ fontWeight: '600', color: '#1f2937' }}>{benefit.title}</p>
+                        <p style={{ fontSize: '14px', color: '#4b5563' }}>{benefit.description}</p>
                       </div>
                     </div>
                   ))}
@@ -162,14 +185,14 @@ const Newsletter = ({ content = {} }) => {
             ) : (
               <div className="text-center py-8">
                 <div className="mb-4 flex justify-center">
-                  <div style={{ backgroundColor: `${accentColor}20`, padding: '12px', borderRadius: '9999px' }}>
-                    <FaCheckCircle style={{ fontSize: '32px', color: accentColor }} />
+                  <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '9999px' }}>
+                    <FaCheckCircle style={{ fontSize: '32px', color: '#22c55e' }} />
                   </div>
                 </div>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: textColor, marginBottom: '8px' }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>
                   {successTitle}
                 </h3>
-                <p style={{ color: '#666' }}>{successMessage}</p>
+                <p style={{ color: '#4b5563' }}>{successMessage}</p>
               </div>
             )}
           </div>
@@ -178,10 +201,10 @@ const Newsletter = ({ content = {} }) => {
             <div className="grid sm:grid-cols-3 gap-6 mt-8 text-center">
               {stats.map((stat) => (
                 <div key={stat.id}>
-                  <p style={{ fontSize: '32px', fontWeight: 'bold', color: accentColor }}>
+                  <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#374151' }}>
                     {stat.value}
                   </p>
-                  <p style={{ fontSize: '14px', color: '#666' }}>
+                  <p style={{ fontSize: '14px', color: '#4b5563' }}>
                     {stat.label}
                   </p>
                 </div>

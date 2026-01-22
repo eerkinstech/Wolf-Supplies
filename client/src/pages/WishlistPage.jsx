@@ -212,7 +212,7 @@ const WishlistPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-700 to-black text-white py-12 md:py-16">
+      <div className="bg-gray-900 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
@@ -381,7 +381,7 @@ const WishlistPage = () => {
                   <button
                     onClick={handleMoveAllToCart}
                     disabled={wishlistItems.filter(computeIsAvailable).length === 0}
-                    className="w-full bg-gradient-to-r from-gray-700 to-grey-700 text-white py-3 px-4 rounded-lg font-bold hover:from-gray-700 hover:to-grey-800 transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-gray-700 text-white py-3 px-4 rounded-lg font-bold hover:bg-gray-800 transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     <FaShoppingCart /> Move All to Cart
                   </button>

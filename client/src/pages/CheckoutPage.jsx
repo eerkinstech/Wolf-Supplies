@@ -455,7 +455,7 @@ const CheckoutPage = () => {
               <div className="flex justify-between font-bold text-lg"><span>Total</span><span>£{finalTotal.toFixed(2)}</span></div>
             </div>
 
-            <button onClick={handlePlaceOrder} disabled={loading} className="w-full bg-gradient-to-r from-gray-700 to-black hover:from-gray-900 hover:to-grey-700 text-white py-3 rounded-lg font-bold shadow transition duration-300 transform hover:scale-105">
+            <button onClick={handlePlaceOrder} disabled={loading} className="w-full bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg font-bold shadow transition duration-300">
               {loading ? 'Placing Order…' : `Place Order — £${finalTotal.toFixed(2)}`}
             </button>
 

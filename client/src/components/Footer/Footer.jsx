@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt, FaGlobe } from 'react-icons/fa';
+import { SiVisa, SiMastercard, SiDiscover, SiApplepay, SiGooglepay } from 'react-icons/si';
 import wolfLogo from '../../assets/Wolf Supplies LTD.png';
 
 const Footer = () => {
@@ -118,6 +119,38 @@ const Footer = () => {
                 <a href='https://wolfsuppliesltd.co.uk' className="hover:text-black">wolfsuppliesltd.co.uk</a>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Payment Methods Section */}
+        <div className="border-t border-gray-300 py-8 mb-8">
+          <h4 className="text-lg font-bold mb-6 text-center">We Accept</h4>
+          <div className="flex justify-center items-center gap-8 flex-wrap">
+            <div className="flex items-center gap-2" title="Visa">
+              <SiVisa className="text-2xl text-blue-600" />
+              <span className="text-sm font-semibold text-gray-700">Visa</span>
+            </div>
+            <div className="flex items-center gap-2" title="Mastercard">
+              <SiMastercard className="text-2xl text-red-600" />
+              <span className="text-sm font-semibold text-gray-700">Mastercard</span>
+            </div>
+            <div className="flex items-center gap-2" title="Discover">
+              <SiDiscover className="text-2xl text-orange-500" />
+              <span className="text-sm font-semibold text-gray-700">Discover</span>
+            </div>
+            <div className="flex items-center gap-2" title="Apple Pay">
+              <SiApplepay className="text-2xl text-black" />
+              <span className="text-sm font-semibold text-gray-700">Apple Pay</span>
+            </div>
+            <div className="flex items-center gap-2" title="Google Pay">
+              <SiGooglepay className="text-2xl text-blue-500" />
+              <span className="text-sm font-semibold text-gray-700">Google Pay</span>
+            </div>
+          </div>
+          <div className="text-center mt-4">
+            <Link to="/payment-options" className="text-blue-600 hover:text-blue-800 transition duration-300 text-sm font-semibold">
+              View All Payment Options
+            </Link>
           </div>
         </div>
 

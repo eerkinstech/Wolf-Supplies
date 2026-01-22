@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup } from 'react-icons/fa';
+import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup, FaHeadset } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/slices/authSlice';
 
@@ -15,6 +15,7 @@ const AdminSidebar = ({ activeTab }) => {
     { icon: FaTags, label: 'Categories', id: 'categories', path: '/admin/categories' },
     { icon: FaClipboardList, label: 'Orders', id: 'orders', path: '/admin/orders' },
     { icon: FaComments, label: 'Reviews', id: 'reviews', path: '/admin/reviews' },
+    { icon: FaHeadset, label: 'Chat', id: 'chat', path: '/admin/chat' },
     { icon: FaChartBar, label: 'Menu', id: 'menu', path: '/admin/menu' },
     { icon: FaChartBar, label: 'Analytics', id: 'analytics', path: '/admin/analytics' },
     { icon: FaLayerGroup, label: 'Collections', id: 'collections', path: '/admin/collections' },
@@ -34,6 +35,7 @@ const AdminSidebar = ({ activeTab }) => {
     if (path.includes('/admin/reviews')) return 'reviews';
     if (path.includes('/admin/analytics')) return 'analytics';
     if (path.includes('/admin/menu')) return 'menu';
+    if (path.includes('/admin/chat')) return 'chat';
     if (path.includes('/admin/collections')) return 'collections';
     if (path.includes('/admin/dashboard') || path === '/admin') return 'dashboard';
     return 'dashboard';

@@ -152,7 +152,7 @@ export const Navigator: React.FC<NavigatorProps>=({
     return (
         <div className="navigator h-full flex flex-col overflow-hidden bg-white">
             {/* Header */}
-            <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-200 bg-gray-50 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
                 <FaLayerGroup className="text-gray-600" size={16} />
                 <h3 className="text-sm font-semibold text-gray-800">Structure</h3>
             </div>
