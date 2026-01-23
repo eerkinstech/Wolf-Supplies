@@ -13,10 +13,10 @@ const ProductFilter = ({ filters, onFilterChange }) => {
     }
   }, [categories, dispatch]);
   const priceRanges = [
-    { min: 0, max: 50, label: 'Under $50' },
-    { min: 50, max: 100, label: '$50 - $100' },
-    { min: 100, max: 500, label: '$100 - $500' },
-    { min: 500, max: 10000, label: 'Above $500' },
+    { min: 0, max: 50, label: 'Under £50' },
+    { min: 50, max: 100, label: '£50 - £100' },
+    { min: 100, max: 500, label: '£100 - £500' },
+    { min: 500, max: 10000, label: 'Above £500' },
   ];
 
   return (

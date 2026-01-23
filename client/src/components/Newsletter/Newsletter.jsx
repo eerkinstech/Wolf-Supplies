@@ -16,9 +16,9 @@ const Newsletter = ({ content = {} }) => {
   const buttonText = content.buttonText || 'Subscribe';
   const successTitle = content.successTitle || "You're subscribed!";
   const successMessage = content.successMessage || 'Thanks — check your email for the welcome offer.';
-  const bgColor = content.bgColor || '#E5E5E5';
-  const accentColor = content.accentColor || '#000000';
-  const textColor = content.textColor || '#2F2F2F';
+  const bgColor = content.bgColor || 'var(--color-bg-section)';
+  const accentColor = content.accentColor || 'var(--color-accent-primary)';
+  const textColor = content.textColor || 'var(--color-text-primary)';
   const padding = content.padding || 64;
   const borderRadius = content.borderRadius || 16;
   const benefits = content.benefits || [
@@ -80,33 +80,33 @@ const Newsletter = ({ content = {} }) => {
     return (
       <section style={{
         padding: `${padding}px 16px`,
-        background: 'bg-white',
-        backgroundColor: '#ffffff'
+        background: 'var(--color-bg-primary)',
+        backgroundColor: 'var(--color-bg-primary)'
       }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <div className="flex justify-center mb-4">
-              <div style={{ backgroundColor: '#f3f4f6', padding: '16px', borderRadius: '9999px' }}>
-                <FaEnvelope style={{ fontSize: '36px', color: '#374151' }} />
+              <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '16px', borderRadius: '9999px' }}>
+                <FaEnvelope style={{ fontSize: '36px', color: 'var(--color-accent-primary)' }} />
               </div>
             </div>
 
             <h2 style={{
               fontSize: '32px',
               fontWeight: 'bold',
-              color: '#1f2937',
+              color: 'var(--color-text-primary)',
               marginBottom: '8px'
             }}>
               {title}
             </h2>
-            {subtitle && <p style={{ color: '#374151', marginBottom: '12px', fontSize: '18px' }}>{subtitle}</p>}
-            <p style={{ color: '#4b5563', maxWidth: '512px', margin: '0 auto' }}>{description}</p>
+            {subtitle && <p style={{ color: 'var(--color-text-secondary)', marginBottom: '12px', fontSize: '18px' }}>{subtitle}</p>}
+            <p style={{ color: 'var(--color-text-secondary)', maxWidth: '512px', margin: '0 auto' }}>{description}</p>
           </div>
 
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--color-bg-primary)',
             borderRadius: `${borderRadius}px`,
-            border: '1px solid #d1d5db',
+            border: '1px solid var(--color-border-light)',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             padding: '40px'
           }}>
@@ -123,14 +123,14 @@ const Newsletter = ({ content = {} }) => {
                       style={{
                         width: '100%',
                         padding: '12px 20px',
-                        border: `2px solid #d1d5db`,
+                        border: `2px solid var(--color-border-light)`,
                         borderRadius: '8px',
                         fontSize: '16px',
                         outline: 'none',
-                        color: '#374151'
+                        color: 'var(--color-text-primary)'
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#374151'}
-                      onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary)'}
+                      onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light)'}
                       disabled={isLoading}
                     />
                   </div>
@@ -139,7 +139,7 @@ const Newsletter = ({ content = {} }) => {
                     type="submit"
                     disabled={isLoading}
                     style={{
-                      backgroundColor: '#374151',
+                      backgroundColor: 'var(--color-accent-primary)',
                       color: 'white',
                       padding: '12px 24px',
                       borderRadius: '8px',
@@ -168,15 +168,15 @@ const Newsletter = ({ content = {} }) => {
                   </button>
                 </div>
 
-                <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-200">
+                <div className="flex flex-wrap gap-6 pt-6 border-t justify-between border-[var(--color-border-light)]">
                   {benefits.map((benefit) => (
                     <div key={benefit.id} className="flex items-center gap-3">
-                      <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '9999px' }}>
-                        <FaCheckCircle style={{ color: '#374151', fontSize: '18px' }} />
+                      <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '9999px' }}>
+                        <FaCheckCircle style={{ color: 'var(--color-accent-primary)', fontSize: '18px' }} />
                       </div>
                       <div>
-                        <p style={{ fontWeight: '600', color: '#1f2937' }}>{benefit.title}</p>
-                        <p style={{ fontSize: '14px', color: '#4b5563' }}>{benefit.description}</p>
+                        <p style={{ fontWeight: '600', color: 'var(--color-text-primary)' }}>{benefit.title}</p>
+                        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>{benefit.description}</p>
                       </div>
                     </div>
                   ))}
@@ -185,14 +185,14 @@ const Newsletter = ({ content = {} }) => {
             ) : (
               <div className="text-center py-8">
                 <div className="mb-4 flex justify-center">
-                  <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '9999px' }}>
-                    <FaCheckCircle style={{ fontSize: '32px', color: '#22c55e' }} />
+                  <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '9999px' }}>
+                    <FaCheckCircle style={{ fontSize: '32px', color: 'var(--color-success)' }} />
                   </div>
                 </div>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
                   {successTitle}
                 </h3>
-                <p style={{ color: '#4b5563' }}>{successMessage}</p>
+                <p style={{ color: 'var(--color-text-secondary)' }}>{successMessage}</p>
               </div>
             )}
           </div>
@@ -201,10 +201,10 @@ const Newsletter = ({ content = {} }) => {
             <div className="grid sm:grid-cols-3 gap-6 mt-8 text-center">
               {stats.map((stat) => (
                 <div key={stat.id}>
-                  <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#374151' }}>
+                  <p style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-secondary)' }}>
                     {stat.value}
                   </p>
-                  <p style={{ fontSize: '14px', color: '#4b5563' }}>
+                  <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
                     {stat.label}
                   </p>
                 </div>
@@ -228,12 +228,13 @@ const Newsletter = ({ content = {} }) => {
       }}>
         <div className="max-w-7xl mx-auto">
           <div style={{
+
             display: 'flex',
             gap: '0',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--color-bg-primary)',
             borderRadius: `${borderRadius}px`,
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            border: '1px solid #D0D0D0',
+            border: '1px solid var(--color-border-light)',
             overflow: 'hidden',
             minHeight: '320px'
           }}>
@@ -244,8 +245,8 @@ const Newsletter = ({ content = {} }) => {
               alignItems: 'center',
               justifyContent: 'center',
               padding: '40px',
-              backgroundColor: '#E5E5E5',
-              borderRight: '1px solid #D0D0D0'
+              backgroundColor: 'var(--color-bg-section)',
+              borderRight: '1px solid var(--color-border-light)'
             }}>
               {content.logoImage ? (
                 <>
@@ -273,9 +274,9 @@ const Newsletter = ({ content = {} }) => {
                   justifyContent: 'center',
                   width: '100%',
                   height: '100%',
-                  backgroundColor: '#D0D0D0',
+                  backgroundColor: 'var(--color-border-light)',
                   borderRadius: '8px',
-                  color: '#6B6B6B',
+                  color: 'var(--color-text-light)',
                   fontSize: '14px',
                   fontWeight: '500',
                   minHeight: '240px'
@@ -300,13 +301,13 @@ const Newsletter = ({ content = {} }) => {
                   fontSize: '26px',
                   fontWeight: 'bold',
                   color: textColor,
-                  margin: '0 0 12px 0',
+                  marginBottom: '12px',
                   lineHeight: '1.3'
                 }}>
                   {title}
                 </h2>
                 <p style={{
-                  color: '#666',
+                  color: 'var(--color-text-light)',
                   margin: '0',
                   fontSize: '15px',
                   lineHeight: '1.6'
@@ -326,13 +327,13 @@ const Newsletter = ({ content = {} }) => {
                     style={{
                       flex: 1,
                       padding: '12px 16px',
-                      border: `1px solid #D0D0D0`,
+                      border: `1px solid var(--color-border-light)`,
                       borderRadius: '6px',
                       fontSize: '14px',
                       outline: 'none'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#000000'}
-                    onBlur={(e) => e.target.style.borderColor = '#D0D0D0'}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light)'}
                     disabled={isLoading}
                   />
                   <button
@@ -365,7 +366,7 @@ const Newsletter = ({ content = {} }) => {
                   <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: textColor, margin: '0 0 4px 0' }}>
                     {successTitle}
                   </h3>
-                  <p style={{ fontSize: '12px', color: '#666', margin: '0' }}>{successMessage}</p>
+                  <p style={{ fontSize: '12px', color: 'var(--color-text-light)', margin: '0' }}>{successMessage}</p>
                 </div>
               )}
             </div>
@@ -384,7 +385,7 @@ const Newsletter = ({ content = {} }) => {
       }}>
         <div className="max-w-2xl mx-auto">
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--color-bg-primary)',
             borderRadius: `${borderRadius}px`,
             padding: '40px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
@@ -403,7 +404,7 @@ const Newsletter = ({ content = {} }) => {
             {/* Description */}
             <p style={{
               fontSize: '16px',
-              color: '#666',
+              color: 'var(--color-text-light)',
               marginBottom: '24px',
               textAlign: 'center',
               margin: '0 0 24px 0'
@@ -422,14 +423,14 @@ const Newsletter = ({ content = {} }) => {
                   style={{
                     width: '100%',
                     padding: '14px 16px',
-                    border: `2px solid #D0D0D0`,
+                    border: `2px solid var(--color-border-light)`,
                     borderRadius: '8px',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#000000'}
-                  onBlur={(e) => e.target.style.borderColor = '#D0D0D0'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light)'}
                   disabled={isLoading}
                 />
                 <button
@@ -475,7 +476,7 @@ const Newsletter = ({ content = {} }) => {
                 <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: textColor, marginBottom: '8px' }}>
                   {successTitle}
                 </h3>
-                <p style={{ fontSize: '14px', color: '#666' }}>{successMessage}</p>
+                <p style={{ fontSize: '14px', color: 'var(--color-text-light)' }}>{successMessage}</p>
               </div>
             )}
           </div>

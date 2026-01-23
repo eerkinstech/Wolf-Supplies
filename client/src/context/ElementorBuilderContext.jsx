@@ -34,7 +34,7 @@ const initializeSamplePage = () => {
         id: 'section-1',
         kind: 'section',
         props: { contentWidth: 'full', numColumns: 4, contentWidthMode: 'full_width', boxedMaxWidth: 1140, horizontalPadding: 15 },
-        style: { backgroundColor: '#2F2F2F', minHeight: '400px', gap: '20px' },
+        style: { backgroundColor: 'var(--color-accent-secondary)', minHeight: '400px', gap: '20px' },
         advanced: { display: 'grid', direction: 'column' },
         responsive: {
             tablet: {
@@ -62,7 +62,7 @@ const initializeSamplePage = () => {
                 kind: 'widget',
                 widgetType: 'heading',
                 props: { level: 'h1', content: 'Heading 1' },
-                style: { color: '#ffffff', fontSize: '32px', wordBreak: 'break-word' },
+                style: { color: 'var(--color-bg-primary)', fontSize: '32px', wordBreak: 'break-word' },
                 advanced: {},
                 children: []
             }
@@ -82,7 +82,7 @@ const initializeSamplePage = () => {
                 kind: 'widget',
                 widgetType: 'heading',
                 props: { level: 'h1', content: 'Heading 2' },
-                style: { color: '#ffffff', fontSize: '32px', wordBreak: 'break-word' },
+                style: { color: 'var(--color-bg-primary)', fontSize: '32px', wordBreak: 'break-word' },
                 advanced: {},
                 children: []
             }
@@ -102,7 +102,7 @@ const initializeSamplePage = () => {
                 kind: 'widget',
                 widgetType: 'heading',
                 props: { level: 'h1', content: 'Heading 3' },
-                style: { color: '#ffffff', fontSize: '32px', wordBreak: 'break-word' },
+                style: { color: 'var(--color-bg-primary)', fontSize: '32px', wordBreak: 'break-word' },
                 advanced: {},
                 children: []
             }
@@ -122,7 +122,7 @@ const initializeSamplePage = () => {
                 kind: 'widget',
                 widgetType: 'heading',
                 props: { level: 'h1', content: 'Heading 4' },
-                style: { color: '#ffffff', fontSize: '32px', wordBreak: 'break-word' },
+                style: { color: 'var(--color-bg-primary)', fontSize: '32px', wordBreak: 'break-word' },
                 advanced: {},
                 children: []
             }
@@ -136,7 +136,7 @@ const initializeSamplePage = () => {
         id: 'section-2',
         kind: 'section',
         props: { contentWidth: 'boxed', numColumns: 3, contentWidthMode: 'boxed', boxedMaxWidth: 1140, horizontalPadding: 15 },
-        style: { backgroundColor: '#FFFFFF', gap: '24px', minHeight: '300px' },
+        style: { backgroundColor: 'var(--color-bg-primary)', gap: '24px', minHeight: '300px' },
         advanced: { display: 'grid', direction: 'column' },
         responsive: {
             tablet: {
@@ -164,7 +164,7 @@ const initializeSamplePage = () => {
                 kind: 'widget',
                 widgetType: 'heading',
                 props: { level: 'h3', content: name },
-                style: { color: '#2F2F2F' },
+                style: { color: 'var(--color-text-primary)' },
                 advanced: {},
                 children: []
             },
@@ -173,7 +173,7 @@ const initializeSamplePage = () => {
                 kind: 'widget',
                 widgetType: 'text',
                 props: { content: 'Build amazing pages without coding' },
-                style: { color: '#6B6B6B', fontSize: '14px' },
+                style: { color: 'var(--color-text-light)', fontSize: '14px' },
                 advanced: {},
                 children: []
             }

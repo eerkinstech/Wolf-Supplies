@@ -39,9 +39,9 @@ const PoliciesFAQPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--color-bg-section)]">
       {/* Header Section */}
-      <div className="bg-gray-900 text-white py-12 md:py-16">
+      <div className="bg-[var(--color-accent-primary)] text-white py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
@@ -60,33 +60,33 @@ const PoliciesFAQPage = () => {
           {faqs.map((faq, idx) => (
             <details
               key={idx}
-              className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 group"
+              className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 group"
             >
-              <summary className="flex items-center justify-between font-bold text-gray-900 text-lg select-none">
+              <summary className="flex items-center justify-between font-bold text-[var(--color-text-primary)] text-lg select-none">
                 <span>{faq.question}</span>
-                <span className="text-gray-400 transition duration-300 group-open:rotate-180">▼</span>
+                <span className="text-[var(--color-text-light)] transition duration-300 group-open:rotate-180">▼</span>
               </summary>
-              <p className="text-gray-700 mt-4 leading-relaxed">{faq.answer}</p>
+              <p className="text-[var(--color-text-light)] mt-4 leading-relaxed">{faq.answer}</p>
             </details>
           ))}
         </div>
 
         {/* Still Have Questions */}
-        <div className="bg-gray-50 rounded-lg border-2 border-gray-400 p-8 mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Didn't Find Your Answer?</h2>
-          <p className="text-gray-700 mb-6">
+        <div className="bg-[var(--color-bg-section)] rounded-lg border-2 border-[var(--color-border-light)] p-8 mt-12">
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4">Didn't Find Your Answer?</h2>
+          <p className="text-[var(--color-text-light)] mb-6">
             Our support team at Wolf Supplies Ltd is here to help with any questions or concerns you may have.
           </p>
-          <div className="space-y-2 text-gray-700 mb-6">
-            <p><FaEnvelope className="inline mr-2 text-gray-400" /> Email: <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-gray-400 hover:underline">support@wolfsuppliesltd.co.uk</a></p>
-            <p><FaPhone className="inline mr-2 text-gray-400" /> Phone: <a href="tel:+447398998101" className="text-gray-400 hover:underline">+44 7398 998101</a></p>
+          <div className="space-y-2 text-[var(--color-text-light)] mb-6">
+            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">support@wolfsuppliesltd.co.uk</a></p>
+            <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>
-          <div className="bg-white p-4 rounded border border-gray-300">
-            <p className="text-sm text-gray-600"><strong>Company Details:</strong></p>
-            <p className="text-sm text-gray-600">Wolf Supplies LTD</p>
-            <p className="text-sm text-gray-600">Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:underline">16070029</a></p>
-            <p className="text-sm text-gray-600">Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</p>
+          <div className="bg-[var(--color-bg-primary)] p-4 rounded border border-[var(--color-border-light)]">
+            <p className="text-sm text-[var(--color-text-light)]"><strong>Company Details:</strong></p>
+            <p className="text-sm text-[var(--color-text-light)]">Wolf Supplies LTD</p>
+            <p className="text-sm text-[var(--color-text-light)]">Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent-primary)] hover:underline">16070029</a></p>
+            <p className="text-sm text-[var(--color-text-light)]">Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</p>
           </div>
         </div>
       </div>

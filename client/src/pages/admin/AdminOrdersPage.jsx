@@ -6,8 +6,8 @@ const AdminOrdersPage = () => {
   return (
     <AdminLayout activeTab="orders">
       <div className="p-8">
-        <h1 className="text-3xl font-bold text-gray-900">Orders Management</h1>
-        <p className="text-gray-600 mt-4">Manage all customer orders and track shipments</p>
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--color-text-primary)' }}>Orders Management</h1>
+        <p className="mt-4" style={{ color: 'var(--color-text-light)' }}>Manage all customer orders and track shipments</p>
         <OrderManagement />
       </div>
     </AdminLayout>

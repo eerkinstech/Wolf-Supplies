@@ -29,9 +29,9 @@ const warehouseImages = Object.keys(allImgs)
 
 const AboutUsPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--color-bg-section)]">
       {/* Header Section */}
-      <div className="bg-gray-900 text-white py-12 md:py-16">
+      <div className="bg-[var(--color-accent-primary)] text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
@@ -47,22 +47,22 @@ const AboutUsPage = () => {
         <section className="mb-16">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
-              <p className="text-gray-700 text-lg leading-relaxed mb-4">
+              <h2 className="text-4xl font-bold text-[var(--color-text-primary)] mb-6">Our Story</h2>
+              <p className="text-[var(--color-text-light)] text-lg leading-relaxed mb-4">
                 Wolf Supplies LTD was founded with a simple mission: to revolutionize online shopping in the United Kingdom. We believe everyone deserves access to quality products at competitive prices, delivered with exceptional customer service.
               </p>
-              <p className="text-gray-700 text-lg leading-relaxed mb-4">
+              <p className="text-[var(--color-text-light)] text-lg leading-relaxed mb-4">
                 What started as a small venture has grown into a trusted marketplace serving thousands of satisfied customers across the UK. We pride ourselves on our commitment to excellence, innovation, and customer satisfaction.
               </p>
-              <p className="text-gray-700 text-lg leading-relaxed">
+              <p className="text-[var(--color-text-light)] text-lg leading-relaxed">
                 Today, Wolf Supplies LTD continues to expand its product range and improve its services, always keeping our customers at the heart of everything we do.
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-8 border-2 border-gray-200">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🛍️</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Wolf Supplies LTD</h3>
-                <p className="text-gray-700 mb-4">Your trusted online shopping partner since 2024</p>
+            <div className="bg-[var(--color-bg-section)] rounded-lg p-8 border-2 border-[var(--color-border-light)]">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🛍️</div>
+                  <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Wolf Supplies LTD</h3>
+                  <p className="text-[var(--color-text-light)] mb-4">Your trusted online shopping partner since 2024</p>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p><strong>Wolf Supplies Ltd</strong></p>
                   <p>Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:underline">16070029</a></p>
@@ -75,23 +75,23 @@ const AboutUsPage = () => {
 
         {/* Mission & Vision */}
         <section className="mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Our Mission & Vision</h2>
+          <h2 className="text-4xl font-bold text-[var(--color-text-primary)] mb-12 text-center">Our Mission & Vision</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-lg shadow-lg p-8 border-l-4 border-gray-400">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                <FaCheck className="text-gray-400 text-2xl" />
+            <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-lg p-8 border-l-4 border-[var(--color-accent-primary)]">
+              <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-3">
+                <FaCheck className="text-[var(--color-accent-primary)] text-2xl" />
                 Our Mission
               </h3>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-[var(--color-text-light)] leading-relaxed">
                 To provide customers with a seamless, trustworthy, and enjoyable shopping experience by offering a curated selection of quality products, competitive pricing, and exceptional customer service across the United Kingdom.
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-8 border-l-4 border-gray-800">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                <FaTrophy className="text-gray-700 text-2xl" />
+            <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-lg p-8 border-l-4 border-[var(--color-accent-primary)]">
+              <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-3">
+                <FaTrophy className="text-[var(--color-accent-primary)] text-2xl" />
                 Our Vision
               </h3>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-[var(--color-text-light)] leading-relaxed">
                 To become the leading UK online marketplace trusted by millions, known for innovation, customer-centricity, sustainability, and creating a positive impact on communities we serve.
               </p>
             </div>

@@ -40,6 +40,11 @@ export const createCheckoutSession = async (req, res, next) => {
 
         // Create order in DB with pending status
         const orderId = `ORD-${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}`;
+
+        // DEBUG: Log incoming request data
+        console.log('DEBUG - Incoming shippingAddress:', JSON.stringify(shippingAddress, null, 2));
+        console.log('DEBUG - Incoming billingAddress:', JSON.stringify(billingAddress, null, 2));
+
         const order = new Order({
             orderId,
             user: user._id,
@@ -54,18 +59,35 @@ export const createCheckoutSession = async (req, res, next) => {
                 selectedColor: it.selectedColor || null,
                 variantId: it.variantId || null,
             })),
+            contactDetails: {
+                firstName: shippingAddress.firstName || '',
+                lastName: shippingAddress.lastName || '',
+                email: shippingAddress.email || '',
+                phone: shippingAddress.phone || '',
+            },
             shippingAddress: {
                 address: shippingAddress.address,
+                apartment: shippingAddress.apartment || '',
                 city: shippingAddress.city,
+                stateRegion: shippingAddress.stateRegion || '',
                 postalCode: shippingAddress.postalCode || shippingAddress.postalCode || shippingAddress.postal || '',
                 country: shippingAddress.country || 'UK',
             },
             billingAddress: billingAddress ? {
                 address: billingAddress.address,
+                apartment: billingAddress.apartment || '',
                 city: billingAddress.city,
+                stateRegion: billingAddress.stateRegion || '',
                 postalCode: billingAddress.postalCode || '',
                 country: billingAddress.country || 'UK',
-            } : undefined,
+            } : {
+                address: shippingAddress.address,
+                apartment: shippingAddress.apartment || '',
+                city: shippingAddress.city,
+                stateRegion: shippingAddress.stateRegion || '',
+                postalCode: shippingAddress.postalCode || '',
+                country: shippingAddress.country || 'UK',
+            },
             paymentMethod: paymentMethod || 'card',
             itemsPrice: itemsPrice || 0,
             taxPrice: taxPrice || 0,
@@ -74,7 +96,16 @@ export const createCheckoutSession = async (req, res, next) => {
             status: 'pending',
         });
 
-        await order.save();
+        console.log('DEBUG - Order object before save:', JSON.stringify(order, null, 2));
+
+        try {
+            await order.save();
+            console.log('Order saved successfully:', order._id, order.orderId);
+            console.log('DEBUG - Order after save:', JSON.stringify(order, null, 2));
+        } catch (saveErr) {
+            console.error('Error saving order:', saveErr.message);
+            return res.status(400).json({ message: 'Failed to create order', error: saveErr.message });
+        }
 
         // Build Stripe line items
         const isValidUrl = (u) => {
@@ -199,18 +230,35 @@ export const createPaymentIntent = async (req, res, next) => {
                 selectedColor: it.selectedColor || null,
                 variantId: it.variantId || null,
             })),
+            contactDetails: {
+                firstName: shippingAddress.firstName || '',
+                lastName: shippingAddress.lastName || '',
+                email: shippingAddress.email || '',
+                phone: shippingAddress.phone || '',
+            },
             shippingAddress: {
                 address: shippingAddress.address,
+                apartment: shippingAddress.apartment || '',
                 city: shippingAddress.city,
+                stateRegion: shippingAddress.stateRegion || '',
                 postalCode: shippingAddress.postalCode || '',
                 country: shippingAddress.country || 'UK',
             },
             billingAddress: billingAddress ? {
                 address: billingAddress.address,
+                apartment: billingAddress.apartment || '',
                 city: billingAddress.city,
+                stateRegion: billingAddress.stateRegion || '',
                 postalCode: billingAddress.postalCode || '',
                 country: billingAddress.country || 'UK',
-            } : undefined,
+            } : {
+                address: shippingAddress.address,
+                apartment: shippingAddress.apartment || '',
+                city: shippingAddress.city,
+                stateRegion: shippingAddress.stateRegion || '',
+                postalCode: shippingAddress.postalCode || '',
+                country: shippingAddress.country || 'UK',
+            },
             paymentMethod: paymentMethod || 'card',
             itemsPrice: itemsPrice || 0,
             shippingPrice: shippingPrice || 0,
@@ -218,7 +266,13 @@ export const createPaymentIntent = async (req, res, next) => {
             status: 'pending',
         });
 
-        await order.save();
+        try {
+            await order.save();
+            console.log('Order saved successfully:', order._id, order.orderId);
+        } catch (saveErr) {
+            console.error('Error saving order:', saveErr.message);
+            return res.status(400).json({ message: 'Failed to create order', error: saveErr.message });
+        }
 
         const amount = Math.round((totalAmount || itemsPrice || 0) * 100);
 

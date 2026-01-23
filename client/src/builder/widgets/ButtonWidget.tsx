@@ -32,8 +32,8 @@ export const ButtonWidget: React.FC<ButtonWidgetProps>=({ node, device='desktop'
     const iconPosition=getResponsiveValue('iconPosition', 'left');
 
     // Button colors: prioritize cssStyle (final merged style), then node.style
-    const textColor=cssStyle?.color||cssStyle?.textColor||node.style?.textColor||'#ffffff';
-    const bgColor=cssStyle?.backgroundColor||node.style?.bgColor||node.style?.backgroundColor||'#3b82f6';
+    const textColor=cssStyle?.color||cssStyle?.textColor||node.style?.textColor||'var(--color-bg-primary)';
+    const bgColor=cssStyle?.backgroundColor||node.style?.bgColor||node.style?.backgroundColor||'var(--color-accent-primary)';
     const hoverBgColor=cssStyle?.hoverBackgroundColor||node.style?.hoverBgColor||node.style?.hoverBackgroundColor||bgColor;
     const hoverTextColor=cssStyle?.hoverTextColor||cssStyle?.hoverColor||node.style?.textHoverColor||node.style?.hoverTextColor||textColor;
 
@@ -42,7 +42,7 @@ export const ButtonWidget: React.FC<ButtonWidgetProps>=({ node, device='desktop'
     const iconPadding=node.style?.iconPadding||6;
     const iconGap=node.style?.iconGap||8;
     const iconBorderRadius=node.style?.iconBorderRadius||0;
-    const iconColor=isHovering? (node.style?.iconHoverColor||'#ffffff'):(node.style?.iconColor||'#ffffff');
+    const iconColor=isHovering? (node.style?.iconHoverColor||'var(--color-bg-primary)'):(node.style?.iconColor||'var(--color-bg-primary)');
     const iconBgColor=isHovering? (node.style?.iconHoverBackgroundColor||'transparent'):(node.style?.iconBackgroundColor||'transparent');
 
     const alignment=getResponsiveValue('alignment', 'center');

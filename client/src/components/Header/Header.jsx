@@ -200,61 +200,52 @@ const Header = ({ hideMenu = false }) => {
     }, [menuSource]);
 
     return (
-        <header className="w-full bg-white z-50">
+        <header className="w-full bg-[var(--color-bg-primary)] z-50">
             {/* Top Navigation Bar */}
-            <div className="bg-gray-900 text-white">
+            <div className="bg-[var(--color-accent-primary)] text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
                     <div className="flex justify-between items-center text-xs sm:text-sm md:text-base">
                         <div className="flex items-center gap-4 sm:gap-6">
-                            <Link to="/about" className="hover:text-gray-200 transition duration-300 font-semibold whitespace-nowrap">
+                            <Link to="/about" className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold whitespace-nowrap">
                                 About Us
                             </Link>
-                            <div className="hidden sm:block text-gray-300">|</div>
-                            <Link to="/policies/shipping" className="hidden sm:block hover:text-gray-200 transition duration-300 font-semibold">
+                            <div className="hidden sm:block text-white text-opacity-60">|</div>
+                            <Link to="/policies/shipping" className="hidden sm:block hover:text-[var(--color-bg-section)] transition duration-300 font-semibold">
                                 Shipping
                             </Link>
-                            <div className="hidden sm:block text-gray-300">|</div>
-                            <Link to="/policies/returns-refund" className="hidden md:block hover:text-gray-200 transition duration-300 font-semibold">
+                            <div className="hidden sm:block text-white text-opacity-60">|</div>
+                            <Link to="/policies/returns-refund" className="hidden md:block hover:text-[var(--color-bg-section)] transition duration-300 font-semibold">
                                 Returns Policy
                             </Link>
                         </div>
                         <div className="flex items-center gap-3 sm:gap-5">
-                            <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:text-gray-200 transition duration-300 font-semibold whitespace-nowrap flex items-center gap-1.5">
+                            <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold whitespace-nowrap flex items-center gap-1.5">
                                 <FaEnvelope /> sales@wolfsuppliesltd.co.uk
                             </a>
                             {isAuthenticated ? (
                                 <div className="flex items-center gap-3">
                                     <div className="relative group hidden sm:block">
-                                        <button className="hover:text-gray-200 transition duration-300 font-semibold flex items-center gap-1.5 whitespace-nowrap">
+                                        <button className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold flex items-center gap-1.5 whitespace-nowrap">
                                             <FaUser /> {user?.name || 'User'} <FaChevronDown className="text-xs" />
                                         </button>
-                                        <div className="absolute right-0 mt-1 w-48 bg-white text-gray-900 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300 z-50">
-                                            <div className="px-4 py-2.5 border-b border-gray-200 text-xs text-gray-600">
+                                        <div className="absolute right-0 mt-1 w-48 bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300 z-50">
+                                            <div className="px-4 py-2.5 border-b border-[var(--color-border-light)] text-xs text-[var(--color-text-light)]">
                                                 {user?.email}
                                             </div>
                                             {isAdmin && (
                                                 <>
-                                                    <Link to="/admin/dashboard" className="px-4 py-2.5 hover:bg-gray-100 text-sm flex items-center gap-2">
-                                                        <FaUserShield className="text-gray-400" /> Admin Dashboard
+                                                    <Link to="/admin/dashboard" className="px-4 py-2.5 hover:bg-[var(--color-bg-section)] text-sm flex items-center gap-2">
+                                                        <FaUserShield className="text-[var(--color-accent-primary)]" /> Admin Dashboard
                                                     </Link>
-                                                    <button
-                                                        onClick={() => {
-                                                            toggleEditMode();
-                                                            setMobileMenuOpen(false);
-                                                        }}
-                                                        className="w-full text-left px-4 py-2.5 hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-700 font-semibold"
-                                                    >
-                                                        <FaEdit /> Edit Page
-                                                    </button>
-                                                    <div className="border-b border-gray-200"></div>
+                                                    <div className="border-b border-[var(--color-border-light)]"></div>
                                                 </>
                                             )}
-                                            <Link to="/account" className="px-4 py-2.5 hover:bg-gray-100 text-sm flex items-center gap-2">
+                                            <Link to="/account" className="px-4 py-2.5 hover:bg-[var(--color-bg-section)] text-sm flex items-center gap-2">
                                                 <FaCog /> Account Settings
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full text-left px-4 py-2.5 hover:bg-gray-200 text-sm rounded-b-lg flex items-center gap-2 text-gray-700 font-semibold"
+                                                className="w-full text-left px-4 py-2.5 hover:bg-[var(--color-border-light)] text-sm rounded-b-lg flex items-center gap-2 text-[var(--color-text-primary)] font-semibold"
                                             >
                                                 <FaSignOutAlt /> Logout
                                             </button>
@@ -262,7 +253,7 @@ const Header = ({ hideMenu = false }) => {
                                     </div>
                                 </div>
                             ) : (
-                                <Link to="/login" className="hover:text-gray-200 transition duration-300 font-semibold flex items-center gap-1.5 whitespace-nowrap">
+                                <Link to="/login" className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold flex items-center gap-1.5 whitespace-nowrap">
                                     <FaUser /> Sign In
                                 </Link>
                             )}
@@ -272,7 +263,7 @@ const Header = ({ hideMenu = false }) => {
             </div>
 
             {/* Main Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-light)]">
                 <div className="max-w-7xl mx-auto sm:px-2 lg:px-2 pt-3">
                     <div className='px-2 py-4'>
                         <div className="flex items-center justify-between gap-3 md:gap-6">
@@ -304,12 +295,12 @@ const Header = ({ hideMenu = false }) => {
                                         value={desktopSearchQuery}
                                         onChange={(e) => setDesktopSearchQuery(e.target.value)}
                                         placeholder="Search for a product or brand"
-                                        className="w-full h-12 md:h-14 px-6 rounded-l-full border border-gray-200 placeholder-gray-400 text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-200 bg-white"
+                                        className="w-full h-12 md:h-14 px-6 rounded-l-full border border-[var(--color-border-light)] placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] transition duration-200 bg-[var(--color-bg-primary)]"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => startVoiceSearch(false)}
-                                        className={`h-12 md:h-14 px-4 flex items-center justify-center transition duration-300 ${isListening ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                        className={`h-12 md:h-14 px-4 flex items-center justify-center transition duration-300 ${isListening ? 'bg-[var(--color-error)] text-white' : 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)] hover:bg-[var(--color-border)]'}`}
                                         title="Voice Search"
                                         aria-label="Voice search"
                                     >
@@ -317,7 +308,7 @@ const Header = ({ hideMenu = false }) => {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="h-12 md:h-14 bg-gray-700 hover:bg-black text-white px-5 rounded-r-full flex items-center justify-center shadow-md transition duration-300">
+                                        className="h-12 md:h-14 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-5 rounded-r-full flex items-center justify-center shadow-md transition duration-300">
                                         <FaSearch className="text-lg md:text-xl" />
                                     </button>
                                 </form>
@@ -347,27 +338,27 @@ const Header = ({ hideMenu = false }) => {
                                 )} */}
 
                                 {/* Wishlist */}
-                                <Link to="/wishlist" className="relative text-gray-700 hidden lg:block hover:text-gray-900 transition duration-300 p-2 hover:bg-gray-200 rounded-lg">
+                                <Link to="/wishlist" className="relative text-[var(--color-text-light)] hidden lg:block hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg">
                                     <FaHeart className="text-lg  md:text-xl" />
                                     {wishlistCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                        <span className="absolute -top-1 -right-1 bg-[var(--color-error)] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                             {wishlistCount}
                                         </span>
                                     )}
                                 </Link>
 
                                 {/* Cart */}
-                                <Link to="/cart" className="relative text-gray-700 hover:text-gray-400 transition duration-300 p-2 hover:bg-gray-100 rounded-lg">
+                                <Link to="/cart" className="relative text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg">
                                     <FaShoppingCart className="text-lg md:text-xl" />
                                     {totalQuantity > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                        <span className="absolute -top-1 -right-1 bg-[var(--color-error)] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                             {totalQuantity}
                                         </span>
                                     )}
                                 </Link>
 
                                 {/* Phone - Hidden on Mobile */}
-                                <div className="hidden md:flex items-center gap-2 bg-[#2563eb] text-white px-3 md:px-4 py-2 rounded-lg whitespace-nowrap">
+                                <div className="hidden md:flex items-center gap-2 bg-[var(--color-accent-primary)] text-white px-3 md:px-4 py-2 rounded-lg whitespace-nowrap">
                                     <FaPhone className="text-base md:text-lg" />
                                     <span className="font-bold text-sm md:text-base">
                                         <a href="tel:+447398998101">
@@ -381,32 +372,32 @@ const Header = ({ hideMenu = false }) => {
 
                     {/* Category Menu - Desktop Only */}
                     {!hideMenu && (
-                        <div className="hidden md:block sticky top-0 w-full bg-white   z-30"
+                        <div className="hidden md:block sticky top-0 w-full bg-[var(--color-bg-primary)]   z-30"
                             onMouseEnter={() => setBrowseOpen(true)}
                             onMouseLeave={() => setBrowseOpen(false)}
                         >
                             <div className="flex items-center gap-4">
                                 {/* Shop By Category Button - Left */}
                                 <button
-                                    className="flex items-center gap-2 px-4 py-3 hover:text-gray-400 hover:bg-gray-50 rounded-lg transition duration-300 font-semibold text-gray-900 text-sm md:text-base whitespace-nowrap"
+                                    className="flex items-center gap-2 px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-primary)] text-sm md:text-base whitespace-nowrap"
                                 >
                                     <FaList className="text-base" /> Shop By Category
                                 </button>
                                 {/* Divider */}
-                                <div className="h-6 w-px bg-gray-300"></div>
+                                <div className="h-6 w-px bg-[var(--color-border-light)]"></div>
 
                                 {/* Secondary Navigation - Top Menu - Right */}
                                 <div className="flex items-center gap-1   ">
-                                    <Link to="/" className="px-4 py-3 hover:text-gray-400 hover:bg-gray-50 rounded-lg transition duration-300 font-semibold text-gray-700 text-sm md:text-base">
+                                    <Link to="/" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
                                         Home
                                     </Link>
-                                    <Link to="/about" className="px-4 py-3 hover:text-gray-400 hover:bg-gray-50 rounded-lg transition duration-300 font-semibold text-gray-700 text-sm md:text-base">
+                                    <Link to="/about" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
                                         About Us
                                     </Link>
-                                    <Link to="/products/" className="px-4 py-3 hover:text-gray-400 hover:bg-gray-50 rounded-lg transition duration-300 font-semibold text-gray-700 text-sm md:text-base">
+                                    <Link to="/products/" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
                                         Shop
                                     </Link>
-                                    <Link to="/contact" className="px-4 py-3 hover:text-gray-400 hover:bg-gray-50 rounded-lg transition duration-300 font-semibold text-gray-700 text-sm md:text-base">
+                                    <Link to="/contact" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
                                         Contact Us
                                     </Link>
                                 </div>
@@ -422,11 +413,11 @@ const Header = ({ hideMenu = false }) => {
                                                     key={item.id || `m_${idx}`}
                                                     to={item.url || item.link || '/'}
                                                     onMouseEnter={() => setActiveMenuIndex(idx)}
-                                                    className={`block w-full text-left px-6 py-4 border-b border-gray-100 transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-gray-100 text-gray-900' : 'bg-white text-gray-900 hover:bg-gray-50'}`}
+                                                    className={`block w-full text-left px-6 py-4 border-b border-[var(--color-border-light)] transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)]' : 'bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-section)]'}`}
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <span>{item.label || item.name}</span>
-                                                        <FaChevronDown className="text-xs text-gray-400" />
+                                                        <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
                                                     </div>
                                                 </Link>
                                             ))}
@@ -434,14 +425,14 @@ const Header = ({ hideMenu = false }) => {
 
                                         {/* Right Content - Shows on Hover */}
                                         {activeMenuIndex >= 0 && (
-                                            <div className="flex-1 bg-white flex flex-col">
+                                            <div className="flex-1 bg-[var(--color-bg-primary)] flex flex-col">
                                                 {/* Top Category Tabs */}
-                                                <div className="border-b border-gray-200 px-6 py-4 flex gap-6 overflow-x-auto">
+                                                <div className="border-b border-[var(--color-border-light)] px-6 py-4 flex gap-6 overflow-x-auto">
                                                     {menuSource.map((item, idx) => (
                                                         <button
                                                             key={item.id || `tab_${idx}`}
                                                             onMouseEnter={() => setActiveMenuIndex(idx)}
-                                                            className={`text-sm font-semibold transition duration-150 whitespace-nowrap pb-2 border-b-2 ${activeMenuIndex === idx ? 'text-gray-400 border-gray-400' : 'text-gray-600 border-transparent hover:text-gray-900'}`}
+                                                            className={`text-sm font-semibold transition duration-150 whitespace-nowrap pb-2 border-b-2 ${activeMenuIndex === idx ? 'text-[var(--color-accent-primary)] border-[var(--color-accent-primary)]' : 'text-[var(--color-text-light)] border-transparent hover:text-[var(--color-text-primary)]'}`}
                                                         >
                                                             {item.label || item.name}
                                                         </button>
@@ -449,21 +440,21 @@ const Header = ({ hideMenu = false }) => {
                                                 </div>
 
                                                 {/* Subcategories Section */}
-                                                <div className="flex-1 bg-white overflow-y-auto">
+                                                <div className="flex-1 bg-[var(--color-bg-primary)] overflow-y-auto">
                                                     <div className="space-y-3">
                                                         {menuSource[activeMenuIndex]?.sub && menuSource[activeMenuIndex].sub.length > 0 ? (
                                                             menuSource[activeMenuIndex].sub.map((subItem) => (
                                                                 <Link
                                                                     key={subItem.id}
                                                                     to={subItem.link || '#'}
-                                                                    className="block px-4 py-2.5 mb-0 text-gray-700 hover:text-gray-400 hover:underline font-semibold text-base transition duration-150"
+                                                                    className="block px-4 py-2.5 mb-0 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:underline font-semibold text-base transition duration-150"
                                                                 >
                                                                     {subItem.name}
                                                                 </Link>
                                                             ))
                                                         ) : (
                                                             <div className="flex items-center justify-center py-12">
-                                                                <p className="text-gray-400 text-center">Menu item details</p>
+                                                                <p className="text-[var(--color-text-muted)] text-center">Menu item details</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -491,14 +482,14 @@ const Header = ({ hideMenu = false }) => {
                 />
 
                 {/* Panel */}
-                <nav className={`absolute left-0 top-0 bottom-0 w-full sm:w-4/5 bg-white shadow-2xl overflow-auto transform transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <nav className={`absolute left-0 top-0 bottom-0 w-full sm:w-4/5 bg-[var(--color-bg-primary)] shadow-2xl overflow-auto transform transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-4">
                         <div className="flex items-center justify-between">
                             <Link to="/" className="flex items-center gap-2">
                                 <div className="text-3xl">🛍️</div>
-                                <span className="text-lg font-bold text-gray-400">Wolf Supplies</span>
+                                <span className="text-lg font-bold text-[var(--color-accent-primary)]">Wolf Supplies</span>
                             </Link>
-                            <button onClick={() => setMobileMenuOpen(false)} className="text-2xl p-2 rounded-md hover:bg-gray-100">
+                            <button onClick={() => setMobileMenuOpen(false)} className="text-2xl p-2 rounded-md hover:bg-[var(--color-bg-section)]">
                                 <FaTimes />
                             </button>
                         </div>
@@ -507,20 +498,20 @@ const Header = ({ hideMenu = false }) => {
 
                         {/* duplicate inline search removed; mobile search uses modal */}
 
-                        <div className="border-t border-gray-200 pt-4">
+                        <div className="border-t border-[var(--color-border-light)] pt-4">
                             <Link
                                 to="/categories"
-                                className="font-bold text-gray-900 mb-3 text-sm flex items-center gap-2 px-3 py-2 hover:bg-gray-100 hover:text-gray-700 rounded-lg"
+                                className="font-bold text-[var(--color-text-primary)] mb-3 text-sm flex items-center gap-2 px-3 py-2 hover:bg-[var(--color-bg-section)] hover:text-[var(--color-accent-primary)] rounded-lg"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <FaList className="text-gray-400" /> Browse All Categories
+                                <FaList className="text-[var(--color-accent-primary)]" /> Browse All Categories
                             </Link>
 
                             {menuSource.map((item) => (
                                 <div key={item.id || item.label || item.name} className="mb-2">
                                     <Link
                                         to={item.url || item.link || '#'}
-                                        className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-gray-400 hover:bg-gray-50 rounded-lg text-sm font-semibold"
+                                        className="flex items-center gap-2 px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg text-sm font-semibold"
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         <span className="text-lg"></span>
@@ -532,7 +523,7 @@ const Header = ({ hideMenu = false }) => {
                                                 <Link
                                                     key={sub.id}
                                                     to={sub.link || '#'}
-                                                    className="px-2 py-1.5 text-gray-600 hover:text-gray-400 text-xs hover:bg-gray-50 rounded flex items-center gap-1"
+                                                    className="px-2 py-1.5 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] text-xs hover:bg-[var(--color-bg-section)] rounded flex items-center gap-1"
                                                     onClick={() => setMobileMenuOpen(false)}
                                                 >
                                                     <span></span>
@@ -542,7 +533,7 @@ const Header = ({ hideMenu = false }) => {
                                             {item.sub.length > 3 && (
                                                 <Link
                                                     to={item.url || item.link || '#'}
-                                                    className="block px-2 py-1.5 text-gray-700 text-xs font-semibold hover:bg-gray-100 rounded"
+                                                    className="block px-2 py-1.5 text-[var(--color-text-primary)] text-xs font-semibold hover:bg-[var(--color-bg-section)] rounded"
                                                     onClick={() => setMobileMenuOpen(false)}
                                                 >
                                                     See all ({item.sub.length})
@@ -554,31 +545,31 @@ const Header = ({ hideMenu = false }) => {
                             ))}
                         </div>
 
-                        <div className="border-t border-gray-200 pt-4 space-y-2">
+                        <div className="border-t border-[var(--color-border-light)] pt-4 space-y-2">
                             <Link
                                 to="/"
-                                className="block px-3 py-2 text-gray-700 hover:text-gray-400 hover:bg-gray-50 rounded-lg font-semibold text-sm"
+                                className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 Home
                             </Link>
                             <Link
                                 to="/products"
-                                className="block px-3 py-2 text-gray-700 hover:text-gray-400 hover:bg-gray-50 rounded-lg font-semibold text-sm"
+                                className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 Shop
                             </Link>
                             <Link
                                 to="/about"
-                                className="block px-3 py-2 text-gray-700 hover:text-gray-400 hover:bg-gray-50 rounded-lg font-semibold text-sm"
+                                className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 About Us
                             </Link>
                             <Link
                                 to="/contact"
-                                className="block px-3 py-2 text-gray-700 hover:text-gray-400 hover:bg-gray-50 rounded-lg font-semibold text-sm"
+                                className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 Contact Us
@@ -586,7 +577,7 @@ const Header = ({ hideMenu = false }) => {
                             {isAdmin && (
                                 <Link
                                     to="/admin/dashboard"
-                                    className="px-3 py-2 text-white bg-gray-700 hover:bg-black rounded-lg font-semibold text-sm flex items-center gap-2"
+                                    className="px-3 py-2 text-white bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] rounded-lg font-semibold text-sm flex items-center gap-2"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <FaUserShield /> Admin Panel
@@ -594,17 +585,24 @@ const Header = ({ hideMenu = false }) => {
                             )}
                         </div>
 
-                        <div className="border-t border-gray-200 pt-4">
+                        <div className="border-t border-[var(--color-border-light)] pt-4">
                             {isAuthenticated ? (
                                 <>
-                                    <div className="flex items-center gap-2 text-gray-700 font-semibold py-2 px-3 text-sm">
-                                        <FaUser className="text-gray-400" />
+                                    <div className="flex items-center gap-2 text-[var(--color-text-primary)] font-semibold py-2 px-3 text-sm">
+                                        <FaUser className="text-[var(--color-accent-primary)]" />
                                         <span>{user?.name || 'User'}</span>
                                     </div>
-                                    <p className="text-xs text-gray-900 px-3 py-1">{user?.email}</p>
+                                    <p className="text-xs text-[var(--color-text-light)] px-3 py-1">{user?.email}</p>
+                                    <Link
+                                        to="/account"
+                                        className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm mt-2 flex items-center gap-2"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        <FaCog /> Account Settings
+                                    </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full text-left px-3 py-2 text-black hover:text-gray-700 hover:bg-gray-100 rounded-lg font-semibold text-sm mt-2 flex items-center gap-2"
+                                        className="w-full text-left px-3 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm mt-2 flex items-center gap-2"
                                     >
                                         <FaSignOutAlt /> Logout
                                     </button>
@@ -613,14 +611,14 @@ const Header = ({ hideMenu = false }) => {
                                 <>
                                     <Link
                                         to="/login"
-                                        className="block px-3 py-2 text-gray-700 hover:text-gray-400 hover:bg-gray-50 rounded-lg font-semibold text-sm"
+                                        className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         Login
                                     </Link>
                                     <Link
                                         to="/register"
-                                        className="block bg-gray-700 hover:bg-black text-white px-4 py-2 rounded-lg font-semibold transition duration-300 text-center text-sm mt-2"
+                                        className="block bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-4 py-2 rounded-lg font-semibold transition duration-300 text-center text-sm mt-2"
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         Sign Up
@@ -648,7 +646,7 @@ const Header = ({ hideMenu = false }) => {
                 />
 
                 {/* Centered Panel */}
-                <div className={`absolute left-1/2 top-20 transform -translate-x-1/2 w-11/12 max-w-xl bg-white rounded-lg shadow-2xl p-4 transition-all duration-200 ${mobileSearchOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-6'}`}>
+                <div className={`absolute left-1/2 top-20 transform -translate-x-1/2 w-11/12 max-w-xl bg-[var(--color-bg-primary)] rounded-lg shadow-2xl p-4 transition-all duration-200 ${mobileSearchOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-6'}`}>
                     <div className="flex items-start gap-2">
                         <form onSubmit={handleMobileSearchSubmit} className="flex-1 w-full">
                             <label id="mobile-search-title" className="sr-only">Search products</label>
@@ -659,7 +657,7 @@ const Header = ({ hideMenu = false }) => {
                                     value={mobileSearchQuery}
                                     onChange={(e) => setMobileSearchQuery(e.target.value)}
                                     placeholder="Search products, brands..."
-                                    className="flex-1 h-12 px-4 rounded-l-full border border-gray-200 placeholder-gray-400 text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-200 text-sm"
+                                    className="flex-1 h-12 px-4 rounded-l-full border border-[var(--color-border-light)] placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] text-sm"
                                 />
 
                                 {mobileSearchQuery.length > 0 && (
@@ -667,7 +665,7 @@ const Header = ({ hideMenu = false }) => {
                                         type="button"
                                         onClick={() => { setMobileSearchQuery(''); if (mobileSearchRef.current) mobileSearchRef.current.focus(); }}
                                         aria-label="Clear search"
-                                        className="text-gray-900 hover:text-gray-700 p-2 hidden sm:block"
+                                        className="text-[var(--color-text-primary)] hover:text-[var(--color-text-light)] p-2 hidden sm:block"
                                     >
                                         ✕
                                     </button>
@@ -676,19 +674,19 @@ const Header = ({ hideMenu = false }) => {
                                 <button
                                     type="button"
                                     onClick={() => startVoiceSearch(true)}
-                                    className={`h-12 px-3 flex items-center justify-center transition duration-300 rounded-full ${isMobileListening ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                    className={`h-12 px-3 flex items-center justify-center transition duration-300 rounded-full ${isMobileListening ? 'bg-[var(--color-error)] text-white' : 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)] hover:bg-[var(--color-border)]'}`}
                                     title="Voice Search"
                                     aria-label="Voice search"
                                 >
                                     <FaMicrophone />
                                 </button>
 
-                                <button type="submit" className="h-12 bg-black hover:bg-gray-900 text-white px-4 rounded-r-full flex items-center justify-center">
+                                <button type="submit" className="h-12 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-4 rounded-r-full flex items-center justify-center">
                                     <FaSearch />
                                 </button>
                             </div>
                         </form>
-                        <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-2xl text-gray-600 p-2 hover:bg-gray-100 rounded-md">
+                        <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-2xl text-[var(--color-text-light)] p-2 hover:bg-[var(--color-bg-section)] rounded-md">
                             <FaTimes />
                         </button>
                     </div>

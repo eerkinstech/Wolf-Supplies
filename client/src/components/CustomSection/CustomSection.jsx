@@ -5,7 +5,7 @@ const CustomSection = ({
     title = '',
     items = [],
     sectionHeight = '500px',
-    backgroundColor = '#ffffff',
+    backgroundColor = 'var(--color-bg-primary)',
     editorContent,
     editorStyle
 }) => {
@@ -105,7 +105,7 @@ const CustomSection = ({
                     className={`fa-solid ${trimmedIcon}`}
                     style={{
                         fontSize: size || '24px',
-                        color: color || '#3b82f6',
+                        color: color || 'var(--color-accent-primary)',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center'
@@ -193,7 +193,7 @@ const CustomSection = ({
                 return (
                     <div style={{
                         fontSize: headingFontSize,
-                        color: item.color || '#000',
+                        color: item.color || 'var(--color-text-primary)',
                         fontWeight: 'bold',
                         margin: 0,
                         textAlign: item.textAlign || 'left',
@@ -229,12 +229,12 @@ const CustomSection = ({
                         <div style={{
                             width: item.width || '100%',
                             height: item.height || '200px',
-                            backgroundColor: '#f3f4f6',
+                            backgroundColor: 'var(--color-bg-section)',
                             borderRadius: '4px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#9ca3af',
+                            color: 'var(--color-text-muted)',
                             fontSize: 'clamp(10px, 2vw, 12px)'
                         }}>
                             No image uploaded
@@ -248,10 +248,10 @@ const CustomSection = ({
                         onError={(e) => {
                             console.error('❌ Image failed to load:', imageSrc);
                             e.target.style.display = 'none';
-                            e.target.parentElement.style.backgroundColor = '#f3f4f6';
+                            e.target.parentElement.style.backgroundColor = 'var(--color-bg-section)';
                             const errorDiv = document.createElement('div');
                             errorDiv.textContent = 'Image failed to load';
-                            errorDiv.style.color = '#ef4444';
+                            errorDiv.style.color = 'var(--color-error)';
                             e.target.parentElement.appendChild(errorDiv);
                         }}
                         onLoad={(e) => {
@@ -319,7 +319,7 @@ const CustomSection = ({
                             style={{
                                 display: 'inline-block',
                                 padding: `clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)`,
-                                backgroundColor: item.bgColor || '#3b82f6',
+                                backgroundColor: item.bgColor || 'var(--color-accent-primary)',
                                 color: item.color || '#fff',
                                 borderRadius: '6px',
                                 textDecoration: 'none',
@@ -387,7 +387,7 @@ const CustomSection = ({
                             }}>
                                 <div style={{
                                     fontSize: '24px',
-                                    color: item.iconColor || '#3b82f6',
+                                    color: item.iconColor || 'var(--color-accent-primary)',
                                     minWidth: item.iconBgSize ? `${item.iconBgSize}px` : '24px',
                                     width: item.iconBgSize ? `${item.iconBgSize}px` : '24px',
                                     height: item.iconBgSize ? `${item.iconBgSize}px` : '24px',
@@ -397,10 +397,10 @@ const CustomSection = ({
                                     backgroundColor: item.iconBackgroundColor || 'transparent',
                                     borderRadius: item.iconBgRadius ? `${item.iconBgRadius}px` : '0px'
                                 }}>
-                                    {renderIcon(listItem.icon || '✓', '24px', item.iconColor || '#3b82f6')}
+                                    {renderIcon(listItem.icon || '✓', '24px', item.iconColor || 'var(--color-accent-primary)')}
                                 </div>
                                 <div style={{
-                                    color: item.color || '#1f2937',
+                                    color: item.color || 'var(--color-text-primary)',
                                     fontSize: item.size === 'sm' ? '14px' : item.size === 'lg' ? '18px' : '16px'
                                 }}>
                                     {listItem.text}
@@ -413,7 +413,7 @@ const CustomSection = ({
             case 'icon-box':
                 return (
                     <div style={{
-                        backgroundColor: item.backgroundColor || '#f3f4f6',
+                        backgroundColor: item.backgroundColor || 'var(--color-bg-section)',
                         borderRadius: item.borderRadius || '8px',
                         padding: item.padding || '24px',
                         textAlign: 'center',
@@ -424,7 +424,7 @@ const CustomSection = ({
                     }}>
                         <div style={{
                             fontSize: item.iconSize || '48px',
-                            color: item.iconColor || '#3b82f6',
+                            color: item.iconColor || 'var(--color-accent-primary)',
                             marginBottom: '16px',
                             display: 'flex',
                             alignItems: 'center',
@@ -437,7 +437,7 @@ const CustomSection = ({
                             marginLeft: 'auto',
                             marginRight: 'auto'
                         }}>
-                            {renderIcon(item.icon || '★', item.iconSize || '48px', item.iconColor || '#3b82f6')}
+                            {renderIcon(item.icon || '★', item.iconSize || '48px', item.iconColor || 'var(--color-accent-primary)')}
                         </div>
                         <h3 style={{
                             fontSize: item.titleFontSize ? `${item.titleFontSize}px` : '18px',
@@ -449,7 +449,7 @@ const CustomSection = ({
                         </h3>
                         <p style={{
                             fontSize: item.descFontSize ? `${item.descFontSize}px` : '14px',
-                            color: item.descriptionColor || item.color || '#666',
+                            color: item.descriptionColor || item.color || 'var(--color-text-light)',
                             margin: '0',
                             lineHeight: '1.5'
                         }}>
@@ -471,7 +471,7 @@ const CustomSection = ({
                 };
                 return (
                     <div style={{
-                        backgroundColor: item.backgroundColor || '#f3f4f6',
+                        backgroundColor: item.backgroundColor || 'var(--color-bg-section)',
                         borderRadius: item.borderRadius || '8px',
                         padding: item.padding || '24px',
                         width: `${item.innerWidth || 100}%`,
@@ -481,7 +481,7 @@ const CustomSection = ({
                         <h3 style={{
                             fontSize: item.titleFontSize ? `${item.titleFontSize}px` : '20px',
                             fontWeight: 'bold',
-                            color: item.titleColor || '#000',
+                            color: item.titleColor || 'var(--color-text-primary)',
                             margin: '0 0 8px 0',
                             textAlign: 'center'
                         }}>
@@ -489,7 +489,7 @@ const CustomSection = ({
                         </h3>
                         <p style={{
                             fontSize: '14px',
-                            color: item.color || '#666',
+                            color: item.color || 'var(--color-text-light)',
                             margin: '0 0 16px 0',
                             textAlign: 'center'
                         }}>
@@ -513,7 +513,7 @@ const CustomSection = ({
                                     padding: '10px 12px',
                                     border: `1px solid ${item.inputBorderColor || '#ddd'}`,
                                     borderRadius: `${item.inputBorderRadius || 4}px`,
-                                    backgroundColor: item.inputBgColor || '#fff',
+                                    backgroundColor: item.inputBgColor || 'var(--color-bg-primary)',
                                     color: item.inputTextColor || '#000',
                                     fontSize: '14px',
                                     fontFamily: 'inherit'
@@ -524,8 +524,8 @@ const CustomSection = ({
                                 style={{
                                     width: item.buttonWidth ? `${item.buttonWidth}%` : 'auto',
                                     padding: '10px 16px',
-                                    backgroundColor: item.buttonColor || '#3b82f6',
-                                    color: '#fff',
+                                    backgroundColor: item.buttonColor || 'var(--color-accent-primary)',
+                                    color: 'var(--color-bg-primary)',
                                     border: 'none',
                                     borderRadius: '4px',
                                     cursor: 'pointer',
@@ -539,7 +539,7 @@ const CustomSection = ({
                         {item.privacyText && (
                             <p style={{
                                 fontSize: '12px',
-                                color: '#999',
+                                color: 'var(--color-text-muted)',
                                 margin: '0',
                                 textAlign: 'center'
                             }}>
@@ -568,13 +568,13 @@ const CustomSection = ({
                                     style={{
                                         width: '100%',
                                         padding: '16px',
-                                        backgroundColor: openAccordion === idx ? (item.activeColor || '#f3f4f6') : (item.backgroundColor || '#fff'),
+                                        backgroundColor: openAccordion === idx ? (item.activeColor || 'var(--color-bg-section)') : (item.backgroundColor || 'var(--color-bg-primary)'),
                                         border: 'none',
                                         cursor: 'pointer',
                                         textAlign: 'left',
                                         fontWeight: 'bold',
                                         fontSize: '16px',
-                                        color: openAccordion === idx ? (item.activeTitleColor || '#000') : (item.titleColor || '#000'),
+                                        color: openAccordion === idx ? (item.activeTitleColor || 'var(--color-text-primary)') : (item.titleColor || 'var(--color-text-primary)'),
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
@@ -592,8 +592,8 @@ const CustomSection = ({
                                 {openAccordion === idx && (
                                     <div style={{
                                         padding: '16px',
-                                        backgroundColor: item.contentBackgroundColor || '#f9fafb',
-                                        color: item.contentColor || '#666',
+                                        backgroundColor: item.contentBackgroundColor || 'var(--color-bg-secondary)',
+                                        color: item.contentColor || 'var(--color-text-light)',
                                         fontSize: '14px',
                                         lineHeight: '1.6',
                                         animation: 'slideDown 0.3s ease'
@@ -656,7 +656,7 @@ const CustomSection = ({
                             <h2 style={{
                                 fontSize: 'clamp(1.5rem, 6vw, 3.5rem)',
                                 fontWeight: 'bold',
-                                color: '#111827',
+                                color: 'var(--color-text-primary)',
                                 marginBottom: '16px',
                                 margin: 0,
                                 paddingBottom: '16px'
@@ -673,12 +673,12 @@ const CustomSection = ({
                         textAlign: 'center',
                         paddingTop: '80px',
                         paddingBottom: '80px',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: 'var(--color-bg-primary)',
                         borderRadius: '16px',
                         border: '2px dashed #d1d5db'
                     }}>
                         <p style={{
-                            color: '#4b5563',
+                            color: 'var(--color-text-light)',
                             fontSize: '18px'
                         }}>No items to display. Add items in editor.</p>
                     </div>
@@ -721,7 +721,7 @@ const CustomSection = ({
                     <h2 style={{
                         fontSize: 'clamp(1.5rem, 6vw, 3.5rem)',
                         fontWeight: 'bold',
-                        color: '#111827',
+                        color: 'var(--color-text-primary)',
                         marginBottom: 'clamp(8px, 2vw, 16px)',
                         margin: 0,
                         paddingBottom: 'clamp(8px, 2vw, 16px)'

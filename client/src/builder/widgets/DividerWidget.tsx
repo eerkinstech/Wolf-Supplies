@@ -21,14 +21,14 @@ export const DividerWidget: React.FC<DividerWidgetProps>=({ node, device='deskto
     const dividerType=getResponsiveValue('dividerType', 'simple');
     const lineStyle=getResponsiveValue('lineStyle', 'solid');
     const thickness=getResponsiveValue('thickness', 2);
-    const color=getResponsiveValue('color', '#cccccc');
+    const color=getResponsiveValue('color', 'var(--color-border)');
     const width=getResponsiveValue('width', '100%');
     const alignment=getResponsiveValue('alignment', 'center');
     const gap=getResponsiveValue('gap', 0);
 
     // Text divider specific
     const text=getResponsiveValue('text', '');
-    const textColor=getResponsiveValue('textColor', '#666666');
+    const textColor=getResponsiveValue('textColor', 'var(--color-text-light)');
     const textSize=getResponsiveValue('textSize', 14);
     const textWeight=getResponsiveValue('textWeight', 'normal');
     const textGap=getResponsiveValue('textGap', 16);

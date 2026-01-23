@@ -1038,7 +1038,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
 
       // Get styling values
       const iconSize = style.iconSize || 24;
-      const iconColor = style.iconColor || '#3b82f6';
+      const iconColor = style.iconColor || 'var(--color-accent-primary)';
       const iconPadding = style.iconPadding || 8;
       const iconBgColor = style.iconBackgroundColor || 'transparent';
       const iconBgSize = iconSize + (iconPadding * 2);
@@ -1213,7 +1213,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
                       target={item.openNewTab ? '_blank' : '_self'}
                       rel={item.openNewTab ? 'noopener noreferrer' : ''}
                       style={{
-                        color: '#3b82f6',
+                        color: 'var(--color-accent-primary)',
                         textDecoration: 'none',
                         fontSize: `${textSize}px`,
                         marginTop: '4px',
@@ -1252,7 +1252,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
 
       // Get icon styling values
       const iconSize = style.iconSize || 48;
-      const iconColor = style.iconColor || '#3b82f6';
+      const iconColor = style.iconColor || 'var(--color-accent-primary)';
       const iconBgColor = style.iconBackgroundColor || 'transparent';
       const iconPadding = style.iconPadding || 0;
       const iconBgSize = iconSize + (iconPadding * 2);

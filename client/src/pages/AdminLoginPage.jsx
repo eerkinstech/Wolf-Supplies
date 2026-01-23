@@ -122,7 +122,19 @@ const AdminLoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-lg font-bold transition duration-300 disabled:opacity-50 text-lg mt-8 transform hover:scale-105 shadow-lg shadow-blue-500/50"
+              className="w-full text-white py-3 rounded-lg font-bold transition duration-300 disabled:opacity-50 text-lg mt-8 transform hover:scale-105 shadow-lg"
+              style={{ 
+                backgroundColor: 'var(--color-accent-primary)',
+                boxShadow: '0 0 20px rgba(165, 99, 42, 0.5)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'var(--color-accent-light)';
+                e.target.style.boxShadow = '0 0 25px rgba(165, 99, 42, 0.7)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'var(--color-accent-primary)';
+                e.target.style.boxShadow = '0 0 20px rgba(165, 99, 42, 0.5)';
+              }}
             >
               {loading ? 'Verifying Admin Credentials...' : 'Sign In as Administrator'}
             </button>

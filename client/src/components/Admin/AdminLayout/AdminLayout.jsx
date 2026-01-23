@@ -2,7 +2,7 @@ import React from 'react';
 import AdminSidebar from '../AdminSidebar/AdminSidebar';
 const AdminLayout = ({ children, activeTab }) => {
     return (
-        <div className="flex bg-gray-100 min-h-screen">
+        <div className="flex min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
             {/* Sidebar */}
             <AdminSidebar activeTab={activeTab} />
 

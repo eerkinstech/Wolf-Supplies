@@ -44,28 +44,29 @@ const AdminSidebar = ({ activeTab }) => {
   const currentActiveTab = activeTab || getCurrentActiveTab();
 
   return (
-    <div className="w-64 bg-gray-900 text-white h-screen flex flex-col fixed left-0 top-0 z-40">
+    <div className="w-64 text-white h-screen flex flex-col fixed left-0 top-0 z-40" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
       {/* Header */}
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6 border-b border-opacity-30" style={{ borderColor: 'white' }}>
         <Link to="/admin" className="flex items-center gap-3">
           <div className="text-3xl">⚙️</div>
           <div>
             <h1 className="text-xl font-bold">Admin Panel</h1>
-            <p className="text-xs text-gray-400">Management</p>
+            <p className="text-xs opacity-75">Management</p>
           </div>
         </Link>
       </div>
 
       {/* Menu Items */}
-      <nav className="flex-1 p-6 space-y-2">
+      <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => (
           <Link
             key={item.id}
             to={item.path}
             className={`flex items-center gap-4 px-4 py-3 rounded-lg transition duration-300 ${currentActiveTab === item.id
-              ? 'bg-gray-800 text-white'
-              : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              ? 'text-white'
+              : 'text-white opacity-75 hover:opacity-100'
               }`}
+            style={currentActiveTab === item.id ? { backgroundColor: 'var(--color-accent-light)' } : { backgroundColor: 'transparent' }}
           >
             <item.icon className="text-lg" />
             <span className="font-semibold">{item.label}</span>
@@ -74,13 +75,16 @@ const AdminSidebar = ({ activeTab }) => {
       </nav>
 
       {/* Footer */}
-      <div className="p-6 border-t border-gray-700">
+      <div className="p-6 border-t border-opacity-30" style={{ borderColor: 'white' }}>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-white bg-red-600 hover:bg-red-700 hover:text-white transition duration-300"
+          className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-white font-semibold transition duration-300"
+          style={{ backgroundColor: 'rgba(255, 0, 0, 0.8)', borderColor: 'white' }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 0, 0, 1)'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 0, 0, 0.8)'}
         >
           <FaSignOutAlt className="text-lg" />
-          <span className="font-semibold">Logout</span>
+          <span>Logout</span>
         </button>
       </div>
     </div>

@@ -30,11 +30,11 @@ const getImgSrc = (img) => {
 const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
   return (
     <>
-      <div className="p-6 sm:p-8 hover:bg-linear-to-r hover:from-gray-50 hover:to-blue-50 transition duration-300">
+      <div className="p-6 sm:p-8 transition duration-300" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
         {/* Product Main Info */}
         <div className="flex flex-col sm:flex-row gap-6 mb-4">
           {/* Product Image */}
-          <div className="relative w-32 h-32 bg-linear-to-br from-gray-100 to-black-200 rounded-xl flex-shrink-0 overflow-hidden group flex items-center justify-center">
+          <div className="relative w-32 h-32 rounded-xl flex-shrink-0 overflow-hidden group flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-section)', borderColor: 'var(--color-border-light)' }}>
             {getImgSrc(item.image) ? (
               <img
                 src={getImgSrc(item.image)}
@@ -51,40 +51,42 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
           <div className="grow">
             <div className="flex justify-between items-start mb-3">
               <div>
-                <h3 className="font-bold text-xl text-gray-900 mb-1">{item.name}</h3>
-
+                <h3 className="font-bold text-xl mb-1" style={{ color: 'var(--color-text-primary)' }}>{item.name}</h3>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="inline-block px-2 py-1 text-xs font-semibold rounded" style={{ backgroundColor: 'var(--color-accent-primary)', color: 'white' }}>VAT 0%</span>
+                </div>
               </div>
-              <p className="text-2xl font-bold text-gray-400">£{Number(item.price).toFixed(2)}</p>
+              <p className="text-2xl font-bold" style={{ color: 'var(--color-accent-primary)' }}>£{Number(item.price).toFixed(2)}</p>
             </div>
 
             {/* Variants Display */}
             {(item.selectedSize || item.selectedColor || (item.selectedVariants && Object.keys(item.selectedVariants).length > 0)) && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="mt-4 pt-4" style={{ borderColor: 'var(--color-border-light)', borderTopWidth: '1px' }}>
                 <div className="grid grid-cols-2 gap-3">
                   {item.selectedSize && (
                     <div className="flex items-center gap-2">
-                      <FaBox className="text-gray-700 text-sm" />
+                      <FaBox className="text-sm" style={{ color: 'var(--color-accent-primary)' }} />
                       <span className="text-sm">
-                        <span className="font-semibold text-gray-700">Size:</span>
-                        <span className="text-gray-600 ml-1">{item.selectedSize}</span>
+                        <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Size:</span>
+                        <span className="ml-1" style={{ color: 'var(--color-text-secondary)' }}>{item.selectedSize}</span>
                       </span>
                     </div>
                   )}
                   {item.selectedColor && (
                     <div className="flex items-center gap-2">
-                      <FaTag className="text-pink-600 text-sm" />
+                      <FaTag className="text-sm" style={{ color: 'var(--color-accent-primary)' }} />
                       <span className="text-sm">
-                        <span className="font-semibold text-gray-700">Color:</span>
-                        <span className="text-gray-600 ml-1">{item.selectedColor}</span>
+                        <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Color:</span>
+                        <span className="ml-1" style={{ color: 'var(--color-text-secondary)' }}>{item.selectedColor}</span>
                       </span>
                     </div>
                   )}
                   {item.selectedVariants && Object.entries(item.selectedVariants).filter(([_, v]) => v).map(([key, value]) => (
                     <div key={key} className="flex items-center gap-2">
-                      <FaCheck className="text-gray-400 text-sm" />
+                      <FaCheck className="text-sm" style={{ color: 'var(--color-accent-primary)' }} />
                       <span className="text-sm">
-                        <span className="font-semibold text-gray-700">{key}:</span>
-                        <span className="text-gray-600 ml-1">{value}</span>
+                        <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{key}:</span>
+                        <span className="ml-1" style={{ color: 'var(--color-text-secondary)' }}>{value}</span>
                       </span>
                     </div>
                   ))}
@@ -95,20 +97,26 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
         </div>
 
         {/* Quantity & Total Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4" style={{ borderColor: 'var(--color-border-light)', borderTopWidth: '1px' }}>
           {/* Quantity Control */}
-          <div className="flex items-center border-2 border-gray-300 rounded-lg bg-white w-fit">
+          <div className="flex items-center rounded-lg w-fit" style={{ borderWidth: '2px', borderColor: 'var(--color-border-light)', backgroundColor: 'var(--color-bg-primary)' }}>
             <button
               onClick={() => onUpdateQuantity(item._id, item.quantity - 1)}
-              className="px-5 py-2 hover:bg-gray-100 font-bold text-lg text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2 font-bold text-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ color: 'var(--color-accent-primary)' }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
               disabled={item.quantity <= 1}
             >
               −
             </button>
-            <span className="px-8 py-2 border-l-2 border-r-2 border-gray-300 font-bold text-lg text-gray-900 w-16 text-center">{item.quantity}</span>
+            <span className="px-8 py-2 font-bold text-lg w-16 text-center" style={{ borderLeftWidth: '2px', borderRightWidth: '2px', borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}>{item.quantity}</span>
             <button
               onClick={() => onUpdateQuantity(item._id, item.quantity + 1)}
-              className="px-5 py-2 hover:bg-gray-100 font-bold text-lg text-gray-700 transition duration-300"
+              className="px-5 py-2 font-bold text-lg transition duration-300"
+              style={{ color: 'var(--color-accent-primary)' }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
             >
               +
             </button>
@@ -116,10 +124,9 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
 
           {/* Price Info */}
           <div className="flex items-center justify-between sm:justify-end gap-8">
-
             <div className="text-right">
-              <p className="text-sm text-gray-600">Subtotal</p>
-              <p className="font-bold text-2xl text-gray-400">£{(Number(item.price) * item.quantity).toFixed(2)}</p>
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Subtotal</p>
+              <p className="font-bold text-2xl" style={{ color: 'var(--color-accent-primary)' }}>£{(Number(item.price) * item.quantity).toFixed(2)}</p>
             </div>
           </div>
 
@@ -132,13 +139,21 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
                 console.error('CartItem remove handler error', err);
               }
             }}
-            className="w-full sm:w-auto px-4 py-2 text-black hover:bg-gray-100 font-semibold flex items-center justify-center gap-2 transition duration-300 rounded-lg border border-gray-400 hover:border-gray-600"
+            className="w-full sm:w-auto px-4 py-2 font-semibold flex items-center justify-center gap-2 transition duration-300 rounded-lg"
+            style={{
+              borderWidth: '2px',
+              borderColor: 'var(--color-border-light)',
+              color: 'var(--color-accent-primary)'
+            }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')
+            }
+            onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
           >
             <FaTrash className="text-sm" />
           </button>
         </div>
       </div>
-      {!isLast && <div className="border-b border-gray-100"></div>}
+      {!isLast && <div style={{ borderBottomColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}></div>}
     </>
   );
 };

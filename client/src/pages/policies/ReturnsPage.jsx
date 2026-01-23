@@ -4,9 +4,9 @@ import { FaUndoAlt, FaMoneyBillWave, FaClock, FaArrowLeft, FaEnvelope, FaPhone }
 
 const PoliciesReturnsPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--color-bg-section)]">
       {/* Header Section */}
-      <div className="bg-gray-900 text-white py-12 md:py-16">
+      <div className="bg-[var(--color-accent-primary)] text-white py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-100 w-fit">
             <FaArrowLeft /> Back to Home
@@ -22,52 +22,52 @@ const PoliciesReturnsPage = () => {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Overview */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <FaClock className="text-gray-400 text-2xl" />
-            <h2 className="text-2xl font-bold text-gray-900">31 Days Return & Refund Window</h2>
+            <FaClock className="text-[var(--color-accent-primary)] text-2xl" />
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">31 Days Return & Refund Window</h2>
           </div>
-          <p className="text-gray-700 mb-4 leading-relaxed">
-            At Wolf Supplies LTD, we want you to be completely satisfied with your purchase. If you're not happy with your item, you can return it within <span className="font-bold text-gray-400">31 days</span> of delivery for a full refund or exchange. This forms our <strong>31 Days Return & Refund</strong> policy.
+          <p className="text-[var(--color-text-light)] mb-4 leading-relaxed">
+            At Wolf Supplies LTD, we want you to be completely satisfied with your purchase. If you're not happy with your item, you can return it within <span className="font-bold text-[var(--color-accent-primary)]">31 days</span> of delivery for a full refund or exchange. This forms our <strong>31 Days Return & Refund</strong> policy.
           </p>
-          <div className="bg-gray-50 border-l-4 border-gray-400 p-4 rounded mb-4">
-            <p className="text-gray-800 mb-2">
+          <div className="bg-[var(--color-bg-section)] border-l-4 border-[var(--color-accent-primary)] p-4 rounded mb-4">
+            <p className="text-[var(--color-text-light)] mb-2">
               <strong>Consumer Rights:</strong> This policy complies with UK Consumer Rights Act 2015 and provides protection for all purchases.
             </p>
           </div>
-          <div className="bg-gray-100 border-l-4 border-gray-800 p-4 rounded text-sm">
-            <p className="text-gray-700"><strong>Wolf Supplies Ltd | Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:underline">16070029</a></strong></p>
-            <p className="text-gray-700">Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</p>
+          <div className="bg-[var(--color-bg-section)] border-l-4 border-[var(--color-accent-primary)] p-4 rounded text-sm">
+            <p className="text-[var(--color-text-light)]"><strong>Wolf Supplies Ltd | Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent-primary)] hover:underline">16070029</a></strong></p>
+            <p className="text-[var(--color-text-light)]">Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</p>
           </div>
         </div>
 
         {/* Return Eligibility */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">What Can Be Returned?</h2>
+        <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">What Can Be Returned?</h2>
           
           <div className="grid md:grid-cols-2 gap-8">
             {/* Eligible */}
             <div>
-              <h3 className="text-xl font-bold text-gray-400 mb-4">✅ Eligible for Return</h3>
-              <ul className="space-y-3 text-gray-700">
+              <h3 className="text-xl font-bold text-[var(--color-accent-primary)] mb-4">✅ Eligible for Return</h3>
+              <ul className="space-y-3 text-[var(--color-text-light)]">
                 <li className="flex gap-3">
-                  <span className="text-gray-400 font-bold">✓</span>
+                  <span className="text-[var(--color-accent-primary)] font-bold">✓</span>
                   <span>Unused items in original packaging</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-gray-400 font-bold">✓</span>
+                  <span className="text-[var(--color-accent-primary)] font-bold">✓</span>
                   <span>Defective or damaged products</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-gray-400 font-bold">✓</span>
+                  <span className="text-[var(--color-accent-primary)] font-bold">✓</span>
                   <span>Wrong item sent</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-gray-400 font-bold">✓</span>
+                  <span className="text-[var(--color-accent-primary)] font-bold">✓</span>
                   <span>Item not as described</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-gray-400 font-bold">✓</span>
+                  <span className="text-[var(--color-accent-primary)] font-bold">✓</span>
                   <span>Faulty items</span>
                 </li>
               </ul>
@@ -76,7 +76,7 @@ const PoliciesReturnsPage = () => {
             {/* Non-Eligible */}
             <div>
               <h3 className="text-xl font-bold text-red-600 mb-4">❌ Not Eligible for Return</h3>
-              <ul className="space-y-3 text-gray-700">
+              <ul className="space-y-3 text-[var(--color-text-light)]">
                 <li className="flex gap-3">
                   <span className="text-red-600 font-bold">✗</span>
                   <span>Items used or worn</span>
@@ -99,19 +99,19 @@ const PoliciesReturnsPage = () => {
         </div>
 
         {/* Refund Details */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <FaMoneyBillWave className="text-gray-400 text-2xl" />
-            <h2 className="text-2xl font-bold text-gray-900">Refund Details</h2>
+            <FaMoneyBillWave className="text-[var(--color-accent-primary)] text-2xl" />
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Refund Details</h2>
           </div>
 
           <div className="space-y-6">
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">🔄 Refund Timeline</h3>
-              <p className="text-gray-700 mb-3">
+              <h3 className="font-bold text-[var(--color-text-primary)] mb-2">🔄 Refund Timeline</h3>
+              <p className="text-[var(--color-text-light)] mb-3">
                 Once we receive and inspect your returned item:
               </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <ul className="list-disc list-inside text-[var(--color-text-light)] space-y-2">
                 <li>Inspection: 3-5 business days</li>
                 <li>Refund Approval: 1-2 business days</li>
                 <li>Refund Processing: 5-10 business days to your original payment method</li>
@@ -119,8 +119,8 @@ const PoliciesReturnsPage = () => {
             </div>
 
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">💳 What Gets Refunded</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <h3 className="font-bold text-[var(--color-text-primary)] mb-2">💳 What Gets Refunded</h3>
+              <ul className="list-disc list-inside text-[var(--color-text-light)] space-y-2">
                 <li>Full product price</li>
                 <li>Original shipping cost (for defective items)</li>
               </ul>
@@ -129,20 +129,20 @@ const PoliciesReturnsPage = () => {
         </div>
 
         {/* Contact */}
-        <div className="bg-gray-50 rounded-lg border-2 border-gray-400 p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Need Help With a Return?</h2>
-          <p className="text-gray-700 mb-4">
+        <div className="bg-[var(--color-bg-section)] rounded-lg border-2 border-[var(--color-border-light)] p-8">
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4">Need Help With a Return?</h2>
+          <p className="text-[var(--color-text-light)] mb-4">
             Our support team is ready to assist you:
           </p>
-          <div className="space-y-2 text-gray-700">
-            <p><FaEnvelope className="inline mr-2 text-gray-400" /> Email: <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-gray-400 hover:underline">support@wolfsuppliesltd.co.uk</a></p>
-            <p><FaPhone className="inline mr-2 text-gray-400" /> Phone: <a href="tel:+447398998101" className="text-gray-400 hover:underline">+44 7398 998101</a></p>
+          <div className="space-y-2 text-[var(--color-text-light)]">
+            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">support@wolfsuppliesltd.co.uk</a></p>
+            <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>
         </div>
 
         {/* Last Updated */}
-        <p className="text-center text-gray-900 text-sm mt-8">
+        <p className="text-center text-[var(--color-text-light)] text-sm mt-8">
           Last updated: January 19, 2026 | Wolf Supplies LTD
         </p>
       </div>

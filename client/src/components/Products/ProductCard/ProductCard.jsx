@@ -89,7 +89,7 @@ const ProductCard = ({ product }) => {
     <Link to={`/product/${productUrl}`}>
       <div className="md:hover:shadow-xl transition-all duration-300 overflow-hidden group h-full flex flex-col p-2 sm:p-4 rounded-lg bg-white shadow-md md:shadow-none">
         {/* Product Image Container */}
-        <div className="w-full h-48 bg-gray-50 rounded-lg overflow-hidden mb-4 flex items-center justify-center border border-gray-200">
+        <div className="w-full h-48 bg-[var(--color-bg-section)] rounded-lg overflow-hidden mb-4 flex items-center justify-center border border-[var(--color-border-light)]">
           <img
             src={getImgSrc(allImages[currentImageIndex])}
             alt={product.name}
@@ -101,7 +101,7 @@ const ProductCard = ({ product }) => {
         {/* Product Info */}
         <div className="flex flex-col flex-grow">
           {/* Product Name */}
-          <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 text-sm group-hover:text-gray-600 transition duration-300">
+          <h3 className="font-bold text-[var(--color-text-light)] mb-2 line-clamp-2 text-sm group-hover:text-[var(--color-accent-primary)] transition duration-300">
             {product.name}
           </h3>
 
@@ -114,12 +114,12 @@ const ProductCard = ({ product }) => {
                   size={14}
                   className={`${i < Math.floor(product.rating || 0)
                       ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300'
+                      : 'text-[var(--color-border-light)]'
                     }`}
                 />
               ))}
             </div>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-[var(--color-text-light)]">
               {product.rating ? `${product.rating.toFixed(1)}` : '0'} ({product.reviewCount || 0})
             </span>
           </div>
@@ -127,11 +127,11 @@ const ProductCard = ({ product }) => {
           <div className="mb-4 flex items-baseline gap-2">
             {hasVariants ? (
               <>
-                <span className="text-xs text-gray-600">From</span>
-                <span className="text-lg font-bold text-gray-800">£{product.variantCombinations[0].price?.toFixed(2) || product.price?.toFixed(2) || '0.00'}</span>
+                <span className="text-xs text-[var(--color-text-light)]">From</span>
+                <span className="text-lg font-bold text-[var(--color-text-primary)]">£{product.variantCombinations[0].price?.toFixed(2) || product.price?.toFixed(2) || '0.00'}</span>
               </>
             ) : (
-              <span className="text-lg font-bold text-gray-800">£{product.price?.toFixed(2) || '0.00'}</span>
+              <span className="text-lg font-bold text-[var(--color-text-primary)]">£{product.price?.toFixed(2) || '0.00'}</span>
             )}
           </div>
 
@@ -139,14 +139,14 @@ const ProductCard = ({ product }) => {
           {hasVariants ? (
             <Link
               to={`/product/${productUrl}`}
-              className="w-full bg-gray-700 hover:bg-gray-800 text-white py-2 rounded font-bold text-sm transition-all duration-300 text-center mt-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0 shadow-md"
+              className="w-full bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white py-2 rounded font-bold text-sm transition-all duration-300 text-center mt-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0 shadow-md"
             >
               Select Options
             </Link>
           ) : (
             <button
               onClick={handleAddToCart}
-              className="w-full bg-gray-700 hover:bg-gray-800 text-white py-2 rounded font-bold text-sm transition-all duration-300 mt-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0 shadow-md"
+              className="w-full bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white py-2 rounded font-bold text-sm transition-all duration-300 mt-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0 shadow-md"
             >
               Shop Now
             </button>

@@ -178,8 +178,8 @@ const UserMessages = () => {
                                     >
                                         <div
                                             className={`max-w-xs p-3 rounded-lg shadow ${msg.sender === 'user'
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-gray-100 text-gray-900 border-l-4 border-l-green-500'
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-gray-100 text-gray-900 border-l-4 border-l-green-500'
                                                 }`}
                                         >
                                             {msg.sender === 'admin' && (
@@ -228,7 +228,7 @@ const UserMessages = () => {
                     </div>
                 </div>
             )}
-        </section>
+        </section >
     );
 };
 

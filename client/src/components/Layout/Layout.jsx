@@ -75,24 +75,24 @@ const Layout = ({ children, showMenuSlider = false }) => {
 
     // Home Page Layout with Menu Mega Menu (Same as Header)
     return (
-        <div className="w-full bg-white pb-10 md:pb-0">
+        <div className="w-full bg-[var(--color-bg-primary)] pb-10 md:pb-0">
             {/* Top Navigation Bar */}
-            <div className="w-full hidden md:block bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div className="w-full hidden md:block bg-[var(--color-bg-primary)] border-b border-[var(--color-border-light)] sticky top-0 z-30">
                 <div className="flex items-center gap-4 px-4 py-2 overflow-x-auto">
-                    <div className="flex items-center gap-2 font-bold text-gray-900 text-lg whitespace-nowrap">
+                    <div className="flex items-center gap-2 font-bold text-[var(--color-text-primary)] text-lg whitespace-nowrap">
                         <FaHamburger /> Shop By Category
                     </div>
-                    <div className="h-6 w-px bg-gray-300"></div>
-                    <Link to="/" className="px-4 py-2 hover:text-gray-400 font-semibold text-gray-700 whitespace-nowrap">
+                    <div className="h-6 w-px bg-[var(--color-border-light)]"></div>
+                    <Link to="/" className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap">
                         Home
                     </Link>
-                    <Link to="/about" className="px-4 py-2 hover:text-gray-400 font-semibold text-gray-700 whitespace-nowrap">
+                    <Link to="/about" className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap">
                         About Us
                     </Link>
-                    <Link to="/products" className="px-4 py-2 hover:text-gray-400 font-semibold text-gray-700 whitespace-nowrap">
+                    <Link to="/products" className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap">
                         Shop
                     </Link>
-                    <Link to="/contact" className="px-4 py-2 hover:text-gray-400 font-semibold text-gray-700 whitespace-nowrap">
+                    <Link to="/contact" className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap">
                         Contact Us
                     </Link>
                 </div>
@@ -102,24 +102,24 @@ const Layout = ({ children, showMenuSlider = false }) => {
             <div className="w-full bg-white relative" onMouseLeave={() => setActiveMenuIndex(-1)}>
                 <div className="flex w-full h-auto">
                     {/* Left Sidebar - Always Visible on Desktop, Hidden on Mobile */}
-                    <div className="hidden md:block w-72 border-r-4 border-gray-400 max-h-full overflow-y-auto bg-white shadow-lg">
+                    <div className="hidden md:block w-72 border-r-4 border-[var(--color-border-light)] max-h-full overflow-y-auto bg-[var(--color-bg-primary)] shadow-lg">
                         {menuItems.map((item, idx) => (
                             <Link
                                 key={item.id || `m_${idx}`}
                                 to={item.url || item.link || '/'}
                                 onMouseEnter={() => setActiveMenuIndex(idx)}
-                                className={`block w-full text-left px-6 py-4 border-b border-gray-300 transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-900 hover:bg-gray-50'}`}
+                                className={`block w-full text-left px-6 py-4 border-b border-[var(--color-border-light)] transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)]' : 'bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-section)]'}`}
                             >
                                 <div className="flex items-center justify-between">
                                     <span>{item.label || item.name || 'Menu Item'}</span>
-                                    <FaChevronDown className="text-xs text-gray-400" />
+                                    <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
                                 </div>
                             </Link>
                         ))}
                     </div>
 
                     {/* Right Side - Slider + Overlaid Menu */}
-                    <div className="flex-1 bg-white relative h-96">
+                    <div className="flex-1 bg-[var(--color-bg-primary)] relative h-96">
                         {/* Slider Container */}
                         <div className="w-full h-full relative overflow-hidden ">
                             {slides.map((slide, idx) => (
@@ -143,7 +143,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                             <p className="text-lg mb-8 leading-relaxed max-w-md">{slide.description}</p>
                                             <Link
                                                 to={slide.buttonLink}
-                                                className="inline-block bg-gray-700 hover:bg-gray-800 text-white font-bold px-8 py-3 rounded-lg transition duration-300 shadow-lg"
+                                                className="inline-block bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white font-bold px-8 py-3 rounded-lg transition duration-300 shadow-lg"
                                             >
                                                 {slide.buttonText}
                                             </Link>
@@ -157,7 +157,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                             {/* Navigation Arrows */}
                             <button
                                 onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 text-gray-800 p-3 rounded-full z-20 transition duration-300"
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-3 rounded-full z-20 transition duration-300"
                                 aria-label="Previous slide"
                             >
                                 <FaChevronLeft className="text-xl" />
@@ -165,7 +165,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
 
                             <button
                                 onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 text-gray-800 p-3 rounded-full z-20 transition duration-300"
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-3 rounded-full z-20 transition duration-300"
                                 aria-label="Next slide"
                             >
                                 <FaChevronRight className="text-xl" />
@@ -178,7 +178,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                         key={idx}
                                         onClick={() => setCurrentSlide(idx)}
                                         className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentSlide
-                                            ? 'bg-white w-8'
+                                            ? 'bg-[var(--color-accent-primary)] w-8'
                                             : 'bg-white bg-opacity-50 hover:bg-opacity-75'
                                             }`}
                                         aria-label={`Go to slide ${idx + 1}`}
@@ -189,18 +189,18 @@ const Layout = ({ children, showMenuSlider = false }) => {
 
                         {/* Menu Content - Overlaid with Z-index */}
                         {activeMenuIndex >= 0 && (
-                            <div 
-                                className="absolute inset-0 bg-white shadow-2xl z-50 flex flex-col"
+                            <div
+                                className="absolute inset-0 bg-[var(--color-bg-primary)] shadow-2xl z-50 flex flex-col"
                                 onMouseEnter={() => setActiveMenuIndex(activeMenuIndex)}
                                 onMouseLeave={() => setActiveMenuIndex(-1)}
                             >
                                 {/* Top Category Tabs */}
-                                <div className="border-b border-gray-900 px-6 py-4 flex gap-6 overflow-x-auto">
+                                <div className="border-b border-[var(--color-border-light)] px-6 py-4 flex gap-6 overflow-x-auto">
                                     {menuItems.map((item, idx) => (
                                         <button
                                             key={item.id || `tab_${idx}`}
                                             onMouseEnter={() => setActiveMenuIndex(idx)}
-                                            className={`text-sm font-semibold transition duration-150 whitespace-nowrap pb-2 border-b-2 ${activeMenuIndex === idx ? 'text-gray-400 border-gray-400' : 'text-gray-600 border-transparent hover:text-gray-900'}`}
+                                            className={`text-sm font-semibold transition duration-150 whitespace-nowrap pb-2 border-b-2 ${activeMenuIndex === idx ? 'text-[var(--color-accent-primary)] border-[var(--color-accent-primary)]' : 'text-[var(--color-text-light)] border-transparent hover:text-[var(--color-text-primary)]'}`}
                                         >
                                             {item.label || item.name || 'Menu Item'}
                                         </button>
@@ -208,21 +208,21 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                 </div>
 
                                 {/* Subcategories Section */}
-                                <div className="flex-1 bg-white overflow-y-auto p-2">
+                                <div className="flex-1 bg-[var(--color-bg-primary)] overflow-y-auto p-2">
                                     <div className="space-y-3">
                                         {menuItems[activeMenuIndex]?.sub && menuItems[activeMenuIndex].sub.length > 0 ? (
                                             menuItems[activeMenuIndex].sub.map((subItem) => (
                                                 <Link
                                                     key={subItem.id}
                                                     to={subItem.link || '#'}
-                                                    className="block px-4 py-2.5 mb-0 text-gray-700 hover:text-gray-400 hover:underline font-semibold text-base transition duration-150"
+                                                    className="block px-4 py-2.5 mb-0 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:underline font-semibold text-base transition duration-150"
                                                 >
                                                     {subItem.name}
                                                 </Link>
                                             ))
                                         ) : (
                                             <div className="flex items-center justify-center py-12">
-                                                <p className="text-gray-400 text-center">Menu item details</p>
+                                                <p className="text-[var(--color-text-muted)] text-center">Menu item details</p>
                                             </div>
                                         )}
                                     </div>
@@ -238,7 +238,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                 {children}
             </main>
 
-            
+
         </div>
     );
 };

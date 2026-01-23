@@ -14,78 +14,92 @@ const AccountPageContent = () => {
     }, [dispatch]);
 
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-3xl font-bold mb-6">My Account</h1>
+        <div className="min-h-screen bg-[var(--color-bg-primary)]">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-[var(--color-text-primary)]">My Account</h1>
+                <p className="text-[var(--color-text-light)] mb-8">Manage your orders and account settings</p>
 
-            <section className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Order History</h2>
-                {loading && <p className="text-gray-600">Loading orders...</p>}
-                {error && <p className="text-red-600">{error}</p>}
-                {!loading && orders && orders.length === 0 && (
-                    <div className="bg-gray-100 border-l-4 border-gray-400 p-4 rounded">
-                        <p className="text-gray-700">You have not placed any orders yet.</p>
-                        <Link to="/products" className="text-gray-400 font-semibold">Start shopping</Link>
-                    </div>
-                )}
-
-                {!loading && orders && orders.length > 0 && (
-                    <div className="space-y-4">
-                        {orders.map((order) => (
-                            <div key={order._id} className="bg-white border rounded-lg p-4 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                <div>
-                                    <p className="text-sm text-gray-900">Order ID: <span className="font-mono">{order.orderId || order._id}</span></p>
-                                    <p className="font-semibold text-gray-900">{new Date(order.createdAt).toLocaleString()}</p>
-                                    <p className="text-gray-600">Items: {order.orderItems ? order.orderItems.length : 0}</p>
-                                    {/* show variant details inline */}
-                                    {order.orderItems && order.orderItems.length > 0 && (
-                                        <div className="mt-2 space-y-1 text-sm text-gray-600">
-                                            {order.orderItems.map((it, idx) => {
-                                                const parts = [];
-                                                if (it.selectedSize) parts.push(`Size: ${it.selectedSize}`);
-                                                if (it.selectedColor) parts.push(`Color: ${it.selectedColor}`);
-                                                if (it.selectedVariants && typeof it.selectedVariants === 'object') {
-                                                    Object.entries(it.selectedVariants).forEach(([k, v]) => { if (v) parts.push(`${k}: ${v}`); });
-                                                }
-                                                if (it.variantId) parts.push(`VariantId: ${it.variantId}`);
-                                                return (
-                                                    <div key={it._id || idx} className="flex items-center gap-3">
-                                                        <div className="font-medium">{it.name}</div>
-                                                        <div className="text-xs text-gray-900">{parts.join(' / ')}</div>
-                                                        <div className="ml-2 text-xs">x{it.qty || it.quantity || 1}</div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-bold text-gray-900">{order.totalPrice ? `£${order.totalPrice.toFixed(2)}` : ''}</p>
-                                    <div className="mt-2 flex items-center gap-2 justify-end">
-                                        {order.isPaid && (
-                                            <span className={`px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700`}>
-                                                Paid
-                                            </span>
-                                        )}
-                                        <span className={`px-3 py-1 rounded-full text-sm ${order.status === 'completed' ? 'bg-gray-200 text-gray-800' : 'bg-gray-100 text-gray-700'}`}>
-                                            {order.status === 'completed' ? 'Fulfilled' : 'Unfulfilled'}
-                                        </span>
-                                        <span className={`px-3 py-1 rounded-full text-sm ${order.isDelivered ? 'bg-gray-200 text-gray-800' : (order.status === 'shipped' ? 'bg-gray-100 text-gray-700' : 'bg-gray-50 text-gray-600')}`}>
-                                            {order.isDelivered ? 'Delivered' : (order.status === 'shipped' ? 'Shipped' : 'No Status')}
-                                        </span>
-                                    </div>
-                                    <div className="mt-3">
-                                        <Link to={`/order/${order._id}`} className="text-sm text-gray-400 font-semibold">View details</Link>
-                                    </div>
-                                </div>
+                <section className="mb-12">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-[var(--color-text-primary)] border-b-2 border-[var(--color-accent-primary)] pb-3">Order History</h2>
+                    {loading && (
+                        <div className="flex items-center justify-center py-12">
+                            <div className="text-center">
+                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-accent-primary)] mb-4"></div>
+                                <p className="text-[var(--color-text-light)]">Loading orders...</p>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </section>
+                        </div>
+                    )}
+                    {error && (
+                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                            <p className="text-red-700 font-semibold">{error}</p>
+                        </div>
+                    )}
+                    {!loading && orders && orders.length === 0 && (
+                        <div className="bg-[var(--color-bg-section)] border-l-4 border-[var(--color-accent-primary)] p-6 rounded-lg">
+                            <p className="text-[var(--color-text-primary)] font-semibold mb-3">You have not placed any orders yet.</p>
+                            <Link to="/products" className="inline-block text-[var(--color-accent-primary)] font-bold hover:underline">Start shopping →</Link>
+                        </div>
+                    )}
 
-            {/* User Messages Section */}
-            <UserMessages />
+                    {!loading && orders && orders.length > 0 && (
+                        <div className="space-y-4">
+                            {orders.map((order) => (
+                                <div key={order._id} className="bg-white border border-[var(--color-border-light)] rounded-lg p-4 md:p-6 shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div className="flex-1">
+                                        <p className="text-xs sm:text-sm text-[var(--color-text-light)] font-mono">Order ID: <span className="font-bold text-[var(--color-text-primary)]">{order.orderId || order._id}</span></p>
+                                        <p className="font-bold text-base sm:text-lg text-[var(--color-text-primary)] mt-1">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                        <p className="text-sm text-[var(--color-text-light)] mt-1">Items: <span className="font-semibold">{order.orderItems ? order.orderItems.length : 0}</span></p>
+                                        {/* show variant details inline */}
+                                        {order.orderItems && order.orderItems.length > 0 && (
+                                            <div className="mt-3 space-y-2 text-xs sm:text-sm text-[var(--color-text-light)]">
+                                                {order.orderItems.map((it, idx) => {
+                                                    const parts = [];
+                                                    if (it.selectedSize) parts.push(`Size: ${it.selectedSize}`);
+                                                    if (it.selectedColor) parts.push(`Color: ${it.selectedColor}`);
+                                                    if (it.selectedVariants && typeof it.selectedVariants === 'object') {
+                                                        Object.entries(it.selectedVariants).forEach(([k, v]) => { if (v) parts.push(`${k}: ${v}`); });
+                                                    }
+                                                    if (it.variantId) parts.push(`VariantId: ${it.variantId}`);
+                                                    return (
+                                                        <div key={it._id || idx} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 bg-[var(--color-bg-section)] p-2 rounded">
+                                                            <div className="font-semibold text-[var(--color-text-primary)]">{it.name}</div>
+                                                            <div className="text-xs text-[var(--color-text-light)]">{parts.join(' / ')}</div>
+                                                            <div className="text-xs font-semibold text-[var(--color-accent-primary)]">x{it.qty || it.quantity || 1}</div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="md:text-right">
+                                        <p className="text-xl md:text-2xl font-bold text-[var(--color-accent-primary)]">{order.totalPrice ? `£${order.totalPrice.toFixed(2)}` : ''}</p>
+                                        <div className="mt-3 flex flex-wrap gap-2 md:justify-end">
+                                            {order.isPaid && (
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800`}>
+                                                    ✓ Paid
+                                                </span>
+                                            )}
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${order.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-[var(--color-bg-section)] text-[var(--color-text-light)]'}`}>
+                                                {order.status === 'completed' ? '✓ Fulfilled' : '○ Unfulfilled'}
+                                            </span>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${order.isDelivered ? 'bg-green-100 text-green-800' : (order.status === 'shipped' ? 'bg-orange-100 text-orange-800' : 'bg-[var(--color-bg-section)] text-[var(--color-text-light)]')}`}>
+                                                {order.isDelivered ? '✓ Delivered' : (order.status === 'shipped' ? '📦 Shipped' : '⏳ Processing')}
+                                            </span>
+                                        </div>
+                                        <div className="mt-4">
+                                            <Link to={`/order/${order._id}`} className="inline-block text-sm font-bold text-[var(--color-accent-primary)] hover:text-[var(--color-accent-light)] transition duration-300">View Details →</Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
 
+                {/* User Messages Section */}
+                <UserMessages />
+
+            </div>
         </div>
     );
 };

@@ -25,16 +25,16 @@ const RelatedProducts = ({ currentProductId, currentCategory }) => {
   }
 
   return (
-    <div className="mt-20 py-12 bg-gradient-to-br from-gray-100 via-white to-gray-200 rounded-3xl p-8 md:p-12">
+    <div className="mt-20 py-12 bg-white rounded-3xl p-8 md:p-12">
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-3">
-          <div className="h-1 w-12 bg-gray-800 rounded-full"></div>
-          <h2 className="text-lg font-bold text-gray-700 uppercase tracking-wider">More Products</h2>
+          <div className="h-1 w-12 rounded-full" style={{ backgroundColor: 'var(--color-accent-primary)' }}></div>
+          <h2 className="text-lg font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-secondary)' }}>More Products</h2>
         </div>
-        <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <h3 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>
           Related Products
         </h3>
-        <p className="text-xl text-gray-600">
+        <p className="text-xl" style={{ color: 'var(--color-text-light)' }}>
           You might also like these {currentCategory} items
         </p>
       </div>
@@ -50,7 +50,12 @@ const RelatedProducts = ({ currentProductId, currentCategory }) => {
       <div className="mt-12 text-center">
         <button
           onClick={() => navigate(`/products?category=${currentCategory}`)}
-          className="inline-flex items-center gap-3 bg-gradient-to-r from-gray-800 to-black hover:from-black hover:to-gray-900 text-white px-10 py-4 rounded-xl font-bold text-lg transition duration-300 transform hover:scale-105 shadow-lg"
+          className="inline-flex items-center gap-3 text-white px-10 py-4 rounded-xl font-bold text-lg transition duration-300 transform hover:scale-105 shadow-lg"
+          style={{
+            backgroundColor: 'var(--color-accent-primary)',
+          }}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
         >
           View All {currentCategory} Products
           <FaChevronRight className="text-sm" />

@@ -154,20 +154,22 @@ const AdminChatPage = () => {
 
     return (
         <AdminLayout activeTab="chat">
-            <div className="flex h-[calc(100vh-64px)] bg-gray-100">
+            <div className="flex h-[calc(100vh-64px)]" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
                 {/* Conversations Sidebar */}
-                <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+                <div className="w-80" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderRightWidth: '1px' }} >
                     {/* Header */}
-                    <div className="p-4 border-b border-gray-200">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-4">Support Chat</h1>
+                    <div className="p-4" style={{ borderColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}>
+                        <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Support Chat</h1>
                         <div className="relative">
-                            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+                            <FaSearch className="absolute left-3 top-3" style={{ color: 'var(--color-text-light)' }} />
                             <input
                                 type="text"
                                 placeholder="Search conversations..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:outline-none"
+                                style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}
+                                onFocus={(e) => e.target.style.boxShadow = `0 0 0 2px var(--color-accent-primary)33`}
                             />
                         </div>
                     </div>
@@ -175,7 +177,7 @@ const AdminChatPage = () => {
                     {/* Conversations List */}
                     <div className="flex-1 overflow-y-auto">
                         {filteredConversations.length === 0 ? (
-                            <div className="p-4 text-center text-gray-500">
+                            <div className="p-4 text-center" style={{ color: 'var(--color-text-light)' }}>
                                 {searchTerm ? 'No conversations found' : 'No conversations yet'}
                             </div>
                         ) : (
@@ -250,21 +252,26 @@ const AdminChatPage = () => {
                             </div>
 
                             {/* Input Bar */}
-                            <div className="border-t border-gray-200 bg-white p-4 flex-shrink-0">
+                            <div className="border-t p-4 flex-shrink-0" style={{ borderColor: 'var(--color-border-light)', backgroundColor: 'var(--color-bg-primary)' }}>
                                 <form onSubmit={handleSendMessage} className="space-y-3">
                                     <textarea
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Type your message..."
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-sm"
+                                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 resize-none text-sm"
+                                        style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}
                                         rows="2"
                                         disabled={sendingMessage}
+                                        onFocus={(e) => e.target.style.boxShadow = `0 0 0 2px var(--color-accent-primary)33`}
                                     />
                                     <div className="flex gap-2">
                                         <button
                                             type="submit"
                                             disabled={sendingMessage || !message.trim()}
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition text-sm"
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-white font-semibold rounded-lg transition text-sm"
+                                            style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                                            onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+                                            onMouseLeave={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
                                         >
                                             <FaPaperPlane size={14} />
                                             {sendingMessage ? 'Sending...' : 'Send Message'}
@@ -272,7 +279,10 @@ const AdminChatPage = () => {
                                         <button
                                             type="button"
                                             onClick={() => setMessage('')}
-                                            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-semibold transition text-sm"
+                                            className="px-4 py-2 rounded-lg font-semibold transition text-sm"
+                                            style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
+                                            onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-border-light)'}
+                                            onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-bg-section)'}
                                         >
                                             Clear
                                         </button>

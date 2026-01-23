@@ -326,14 +326,14 @@ const ReviewManagement = () => {
     return (
         <div className="p-8">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">Review Management</h1>
+                <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>Review Management</h1>
 
                 {/* Global Settings */}
-                <div className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-gray-800">
+                <div className="rounded-lg shadow-lg p-6 mb-8" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-accent-primary)', borderLeftWidth: '4px' }}>
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900 mb-2">Review Approval Setting</h2>
-                            <p className="text-gray-600 text-sm">
+                            <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Review Approval Setting</h2>
+                            <p className="text-sm" style={{ color: 'var(--color-text-light)' }}>
                                 {requireApproval
                                     ? 'Reviews require admin approval before appearing on product pages'
                                     : 'Reviews appear immediately without requiring approval'}
@@ -342,10 +342,10 @@ const ReviewManagement = () => {
                         <button
                             onClick={toggleRequireApproval}
                             disabled={savingSettings}
-                            className={`px-6 py-3 rounded-lg font-semibold transition ${requireApproval
-                                ? 'bg-gray-500 text-white hover:bg-black'
-                                : 'bg-gray-1000 text-white hover:bg-gray-800'
-                                } ${savingSettings ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`px-6 py-3 rounded-lg font-semibold transition ${savingSettings ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            style={{ backgroundColor: requireApproval ? 'var(--color-accent-primary)' : 'var(--color-text-secondary)', color: 'white' }}
+                            onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+                            onMouseLeave={(e) => !e.target.disabled && (e.target.style.backgroundColor = requireApproval ? 'var(--color-accent-primary)' : 'var(--color-text-secondary)')}
                         >
                             {savingSettings ? 'Saving...' : requireApproval ? 'Approval Required' : 'No Approval Required'}
                         </button>
@@ -355,17 +355,17 @@ const ReviewManagement = () => {
                 {/* Statistics */}
                 {activeTab === 'all' && (
                     <div className="grid grid-cols-3 gap-4 mb-8">
-                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-gray-600">
-                            <p className="text-gray-600 text-sm font-semibold mb-2">Total Reviews</p>
-                            <p className="text-3xl font-bold text-gray-700">{totalCount}</p>
+                        <div className="rounded-lg shadow p-6" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-accent-primary)', borderLeftWidth: '4px' }}>
+                            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-light)' }}>Total Reviews</p>
+                            <p className="text-3xl font-bold" style={{ color: 'var(--color-accent-primary)' }}>{totalCount}</p>
                         </div>
-                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-gray-500">
-                            <p className="text-gray-600 text-sm font-semibold mb-2">Verified</p>
-                            <p className="text-3xl font-bold text-gray-400">{approvedCount}</p>
+                        <div className="rounded-lg shadow p-6" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-accent-light)', borderLeftWidth: '4px' }}>
+                            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-light)' }}>Verified</p>
+                            <p className="text-3xl font-bold" style={{ color: 'var(--color-accent-light)' }}>{approvedCount}</p>
                         </div>
-                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-gray-600">
-                            <p className="text-gray-600 text-sm font-semibold mb-2">Pending</p>
-                            <p className="text-3xl font-bold text-gray-800">{pendingCount}</p>
+                        <div className="rounded-lg shadow p-6" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-text-secondary)', borderLeftWidth: '4px' }}>
+                            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-light)' }}>Pending</p>
+                            <p className="text-3xl font-bold" style={{ color: 'var(--color-text-secondary)' }}>{pendingCount}</p>
                         </div>
                     </div>
                 )}
@@ -379,19 +379,19 @@ const ReviewManagement = () => {
                         setSelectedProduct(null);
                         setFilterTab('all');
                     }}
-                    className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'all'
-                        ? 'bg-gray-800 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                    className={`px-6 py-3 rounded-lg font-semibold transition`}
+                    style={{ backgroundColor: activeTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)', color: activeTab === 'all' ? 'white' : 'var(--color-text-primary)' }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = activeTab === 'all' ? 'var(--color-accent-light)' : 'var(--color-border-light)'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = activeTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)'}
                 >
                     All Reviews
                 </button>
                 <button
                     onClick={() => setActiveTab('by-product')}
-                    className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'by-product'
-                        ? 'bg-gray-800 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                    className={`px-6 py-3 rounded-lg font-semibold transition`}
+                    style={{ backgroundColor: activeTab === 'by-product' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)', color: activeTab === 'by-product' ? 'white' : 'var(--color-text-primary)' }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = activeTab === 'by-product' ? 'var(--color-accent-light)' : 'var(--color-border-light)'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = activeTab === 'by-product' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)'}
                 >
                     Reviews by Product
                 </button>
@@ -404,37 +404,34 @@ const ReviewManagement = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search reviews by name, email, product or text..."
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-800 transition"
+                    className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition"
+                    style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light)'}
                 />
             </div>
 
             {/* Filter Tabs (shown only when viewing All Reviews) */}
             {activeTab === 'all' && (
-                <div className="mb-8 flex gap-3 border-b border-gray-200">
+                <div className="mb-8 flex gap-3 border-b" style={{ borderColor: 'var(--color-border-light)' }}>
                     <button
                         onClick={() => setFilterTab('all')}
-                        className={`px-4 py-3 font-semibold border-b-2 transition ${filterTab === 'all'
-                            ? 'border-gray-800 text-gray-700'
-                            : 'border-transparent text-gray-600 hover:text-gray-900'
-                            }`}
+                        className={`px-4 py-3 font-semibold border-b-2 transition`}
+                        style={{ borderColor: filterTab === 'all' ? 'var(--color-accent-primary)' : 'transparent', color: filterTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-text-light)' }}
                     >
                         All ({totalCount})
                     </button>
                     <button
                         onClick={() => setFilterTab('approved')}
-                        className={`px-4 py-3 font-semibold border-b-2 transition ${filterTab === 'approved'
-                            ? 'border-gray-400 text-gray-400'
-                            : 'border-transparent text-gray-600 hover:text-gray-900'
-                            }`}
+                        className={`px-4 py-3 font-semibold border-b-2 transition`}
+                        style={{ borderColor: filterTab === 'approved' ? 'var(--color-accent-light)' : 'transparent', color: filterTab === 'approved' ? 'var(--color-accent-light)' : 'var(--color-text-light)' }}
                     >
                         Verified ({approvedCount})
                     </button>
                     <button
                         onClick={() => setFilterTab('pending')}
-                        className={`px-4 py-3 font-semibold border-b-2 transition ${filterTab === 'pending'
-                            ? 'border-gray-800 text-gray-800'
-                            : 'border-transparent text-gray-600 hover:text-gray-900'
-                            }`}
+                        className={`px-4 py-3 font-semibold border-b-2 transition`}
+                        style={{ borderColor: filterTab === 'pending' ? 'var(--color-text-secondary)' : 'transparent', color: filterTab === 'pending' ? 'var(--color-text-secondary)' : 'var(--color-text-light)' }}
                     >
                         Pending ({pendingCount})
                     </button>
@@ -444,13 +441,16 @@ const ReviewManagement = () => {
             {/* Product Selector (for by-product tab) */}
             {activeTab === 'by-product' && (
                 <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
+                    <label className="block text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>
                         Select Product
                     </label>
                     <select
                         value={selectedProduct || ''}
                         onChange={(e) => setSelectedProduct(e.target.value || null)}
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-800 transition"
+                        className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none transition"
+                        style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary)'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light)'}
                     >
                         <option value="">-- Choose a product --</option>
                         {products.map((product) => (
@@ -465,7 +465,7 @@ const ReviewManagement = () => {
             {/* Loading State */}
             {loading && (
                 <div className="flex justify-center items-center py-12">
-                    <FaSpinner className="text-4xl text-gray-700 animate-spin" />
+                    <FaSpinner className="text-4xl animate-spin" style={{ color: 'var(--color-accent-primary)' }} />
                 </div>
             )}
 
@@ -499,28 +499,28 @@ const ReviewManagement = () => {
                             filteredReviews.map((review, idx) => (
                                 <div
                                     key={idx}
-                                    className={`bg-white rounded-lg shadow-lg p-6 border-l-4 ${review.isApproved ? 'border-gray-500' : 'border-gray-400'
-                                        }`}
+                                    className={`rounded-lg shadow-lg p-6`}
+                                    style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: review.isApproved ? 'var(--color-accent-light)' : 'var(--color-text-secondary)', borderLeftWidth: '4px' }}
                                 >
                                     {/* Header */}
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
                                             <div className="flex items-center gap-3 mb-2">
-                                                <h3 className="text-lg font-bold text-gray-900">{review.name}</h3>
+                                                <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>{review.name}</h3>
                                                 {review.isApproved && (
-                                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-accent-primary)' }}>
                                                         ✓ Verified
                                                     </span>
                                                 )}
                                                 {!review.isApproved && (
-                                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-800">
+                                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-secondary)' }}>
                                                         ⏳ Pending
                                                     </span>
                                                 )}
                                             </div>
                                             {activeTab === 'all' && (
-                                                <p className="text-sm text-gray-600 font-semibold">
-                                                    Product: <span className="text-gray-700">{review.productName}</span>
+                                                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-light)' }}>
+                                                    Product: <span style={{ color: 'var(--color-accent-primary)' }}>{review.productName}</span>
                                                 </p>
                                             )}
                                         </div>
@@ -533,20 +533,20 @@ const ReviewManagement = () => {
                                                     </span>
                                                 ))}
                                             </div>
-                                            <p className="text-sm text-gray-900">
+                                            <p className="text-sm" style={{ color: 'var(--color-text-light)' }}>
                                                 {new Date(review.createdAt || review.updatedAt || Date.now()).toLocaleDateString()}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Comment */}
-                                    <p className="text-gray-700 mb-6 leading-relaxed">{review.comment}</p>
+                                    <p className="mb-6 leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>{review.comment}</p>
 
                                     {/* Actions */}
-                                    <div className="flex items-center justify-between pt-4 border-t">
-                                        <div className="text-sm text-gray-600">
-                                            <span className="font-semibold">Email: </span>
-                                            <span className="text-gray-700">{review.email || (review.user && typeof review.user === 'object' ? review.user.email : review.user) || 'Guest'}</span>
+                                    <div className="flex items-center justify-between pt-4" style={{ borderColor: 'var(--color-border-light)', borderTopWidth: '1px' }}>
+                                        <div className="text-sm">
+                                            <span className="font-semibold" style={{ color: 'var(--color-text-secondary)' }}>Email: </span>
+                                            <span style={{ color: 'var(--color-text-primary)' }}>{review.email || (review.user && typeof review.user === 'object' ? review.user.email : review.user) || 'Guest'}</span>
                                         </div>
 
                                         <div className="flex gap-3">

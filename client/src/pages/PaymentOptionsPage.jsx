@@ -56,18 +56,18 @@ const PaymentOptionsPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-white py-12">
+        <div className="min-h-screen bg-[var(--color-bg-primary)] py-12">
             <div className="max-w-7xl mx-auto px-4">
                 {/* Header */}
                 <div className="mb-12 text-center">
-                    <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Payment Options</h1>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+                    <h1 className="text-5xl md:text-6xl font-bold text-[var(--color-text-primary)] mb-4">Payment Options</h1>
+                    <p className="text-xl text-[var(--color-text-light)] max-w-3xl mx-auto mb-6">
                         We offer multiple secure payment methods to make shopping with us convenient and safe. Choose the payment method that works best for you.
                     </p>
 
                     {/* VAT-Free Banner */}
-                    <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-8 max-w-2xl mx-auto">
-                        <p className="text-green-900 font-semibold text-lg">
+                    <div className="bg-[var(--color-bg-section)] border-2 border-[var(--color-accent-primary)] rounded-lg p-4 mb-8 max-w-2xl mx-auto">
+                        <p className="text-[var(--color-text-primary)] font-semibold text-lg">
                             ✓ All our prices are VAT-free. The price you see is the price you pay.
                         </p>
                     </div>

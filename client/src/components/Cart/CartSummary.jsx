@@ -12,44 +12,47 @@ const CartSummary = ({
   finalTotal
 }) => {
   return (
-    <div className="bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl shadow-lg border border-gray-300 p-8 sticky top-24 space-y-8">
-      <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-        <FaBox className="text-gray-400" /> Order Summary
+    <div className="rounded-2xl shadow-lg border p-8 sticky top-24 space-y-8" style={{ backgroundColor: 'var(--color-bg-section)', borderColor: 'var(--color-border-light)' }}>
+      <h2 className="text-3xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+        <FaBox style={{ color: 'var(--color-accent-primary)' }} /> Order Summary
       </h2>
 
       {/* Shipping Info - always free */}
-      <div className="bg-linear-to-r from-gray-200 to-gray-300 border-l-4 border-gray-700 p-6 rounded-xl">
+      <div className="border-l-4 p-6 rounded-xl" style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-accent-primary)' }}>
         <div className="flex items-center gap-3 mb-2">
-          <FaTruck className="text-gray-400 text-xl" />
-          <p className="font-bold text-gray-900 text-lg">Free Shipping</p>
+          <FaTruck className="text-xl" style={{ color: 'var(--color-accent-primary)' }} />
+          <p className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>Free Shipping</p>
         </div>
-        <p className="text-sm text-gray-800">Shipping is free for all orders</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Shipping is free for all orders</p>
       </div>
 
       {/* Price Breakdown */}
-      <div className="space-y-4 pb-8 border-b-2 border-gray-200">
-        <div className="flex justify-between text-base">
-          <span className="text-gray-600 font-medium">Subtotal</span>
-          <span className="font-semibold text-gray-900">£{totalPrice.toFixed(2)}</span>
+      <div className="space-y-4 pb-8" style={{ borderBottomColor: 'var(--color-border-light)' }}>
+        <div className="flex justify-between text-base" style={{ borderColor: 'var(--color-border-light)' }}>
+          <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>Subtotal</span>
+          <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>£{totalPrice.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-base">
-          <span className="text-gray-600 font-medium">Shipping</span>
-          <span className={`font-semibold ${shippingCost === 0 ? 'text-gray-400' : 'text-gray-900'}`}>
+          <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>Shipping</span>
+          <span className="font-semibold" style={{ color: shippingCost === 0 ? 'var(--color-text-light)' : 'var(--color-text-primary)' }}>
             {shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`}
           </span>
         </div>
-
+        <div className="flex justify-between text-base items-center">
+          <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>VAT</span>
+          <span className="inline-block px-2 py-1 text-xs font-semibold rounded" style={{ backgroundColor: 'var(--color-accent-primary)', color: 'white' }}>0%</span>
+        </div>
       </div>
 
       {/* Total */}
-      <div className="bg-linear-to-r from-gray-200 to-gray-300 p-6 rounded-xl">
+      <div className="p-6 rounded-xl" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-600 font-medium">Total Items</span>
-          <span className="font-bold text-gray-900 text-lg">{totalQuantity}</span>
+          <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>Total Items</span>
+          <span className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>{totalQuantity}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-gray-900">Total Amount</span>
-          <span className="text-2xl font-bold text-gray-900">£{finalTotal.toFixed(2)}</span>
+          <span className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>Total Amount</span>
+          <span className="text-2xl font-bold" style={{ color: 'var(--color-accent-primary)' }}>£{finalTotal.toFixed(2)}</span>
         </div>
       </div>
 
@@ -57,21 +60,28 @@ const CartSummary = ({
       <div className="space-y-4 pt-4">
         <button
           onClick={onCheckout}
-          className="w-full bg-linear-to-r from-gray-800 to-black hover:from-black hover:to-gray-900 text-white py-4 rounded-xl font-bold transition duration-300 text-lg transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+          className="w-full text-white py-4 rounded-xl font-bold transition duration-300 text-lg transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+          style={{
+            backgroundColor: 'var(--color-accent-primary)',
+          }}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
         >
           <FaCheck /> Proceed to Checkout
         </button>
-        {/* 
-        <Link
-          to="/products"
-          className="block w-full border-2 border-gray-400 text-gray-400 hover:bg-gray-50 py-4 rounded-xl font-bold transition duration-300 text-center text-lg"
-        >
-          Continue Shopping
-        </Link> */}
 
         <button
           onClick={onClearCart}
-          className="w-full border-2 border-black text-black hover:bg-gray-100 py-4 rounded-xl font-bold transition duration-300 text-lg"
+          className="w-full py-4 rounded-xl font-bold transition duration-300 text-lg"
+          style={{
+            borderColor: 'var(--color-accent-primary)',
+            color: 'var(--color-accent-primary)',
+            borderWidth: '2px',
+            backgroundColor: 'transparent'
+          }}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')
+          }
+          onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
         >
           Clear Cart
         </button>

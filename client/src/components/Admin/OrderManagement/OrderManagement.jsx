@@ -291,8 +291,8 @@ const OrderManagement = () => {
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
-                          <button onClick={() => setModalOrder(order)} className="px-3 py-1 bg-gray-800 text-white rounded text-sm"> <FaFile/> </button>
-                        
+                          <button onClick={() => setModalOrder(order)} className="px-3 py-1 bg-gray-800 text-white rounded text-sm"> <FaFile /> </button>
+
                         </div>
                       </td>
 
@@ -312,76 +312,160 @@ const OrderManagement = () => {
       )}
       {/* Order detail modal */}
       {modalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white max-w-3xl w-full p-6 rounded shadow-lg overflow-auto max-h-[80vh]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">Order {modalOrder.orderId || modalOrder._id}</h3>
-              <button onClick={() => setModalOrder(null)} className="text-sm text-gray-600">Close</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white max-w-4xl w-full rounded-lg shadow-2xl overflow-auto max-h-[90vh]" style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
+            {/* Modal Header */}
+            <div className="sticky top-0 z-10 flex justify-between items-center p-6 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
+              <div>
+                <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                  Order {modalOrder.orderId || modalOrder._id}
+                </h3>
+                <p className="text-sm mt-1" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
+                  {new Date(modalOrder.createdAt).toLocaleDateString()}
+                </p>
+                <p className="text-sm mt-2 px-3 py-1 rounded inline-block" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)', color: 'white' }}>
+                  Customer Orders: {localOrders.filter(o => o.user === modalOrder.user || o.user?._id === modalOrder.user?._id).length}
+                </p>
+              </div>
+              <button onClick={() => setModalOrder(null)} className="px-4 py-2 rounded font-semibold transition-all hover:opacity-75" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', color: 'var(--color-text-primary, #000000)' }}>
+                Close
+              </button>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold">Items</h4>
-                <div className="mt-2 space-y-3">
+            <div className="p-6 space-y-6">
+              {/* Contact Details Section */}
+              <div className="p-6 rounded-lg border-2" style={{
+                backgroundColor: 'var(--color-bg-section, #e5e5e5)',
+                borderColor: 'var(--color-border-light, #e5e5e5)'
+              }}>
+                <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary, #000000)' }}>Contact Details</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>First Name</p>
+                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.firstName || modalOrder.user?.name?.split(' ')[0] || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Last Name</p>
+                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.lastName || modalOrder.user?.name?.split(' ')[1] || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Email</p>
+                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.email || modalOrder.user?.email || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Phone</p>
+                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.phone || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shipping & Billing Addresses */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Shipping Address */}
+                <div className="p-4 rounded-lg border-2" style={{
+                  backgroundColor: 'var(--color-bg-section, #e5e5e5)',
+                  borderColor: 'var(--color-border-light, #e5e5e5)'
+                }}>
+                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Shipping Address</h4>
+                  {modalOrder.shippingAddress ? (
+                    <div className="text-sm space-y-1" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                      <div className="font-semibold">{modalOrder.shippingAddress.address}</div>
+                      <div>{modalOrder.shippingAddress.city} {modalOrder.shippingAddress.postalCode}</div>
+                      <div>{modalOrder.shippingAddress.country}</div>
+                    </div>
+                  ) : <div className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>No shipping address provided.</div>}
+                </div>
+
+                {/* Billing Address */}
+                <div className="p-4 rounded-lg border-2" style={{
+                  backgroundColor: 'var(--color-bg-section, #e5e5e5)',
+                  borderColor: 'var(--color-border-light, #e5e5e5)'
+                }}>
+                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Billing Address</h4>
+                  {modalOrder.billingAddress ? (
+                    <div className="text-sm space-y-1" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                      <div className="font-semibold">{modalOrder.billingAddress.address}</div>
+                      <div>{modalOrder.billingAddress.city} {modalOrder.billingAddress.postalCode}</div>
+                      <div>{modalOrder.billingAddress.country}</div>
+                    </div>
+                  ) : <div className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Same as shipping</div>}
+                </div>
+              </div>
+
+              {/* Order Items */}
+              <div className="p-4 rounded-lg border-2" style={{
+                backgroundColor: 'white',
+                borderColor: 'var(--color-border-light, #e5e5e5)'
+              }}>
+                <h4 className="font-semibold mb-4" style={{ color: 'var(--color-text-primary, #000000)' }}>Order Items</h4>
+                <div className="space-y-3">
                   {modalOrder.orderItems?.map(item => (
-                    <div key={item._id || item.product} className="flex items-center gap-3 border-b pb-2">
+                    <div key={item._id || item.product} className="flex items-center gap-3 pb-3 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)' }}>
                       <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
                       <div className="flex-1">
-                        <div className="font-semibold">{item.name}</div>
-                        <div className="text-sm text-gray-900">Qty: {item.qty} × £{Number(item.price).toFixed(2)}</div>
-                        <div className="text-sm text-gray-900">
-                          {item.selectedSize && `Size: ${item.selectedSize} `}
-                          {item.selectedColor && `Color: ${item.selectedColor} `}
-                        </div>
+                        <div className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>{item.name}</div>
+                        <div className="text-sm" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Qty: {item.qty} × £{Number(item.price).toFixed(2)}</div>
+                        {(item.selectedSize || item.selectedColor) && (
+                          <div className="text-xs" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
+                            {item.selectedSize && `Size: ${item.selectedSize} `}
+                            {item.selectedColor && `Color: ${item.selectedColor}`}
+                          </div>
+                        )}
                       </div>
-                      <div className="font-semibold">£{(item.qty * item.price).toFixed(2)}</div>
+                      <div className="font-bold" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>£{(item.qty * item.price).toFixed(2)}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div>
-                <h4 className="font-semibold">Shipping Address</h4>
-                {modalOrder.shippingAddress ? (
-                  <div className="text-sm text-gray-700">
-                    <div>{modalOrder.shippingAddress.address}</div>
-                    <div>{modalOrder.shippingAddress.city} {modalOrder.shippingAddress.postalCode}</div>
-                    <div>{modalOrder.shippingAddress.country}</div>
-                  </div>
-                ) : <div className="text-sm text-gray-900">No shipping address provided.</div>}
-              </div>
-
-              {modalOrder.billingAddress && (
-                <div>
-                  <h4 className="font-semibold">Billing Address</h4>
-                  <div className="text-sm text-gray-700">
-                    <div>{modalOrder.billingAddress.address}</div>
-                    <div>{modalOrder.billingAddress.city} {modalOrder.billingAddress.postalCode}</div>
-                    <div>{modalOrder.billingAddress.country}</div>
+              {/* Summary & Payment Footer */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Order Summary */}
+                <div className="md:col-span-2 p-4 rounded-lg border-2" style={{
+                  backgroundColor: 'white',
+                  borderColor: 'var(--color-border-light, #e5e5e5)'
+                }}>
+                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Order Summary</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Items:</span>
+                      <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{((modalOrder.itemsPrice ?? modalOrder.orderItems?.reduce((s, it) => s + it.price * it.qty, 0)) || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Shipping:</span>
+                      <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.shippingPrice || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Tax:</span>
+                      <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.taxPrice || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="border-t pt-2 flex justify-between font-bold" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', color: 'var(--color-accent-primary, #a5632a)' }}>
+                      <span>Total:</span>
+                      <span>£{(modalOrder.totalPrice || modalOrder.totalAmount || 0).toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
-              )}
 
-              <div>
-                <h4 className="font-semibold">Customer</h4>
-                <div className="text-sm text-gray-700">{modalOrder.user?.name || modalOrder.customerName}</div>
-                <div className="text-sm text-gray-600">{modalOrder.user?.email || modalOrder.customerEmail}</div>
-              </div>
-
-              <div>
-                <h4 className="font-semibold">Summary</h4>
-                <div className="text-sm text-gray-700">Items: £{((modalOrder.itemsPrice ?? modalOrder.orderItems?.reduce((s, it) => s + it.price * it.qty, 0)) || 0).toFixed(2)}</div>
-                <div className="text-sm text-gray-700">Shipping: £{(modalOrder.shippingPrice || 0).toFixed(2)}</div>
-                <div className="text-sm text-gray-700">Tax: £{(modalOrder.taxPrice || 0).toFixed(2)}</div>
-                <div className="text-lg font-semibold mt-2">Total: £{(modalOrder.totalPrice || modalOrder.totalAmount || 0).toFixed(2)}</div>
-              </div>
-
-              <div>
-                <h4 className="font-semibold">Status</h4>
-                <div className="mt-2 flex items-center gap-2">
-                  {modalOrder.isPaid && <div className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">Paid</div>}
-                  <div className={`px-3 py-1 rounded-full text-sm ${modalOrder.status === 'completed' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800'}`}>{modalOrder.status === 'completed' ? 'Fulfilled' : 'Unfulfilled'}</div>
-                  <div className={`px-3 py-1 rounded-full text-sm ${modalOrder.isDelivered ? 'bg-gray-100 text-gray-800' : (modalOrder.status === 'shipped' ? 'bg-purple-100 text-purple-800' : 'bg-yellow-100 text-yellow-800')}`}>{modalOrder.isDelivered ? `Delivered` : (modalOrder.status === 'shipped' ? 'Shipped' : 'No Status')}</div>
+                {/* Fulfillment & Delivery Status */}
+                <div className="p-4 rounded-lg border-2" style={{
+                  backgroundColor: 'white',
+                  borderColor: 'var(--color-border-light, #e5e5e5)'
+                }}>
+                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Status</h4>
+                  <div className="space-y-2">
+                    <div className="px-3 py-2 rounded text-sm font-semibold" style={{
+                      backgroundColor: modalOrder.status === 'completed' ? 'var(--color-accent-primary, #a5632a)' : 'var(--color-bg-section, #e5e5e5)',
+                      color: modalOrder.status === 'completed' ? 'white' : 'var(--color-text-primary, #000000)'
+                    }}>
+                      {modalOrder.status === 'completed' ? 'Fulfilled' : 'Unfulfilled'}
+                    </div>
+                    <div className="px-3 py-2 rounded text-sm font-semibold" style={{
+                      backgroundColor: modalOrder.isDelivered ? 'var(--color-accent-primary, #a5632a)' : (modalOrder.status === 'shipped' ? '#d4905e' : 'var(--color-bg-section, #e5e5e5)'),
+                      color: modalOrder.isDelivered || modalOrder.status === 'shipped' ? 'white' : 'var(--color-text-primary, #000000)'
+                    }}>
+                      {modalOrder.isDelivered ? 'Delivered' : (modalOrder.status === 'shipped' ? 'Shipped' : 'No Status')}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

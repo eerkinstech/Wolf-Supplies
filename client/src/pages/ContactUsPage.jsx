@@ -51,11 +51,11 @@ const ContactUsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
       {/* Header Section */}
-      <div className="bg-gray-900 text-white py-12 md:py-16">
+      <div className="text-white py-12 md:py-16" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }} >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
+          <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 w-fit transition duration-300">
             <FaArrowLeft /> Back to Home
           </Link>
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Contact Us</h1>
@@ -67,48 +67,48 @@ const ContactUsPage = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {/* Contact Info Cards */}
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
-            <FaPhone className="text-4xl text-gray-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Call Us</h3>
-            <p className="text-gray-700 mb-2">
-              <a href="tel:+447398998101" className="hover:text-gray-400 transition">
+          <div className="rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}  >
+            <FaPhone className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+            <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Call Us</h3>
+            <p className="mb-2" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
+              <a href="tel:+447398998101" className="hover:opacity-75 transition duration-300" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
                 +44 7398 998101
               </a>
             </p>
-            <p className="text-sm text-gray-600">Monday - Friday, 9 AM - 6 PM GMT</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
-            <FaEnvelope className="text-4xl text-gray-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Email Us</h3>
-            <p className="text-gray-700 mb-2">
-              <a href="mailto:support@wolfsuppliesltd.co.uk" className="hover:text-gray-400 transition">
+          <div className="rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}  >
+            <FaEnvelope className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+            <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Email Us</h3>
+            <p className="mb-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
+              <a href="mailto:support@wolfsuppliesltd.co.uk" className="hover:opacity-75 transition duration-300" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
                 support@wolfsuppliesltd.co.uk
               </a>
             </p>
-            <p className="text-sm text-gray-600">We'll respond within 24 hours</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>We'll respond within 24 hours</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
-            <FaMapMarkerAlt className="text-4xl text-gray-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Visit Us</h3>
-            <p className="text-gray-700 mb-2 font-semibold">Unit 4 Atlas Estates</p>
-            <p className="text-gray-700 mb-2">Colebrook Road, Birmingham</p>
-            <p className="text-gray-700 mb-2">West Midlands, B11 2NT</p>
-            <p className="text-sm text-gray-600">United Kingdom</p>
+          <div className="rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}  >
+            <FaMapMarkerAlt className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+            <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Visit Us</h3>
+            <p className="mb-2 font-semibold" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Unit 4 Atlas Estates</p>
+            <p className="mb-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Colebrook Road, Birmingham</p>
+            <p className="mb-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>West Midlands, B11 2NT</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>United Kingdom</p>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <FaPaperPlane className="text-gray-400" />
+          <div className="rounded-lg shadow-lg p-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
+              <FaPaperPlane style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
               Send us a Message
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>
                   Your Name
                 </label>
                 <input
@@ -117,13 +117,16 @@ const ContactUsPage = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 transition duration-300"
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition duration-300"
+                  style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary, #a5632a)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light, #e5e5e5)'}
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>
                   Email Address
                 </label>
                 <input
@@ -132,13 +135,16 @@ const ContactUsPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 transition duration-300"
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition duration-300"
+                  style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary, #a5632a)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light, #e5e5e5)'}
                   placeholder="john@example.com"
                 />
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="subject" className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>
                   Subject
                 </label>
                 <input
@@ -147,13 +153,16 @@ const ContactUsPage = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 transition duration-300"
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition duration-300"
+                  style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary, #a5632a)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light, #e5e5e5)'}
                   placeholder="How can we help?"
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="message" className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>
                   Message
                 </label>
                 <textarea
@@ -162,14 +171,18 @@ const ContactUsPage = () => {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="6"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 transition duration-300 resize-none"
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition duration-300 resize-none"
+                  style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--color-accent-primary, #a5632a)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border-light, #e5e5e5)'}
                   placeholder="Tell us more about your inquiry..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 rounded-lg transition duration-300 flex items-center justify-center gap-2 shadow-lg"
+                className="w-full text-white font-bold py-3 rounded-lg transition duration-300 flex items-center justify-center gap-2 shadow-lg hover:opacity-90"
+                style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}
               >
                 <FaPaperPlane /> Send Message
               </button>
@@ -179,55 +192,59 @@ const ContactUsPage = () => {
           {/* FAQ & Support Info */}
           <div className="space-y-8">
             {/* Support Hours */}
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FaClock className="text-gray-400" />
+            <div className="rounded-lg shadow-lg p-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                <FaClock style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
                 Support Hours
               </h2>
               <div className="space-y-4">
-                <div className="border-l-4 border-gray-400 pl-4">
-                  <p className="font-bold text-gray-900">Monday - Friday</p>
-                  <p className="text-gray-700">9:00 AM - 6:00 PM GMT</p>
+                <div className="pl-4 p-3 rounded" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)', backgroundColor: 'rgba(165, 99, 42, 0.1)' }}>
+                  <p className="font-bold" style={{ color: 'var(--color-text-primary, #000000)' }}>Monday - Friday</p>
+                  <p style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>9:00 AM - 6:00 PM GMT</p>
                 </div>
-                <div className="border-l-4 border-gray-400 pl-4">
-                  <p className="font-bold text-gray-900">Saturday - Sunday</p>
-                  <p className="text-gray-700">10:00 AM - 4:00 PM GMT</p>
+                <div className="pl-4 p-3 rounded" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)', backgroundColor: 'rgba(165, 99, 42, 0.1)' }}>
+                  <p className="font-bold" style={{ color: 'var(--color-text-primary, #000000)' }}>Saturday - Sunday</p>
+                  <p style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>10:00 AM - 4:00 PM GMT</p>
                 </div>
-                <div className="border-l-4 border-gray-300 pl-4 bg-gray-50 p-4 rounded">
-                  <p className="font-bold text-gray-900">Bank Holidays</p>
-                  <p className="text-gray-700">Closed</p>
+                <div className="pl-4 p-3 rounded" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)', backgroundColor: 'rgba(165, 99, 42, 0.1)' }}>
+                  <p className="font-bold" style={{ color: 'var(--color-text-primary, #000000)' }}>Bank Holidays</p>
+                  <p style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Closed</p>
                 </div>
               </div>
             </div>
 
             {/* Quick Support */}
-            <div className="bg-gray-50 rounded-lg shadow-lg p-8 border-2 border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FaHeadset className="text-gray-400" />
+            <div className="rounded-lg shadow-lg p-8 border-2" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}>
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                <FaHeadset style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
                 Quick Support
               </h2>
               <div className="space-y-3">
                 <Link
                   to="/policies/shipping"
-                  className="block p-3 bg-white rounded-lg hover:bg-gray-50 transition duration-300 text-gray-400 font-semibold hover:text-gray-700"
+                  className="block p-3 rounded hover:opacity-80 transition duration-300 font-semibold"
+                  style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)', color: 'var(--color-accent-primary, #a5632a)' }}
                 >
                   📦 Shipping Policy
                 </Link>
                 <Link
                   to="/policies/returns-refund"
-                  className="block p-3 bg-white rounded-lg hover:bg-gray-50 transition duration-300 text-gray-400 font-semibold hover:text-gray-700"
+                  className="block p-3 rounded hover:opacity-80 transition duration-300 font-semibold"
+                  style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)', color: 'var(--color-accent-primary, #a5632a)' }}
                 >
                   🔄 Returns & Refunds
                 </Link>
                 <Link
                   to="/policies/privacy"
-                  className="block p-3 bg-white rounded-lg hover:bg-gray-50 transition duration-300 text-gray-400 font-semibold hover:text-gray-700"
+                  className="block p-3 rounded hover:opacity-80 transition duration-300 font-semibold"
+                  style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)', color: 'var(--color-accent-primary, #a5632a)' }}
                 >
                   🔒 Privacy Policy
                 </Link>
                 <Link
                   to="/policies/faq"
-                  className="block p-3 bg-white rounded-lg hover:bg-gray-50 transition duration-300 text-gray-400 font-semibold hover:text-gray-700"
+                  className="block p-3 rounded hover:opacity-80 transition duration-300 font-semibold"
+                  style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)', color: 'var(--color-accent-primary, #a5632a)' }}
                 >
                   ❓ FAQ
                 </Link>

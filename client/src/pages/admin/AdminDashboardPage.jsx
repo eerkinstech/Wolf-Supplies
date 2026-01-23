@@ -78,54 +78,59 @@ const AdminDashboardPage = () => {
   }, [products, categories, orders, dateFrom, dateTo]);
 
   const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-300 hover:shadow-xl transition duration-300">
+    <div className="rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase opacity-90 text-gray-700">{label}</p>
-          <p className="text-lg font-bold mt-2 text-gray-900">{value}</p>
+          <p className="text-sm font-semibold uppercase opacity-90" style={{ color: 'var(--color-text-secondary)' }}>{label}</p>
+          <p className="text-lg font-bold mt-2" style={{ color: 'var(--color-text-primary)' }}>{value}</p>
           {trend && (
-            <p className={`text-sm mt-2 flex items-center gap-1 ${trendUp ? 'text-gray-700' : 'text-red-600'}`}>
+            <p className={`text-sm mt-2 flex items-center gap-1`} style={{ color: trendUp ? 'var(--color-text-secondary)' : '#dc2626' }}>
               {trendUp ? <FaArrowUp /> : <FaArrowDown />}
               {trend}
             </p>
           )}
         </div>
-        <Icon className="text-4xl text-gray-400" />
+        <Icon className="text-4xl" style={{ color: 'var(--color-accent-primary)' }} />
       </div>
     </div>
   );
 
   return (
     <AdminLayout activeTab="dashboard">
-      <div className="p-8 bg-white">
+      <div className="p-8" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's your store overview.</p>
+          <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Dashboard</h1>
+          <p style={{ color: 'var(--color-text-light)' }}>Welcome back! Here's your store overview.</p>
         </div>
 
         {/* Date filter */}
         <div className="flex items-center gap-3 mb-6">
-          <label className="text-sm text-gray-600">From</label>
+          <label className="text-sm" style={{ color: 'var(--color-text-light)' }}>From</label>
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="border px-3 py-2 rounded-md"
+            className="px-3 py-2 rounded-md"
+            style={{ borderColor: 'var(--color-border-light)', borderWidth: '1px' }}
           />
-          <label className="text-sm text-gray-600">To</label>
+          <label className="text-sm" style={{ color: 'var(--color-text-light)' }}>To</label>
           <input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="border px-3 py-2 rounded-md"
+            className="px-3 py-2 rounded-md"
+            style={{ borderColor: 'var(--color-border-light)', borderWidth: '1px' }}
           />
           <button
             onClick={() => {
               // effect depends on dateFrom/dateTo, so updating state is enough
               // we keep the button for UX but no-op since state already set by inputs
             }}
-            className="bg-gray-800 text-white px-4 py-2 rounded-md ml-2"
+            className="text-white px-4 py-2 rounded-md ml-2"
+            style={{ backgroundColor: 'var(--color-accent-primary)' }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
           >
             Apply
           </button>
@@ -134,12 +139,15 @@ const AdminDashboardPage = () => {
               setDateFrom('');
               setDateTo('');
             }}
-            className="bg-gray-200 text-gray-700 px-3 py-2 rounded-md ml-2"
+            className="px-3 py-2 rounded-md ml-2"
+            style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-border-light)'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-bg-section)'}
           >
             Reset
           </button>
           {(dateFrom || dateTo) && (
-            <div className="text-xs text-gray-900 ml-4">
+            <div className="text-xs ml-4" style={{ color: 'var(--color-text-primary)' }}>
               Showing stats for {dateFrom || 'start'} — {dateTo || 'now'}
             </div>
           )}
@@ -185,33 +193,45 @@ const AdminDashboardPage = () => {
         {/* Quick Actions & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Quick Actions */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <FaChartLine className="text-gray-700" />
+          <div className="lg:col-span-2 rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+              <FaChartLine style={{ color: 'var(--color-accent-primary)' }} />
               Quick Actions
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={() => navigate('/admin/products')}
-                className="bg-gray-700 hover:bg-gray-800 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
               >
                 📦 Add New Product
               </button>
               <button
                 onClick={() => navigate('/admin/orders')}
-                className="bg-gray-700 hover:bg-gray-800 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
               >
                 📋 Manage Orders
               </button>
               <button
                 onClick={() => navigate('/admin/categories')}
-                className="bg-gray-700 hover:bg-gray-800 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
               >
                 🏷️ Manage Categories
               </button>
               <button
                 onClick={() => navigate('/admin/analytics')}
-                className="bg-gray-700 hover:bg-gray-800 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
               >
                 📊 View Analytics
               </button>
@@ -219,18 +239,18 @@ const AdminDashboardPage = () => {
           </div>
 
           {/* System Status */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-6">System Status</h2>
+          <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+            <h2 className="text-lg font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>System Status</h2>
             <div className="space-y-4">
               {[
-                { label: 'Database', status: 'Online', color: 'gray' },
-                { label: 'API Server', status: 'Online', color: 'gray' },
-                { label: 'Backend', status: 'Running', color: 'gray' },
-                { label: 'Frontend', status: 'Active', color: 'gray' },
+                { label: 'Database', status: 'Online', color: 'var(--color-accent-primary)' },
+                { label: 'API Server', status: 'Online', color: 'var(--color-accent-primary)' },
+                { label: 'Backend', status: 'Running', color: 'var(--color-accent-primary)' },
+                { label: 'Frontend', status: 'Active', color: 'var(--color-accent-primary)' },
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 font-semibold">{item.label}</span>
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full bg-${item.color}-50 text-${item.color}-600`}>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--color-text-light)' }}>{item.label}</span>
+                  <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-accent-primary)' }}>
                     ✓ {item.status}
                   </span>
                 </div>
@@ -241,8 +261,8 @@ const AdminDashboardPage = () => {
 
         {/* Additional Panels: Recent Orders & Low Stock */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Recent Orders</h2>
+          <div className="lg:col-span-2 rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Recent Orders</h2>
             {orders && orders.length > 0 ? (
               (() => {
                 // show the filtered recent orders if a date range is active, otherwise recent orders
@@ -274,14 +294,14 @@ const AdminDashboardPage = () => {
                       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                       .slice(0, 6)
                       .map((o) => (
-                        <li key={o._id} className="flex items-center justify-between border-b py-3">
+                        <li key={o._id} className="flex items-center justify-between py-3" style={{ borderColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}>
                           <div>
-                            <div className="font-semibold">Order #{o._id.slice(-6)}</div>
-                            <div className="text-xs text-gray-900">{o.user?.email || o.user || '—'}</div>
+                            <div className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Order #{o._id.slice(-6)}</div>
+                            <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>{o.user?.email || o.user || '—'}</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold">£{(o.totalPrice || 0).toFixed(2)}</div>
-                            <div className="text-xs text-gray-900">{new Date(o.createdAt).toLocaleDateString()}</div>
+                            <div className="font-bold" style={{ color: 'var(--color-accent-primary)' }}>£{(o.totalPrice || 0).toFixed(2)}</div>
+                            <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>{new Date(o.createdAt).toLocaleDateString()}</div>
                           </div>
                         </li>
                       ))}
@@ -289,12 +309,12 @@ const AdminDashboardPage = () => {
                 );
               })()
             ) : (
-              <p className="text-gray-900">No orders yet.</p>
+              <p style={{ color: 'var(--color-text-primary)' }}>No orders yet.</p>
             )}
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Low Stock</h2>
+          <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Low Stock</h2>
             {products && products.length > 0 ? (
               <ul className="space-y-3">
                 {products
@@ -305,14 +325,14 @@ const AdminDashboardPage = () => {
                   })
                   .slice(0, 8)
                   .map((p) => (
-                    <li key={p._id} className="flex items-center justify-between border-b py-3">
-                      <div className="text-sm font-semibold">{p.name}</div>
-                      <div className="text-xs text-gray-900">Stock: {p.countInStock ?? p.stock ?? (p.variantCombinations?.[0]?.stock ?? '—')}</div>
+                    <li key={p._id} className="flex items-center justify-between py-3" style={{ borderColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}>
+                      <div className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.name}</div>
+                      <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>Stock: {p.countInStock ?? p.stock ?? (p.variantCombinations?.[0]?.stock ?? '—')}</div>
                     </li>
                   ))}
               </ul>
             ) : (
-              <p className="text-gray-900">No products available.</p>
+              <p style={{ color: 'var(--color-text-primary)' }}>No products available.</p>
             )}
           </div>
         </div>

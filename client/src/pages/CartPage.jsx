@@ -78,27 +78,27 @@ const CartPage = () => {
   const finalTotal = totalPrice;
 
   return (
-    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--color-bg-primary)] py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <FaShoppingCart className="text-4xl text-gray-400" />
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900">Shopping Cart</h1>
+            <FaShoppingCart className="text-4xl text-[var(--color-accent-primary)]" />
+            <h1 className="text-5xl md:text-6xl font-bold text-[var(--color-text-primary)]">Shopping Cart</h1>
           </div>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-[var(--color-text-light)]">
             {items.length === 0 ? 'Your cart is empty' : `You have ${totalQuantity} item${totalQuantity !== 1 ? 's' : ''} in your cart`}
           </p>
         </div>
 
         {items.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-3xl shadow-lg border-2 border-gray-100">
-            <FaShoppingCart className="text-8xl text-gray-300 mx-auto mb-6" />
-            <p className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</p>
-            <p className="text-xl text-gray-600 mb-12">Add some items to your cart to get started!</p>
+          <div className="text-center py-24 bg-[var(--color-bg-secondary)] rounded-3xl shadow-lg border-2 border-[var(--color-border-light)]">
+            <FaShoppingCart className="text-8xl text-[var(--color-text-muted)] mx-auto mb-6" />
+            <p className="text-3xl font-bold text-[var(--color-text-primary)] mb-4">Your cart is empty</p>
+            <p className="text-xl text-[var(--color-text-light)] mb-12">Add some items to your cart to get started!</p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-3 bg-gray-700 hover:bg-gray-800 text-white px-10 py-4 rounded-lg font-bold text-lg transition duration-300 shadow-lg"
+              className="inline-flex items-center gap-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-10 py-4 rounded-lg font-bold text-lg transition duration-300 shadow-lg"
             >
               <FaArrowLeft /> Continue Shopping
             </Link>
@@ -107,7 +107,7 @@ const CartPage = () => {
           <div className="grid lg:grid-cols-3 gap-10">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+              <div className="bg-[var(--color-bg-primary)] rounded-2xl shadow-lg overflow-hidden border border-[var(--color-border-light)]">
                 {items.map((item, idx) => (
                   <CartItem
                     key={item._id}

@@ -152,78 +152,78 @@ const AdminMenuPage = () => {
         <AdminLayout activeTab="menu">
             <div className="p-8 max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold">Admin — Browse Menu</h1>
+                    <h1 className="text-3xl font-bold" style={{ color: 'var(--color-text-primary)' }}>Admin — Browse Menu</h1>
                     <div className="flex items-center gap-3">
-                        <button onClick={saveMenu} className="bg-black text-white px-4 py-2 rounded-lg font-semibold">Save Menu</button>
+                        <button onClick={saveMenu} className="text-white px-4 py-2 rounded-lg font-semibold" style={{ backgroundColor: 'var(--color-accent-primary)' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}>Save Menu</button>
                     </div>
                 </div>
 
                 <div className="mb-6 flex items-center gap-3">
-                    <button onClick={startCreateMain} className="bg-black text-white px-3 py-2 rounded">Create Menu</button>
+                    <button onClick={startCreateMain} className="text-white px-3 py-2 rounded" style={{ backgroundColor: 'var(--color-accent-primary)' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}>Create Menu</button>
                     {isCreatingMain && (
                         <div className="flex items-center gap-2">
-                            <input value={mainText} onChange={(e) => setMainText(e.target.value)} placeholder="Menu title" className="border px-2 py-1 rounded" />
-                            <input value={mainLink} onChange={(e) => setMainLink(e.target.value)} placeholder="Menu link (e.g. /category/slug or /custom)" className="border px-2 py-1 rounded" />
-                            <button onClick={confirmCreateMain} className="bg-black text-white px-3 py-1 rounded">Add</button>
-                            <button onClick={cancelCreateMain} className="px-3 py-1 border rounded">Cancel</button>
+                            <input value={mainText} onChange={(e) => setMainText(e.target.value)} placeholder="Menu title" className="border px-2 py-1 rounded" style={{ borderColor: 'var(--color-border-light)' }} />
+                            <input value={mainLink} onChange={(e) => setMainLink(e.target.value)} placeholder="Menu link (e.g. /category/slug or /custom)" className="border px-2 py-1 rounded" style={{ borderColor: 'var(--color-border-light)' }} />
+                            <button onClick={confirmCreateMain} className="text-white px-3 py-1 rounded" style={{ backgroundColor: 'var(--color-accent-primary)' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}>Add</button>
+                            <button onClick={cancelCreateMain} className="px-3 py-1 border rounded" style={{ borderColor: 'var(--color-border-light)' }}>Cancel</button>
                         </div>
                     )}
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow">
-                    <h2 className="font-bold mb-4">Menu Editor</h2>
+                <div className="p-6 rounded-lg shadow" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
+                    <h2 className="font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Menu Editor</h2>
                     {menuItems.length === 0 ? (
-                        <p className="text-sm text-gray-900">No menu items yet — click "Create Menu" to add a top-level item.</p>
+                        <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>No menu items yet — click "Create Menu" to add a top-level item.</p>
                     ) : (
                         <ul className="space-y-3">
                             {menuItems.map((item, idx) => (
-                                <li key={item.id} className="border rounded-lg">
+                                <li key={item.id} className="border rounded-lg" style={{ borderColor: 'var(--color-border-light)' }}>
                                     <div className="flex items-center justify-between p-3">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-gray-400"><FaGripLines /></span>
+                                            <span style={{ color: 'var(--color-text-light)' }}><FaGripLines /></span>
                                             <div>
-                                                <div className="font-semibold">{item.name}</div>
-                                                <div className="text-xs text-gray-900">link: <span className="text-black">{item.link}</span></div>
+                                                <div className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{item.name}</div>
+                                                <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>link: <span style={{ color: 'var(--color-text-primary)' }}>{item.link}</span></div>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center gap-2">
-                                            <button onClick={() => move(idx, -1)} className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">Up</button>
-                                            <button onClick={() => move(idx, 1)} className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">Down</button>
-                                            <button onClick={() => startAddSub(item.id)} className="px-3 py-1 bg-gray-200 text-black rounded">Add Sub</button>
-                                            <button onClick={() => toggleExpand(item.id)} className="px-3 py-1 bg-gray-50 rounded border">{expanded[item.id] ? <FaChevronUp /> : <FaChevronDown />}</button>
-                                            <button onClick={() => removeFromMenu(item.id)} className="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 flex items-center gap-2"><FaTrash /> Remove</button>
+                                            <button onClick={() => move(idx, -1)} className="px-3 py-1 rounded" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}>Up</button>
+                                            <button onClick={() => move(idx, 1)} className="px-3 py-1 rounded" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}>Down</button>
+                                            <button onClick={() => startAddSub(item.id)} className="px-3 py-1 rounded" style={{ backgroundColor: 'var(--color-accent-light)', color: 'white' }}>Add Sub</button>
+                                            <button onClick={() => toggleExpand(item.id)} className="px-3 py-1 rounded border" style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}>{expanded[item.id] ? <FaChevronUp /> : <FaChevronDown />}</button>
+                                            <button onClick={() => removeFromMenu(item.id)} className="px-3 py-1 rounded flex items-center gap-2" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-light)' }}><FaTrash /> Remove</button>
                                         </div>
                                     </div>
 
                                     {expanded[item.id] && (
-                                        <div className="p-3 border-t bg-gray-50">
+                                        <div className="p-3 border-t" style={{ backgroundColor: 'var(--color-bg-section)', borderColor: 'var(--color-border-light)' }}>
                                             <div className="mb-3">
-                                                <div className="font-semibold">Submenus</div>
+                                                <div className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Submenus</div>
                                             </div>
                                             <ul className="space-y-2">
                                                 {(item.sub || []).map((sub, sidx) => (
-                                                    <li key={sub.id} className="flex items-center justify-between bg-white p-2 rounded">
+                                                    <li key={sub.id} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
                                                         <div>
-                                                            <div className="font-medium">{sub.name}</div>
-                                                            <div className="text-xs text-gray-900">link: <span className="text-black">{sub.link}</span></div>
+                                                            <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{sub.name}</div>
+                                                            <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>link: <span style={{ color: 'var(--color-text-primary)' }}>{sub.link}</span></div>
                                                         </div>
                                                         <div className="flex items-center gap-2">
-                                                            <button onClick={() => moveSub(idx, sidx, -1)} className="px-2 py-1 bg-gray-100 rounded">Up</button>
-                                                            <button onClick={() => moveSub(idx, sidx, 1)} className="px-2 py-1 bg-gray-100 rounded">Down</button>
-                                                            <button onClick={() => removeSub(item.id, sub.id)} className="px-2 py-1 bg-gray-100 text-gray-700 rounded">Remove</button>
+                                                            <button onClick={() => moveSub(idx, sidx, -1)} className="px-2 py-1 rounded" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}>Up</button>
+                                                            <button onClick={() => moveSub(idx, sidx, 1)} className="px-2 py-1 rounded" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}>Down</button>
+                                                            <button onClick={() => removeSub(item.id, sub.id)} className="px-2 py-1 rounded" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-light)' }}>Remove</button>
                                                         </div>
                                                     </li>
                                                 ))}
 
                                                 {addingSubFor === item.id ? (
-                                                    <li className="bg-white p-3 rounded">
+                                                    <li className="p-3 rounded" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                                            <input value={addingSubText} onChange={(e) => setAddingSubText(e.target.value)} placeholder="Submenu text" className="border px-2 py-1 rounded" />
-                                                            <input value={addingSubLink} onChange={(e) => setAddingSubLink(e.target.value)} placeholder="Submenu link (e.g. /category/slug or /custom)" className="border px-2 py-1 rounded" />
+                                                            <input value={addingSubText} onChange={(e) => setAddingSubText(e.target.value)} placeholder="Submenu text" className="border px-2 py-1 rounded" style={{ borderColor: 'var(--color-border-light)' }} />
+                                                            <input value={addingSubLink} onChange={(e) => setAddingSubLink(e.target.value)} placeholder="Submenu link (e.g. /category/slug or /custom)" className="border px-2 py-1 rounded" style={{ borderColor: 'var(--color-border-light)' }} />
                                                             <div className="flex gap-2">
-                                                                <button onClick={() => confirmAddSub(item.id)} className="bg-black text-white px-3 py-1 rounded">Add</button>
-                                                                <button onClick={cancelAddSub} className="px-3 py-1 border rounded">Cancel</button>
+                                                                <button onClick={() => confirmAddSub(item.id)} className="text-white px-3 py-1 rounded" style={{ backgroundColor: 'var(--color-accent-primary)' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}>Add</button>
+                                                                <button onClick={cancelAddSub} className="px-3 py-1 border rounded" style={{ borderColor: 'var(--color-border-light)' }}>Cancel</button>
                                                             </div>
                                                         </div>
                                                     </li>

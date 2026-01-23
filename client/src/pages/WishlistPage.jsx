@@ -210,18 +210,18 @@ const WishlistPage = () => {
   const sortedItems = getSortedItems();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
       {/* Header Section */}
-      <div className="bg-gray-900 text-white py-12 md:py-16">
+      <div className="text-white py-12 md:py-16" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
+          <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 w-fit">
             <FaArrowLeft /> Back to Home
           </Link>
           <div className="flex items-center gap-3">
             <FaHeart className="text-3xl" />
             <div>
               <h1 className="text-5xl md:text-6xl font-bold">My Wishlist</h1>
-              <p className="text-xl text-gray-100 mt-2">
+              <p className="text-xl mt-2">
                 {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} saved
               </p>
             </div>
@@ -237,13 +237,18 @@ const WishlistPage = () => {
             <div className="inline-block">
               <div className="text-8xl mb-6 opacity-50">💔</div>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Wishlist is Empty</h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Your Wishlist is Empty</h2>
+            <p className="text-lg mb-8" style={{ color: 'var(--color-text-light)' }}>
               Start adding products to your wishlist and save them for later!
             </p>
             <Link
               to="/products"
-              className="inline-block bg-black text-white px-8 py-3 rounded-lg font-bold hover:bg-black transition duration-300"
+              className="inline-block text-white px-8 py-3 rounded-lg font-bold transition duration-300"
+              style={{
+                backgroundColor: 'var(--color-accent-primary)',
+              }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
             >
               Browse Products
             </Link>
@@ -253,14 +258,20 @@ const WishlistPage = () => {
             {/* Products Grid */}
             <div className="lg:col-span-3">
               {/* Sort Controls */}
-              <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <div className="rounded-lg shadow-md p-6 mb-8" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-700 font-semibold">Sort by:</span>
+                    <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Sort by:</span>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+                      className="px-4 py-2 rounded-lg focus:outline-none focus:ring-2"
+                      style={{
+                        borderColor: 'var(--color-border-light)',
+                        borderWidth: '1px',
+                        color: 'var(--color-text-primary)',
+                      }}
+                      onFocus={(e) => (e.target.style.outline = 'none', e.target.style.ringColor = 'var(--color-accent-primary)')}
                     >
                       <option value="newest">Newest</option>
                       <option value="priceLow">Price: Low to High</option>
@@ -270,7 +281,10 @@ const WishlistPage = () => {
                   </div>
                   <button
                     onClick={handleClearWishlist}
-                    className="text-red-600 hover:text-red-700 font-semibold flex items-center gap-2"
+                    className="font-semibold flex items-center gap-2 transition duration-300"
+                    style={{ color: 'var(--color-accent-primary)' }}
+                    onMouseEnter={(e) => (e.target.style.opacity = '0.8')}
+                    onMouseLeave={(e) => (e.target.style.opacity = '1')}
                   >
                     <FaTrash /> Clear All
                   </button>
@@ -282,11 +296,11 @@ const WishlistPage = () => {
                 {sortedItems.map((item) => {
                   const available = computeIsAvailable(item);
                   return (
-                    <div key={(item.productId || item._id) + (item.variantId ? `-${item.variantId}` : '')} className="relative bg-white rounded-lg shadow-md hover:shadow-xl transition duration-300 overflow-hidden">
+                    <div key={(item.productId || item._id) + (item.variantId ? `-${item.variantId}` : '')} className="relative rounded-lg shadow-md hover:shadow-xl transition duration-300 overflow-hidden" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
                       {/* If this is a variant snapshot (server or local), render a compact snapshot card */}
                       {item.__isSnapshot ? (
                         <div className="flex items-stretch md:items-start">
-                          <div className="w-36 flex-shrink-0 bg-gray-100 overflow-hidden">
+                          <div className="w-36 flex-shrink-0 overflow-hidden" style={{ backgroundColor: 'var(--color-bg-section)' }}>
                             <img
                               src={getImgSrc(item.image) || 'https://via.placeholder.com/300'}
                               alt={item.name}
@@ -298,31 +312,35 @@ const WishlistPage = () => {
                             <div className="flex items-start gap-3">
                               <div className="flex-1">
                                 <Link to={`/product/${item.productId || item._id}`} className="hover:underline">
-                                  <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
+                                  <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>{item.name}</h3>
                                 </Link>
-                                <div className="mt-1 text-sm text-gray-600">{Object.entries(item.selectedVariants || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}</div>
+                                <div className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{Object.entries(item.selectedVariants || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}</div>
                               </div>
                               <div className="text-right">
-                                <div className="text-xl font-bold text-gray-900">£{(item.price || 0).toFixed(2)}</div>
-                                <div className="text-sm text-gray-900">Variant</div>
+                                <div className="text-xl font-bold" style={{ color: 'var(--color-accent-primary)' }}>£{(item.price || 0).toFixed(2)}</div>
+                                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Variant</div>
                               </div>
                             </div>
 
                             <div className="mt-4 flex gap-3">
                               {(!computeIsAvailable(item)) && (
-                                <div className="absolute top-3 left-3 bg-gray-700 text-white px-2 py-1 rounded text-xs font-bold">Out of stock</div>
+                                <div className="absolute top-3 left-3 text-white px-2 py-1 rounded text-xs font-bold" style={{ backgroundColor: 'var(--color-accent-primary)' }}>Out of stock</div>
                               )}
                               {computeIsAvailable(item) ? (
                                 <button
                                   onClick={() => handleAddToCart(item)}
-                                  className="py-2 px-4 rounded-lg font-semibold transition duration-300 flex items-center gap-2 bg-black text-white hover:bg-black"
+                                  className="py-2 px-4 rounded-lg font-semibold transition duration-300 flex items-center gap-2 text-white"
+                                  style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                                  onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+                                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
                                 >
                                   <FaShoppingCart /> Add to Cart
                                 </button>
                               ) : (
                                 <button
                                   disabled
-                                  className="py-2 px-4 rounded-lg font-semibold transition duration-300 flex items-center gap-2 bg-gray-500 text-white cursor-not-allowed"
+                                  className="py-2 px-4 rounded-lg font-semibold transition duration-300 flex items-center gap-2 text-white cursor-not-allowed"
+                                  style={{ backgroundColor: 'var(--color-text-light)', opacity: '0.6' }}
                                 >
                                   Sold Out
                                 </button>
@@ -330,12 +348,27 @@ const WishlistPage = () => {
 
                               <button
                                 onClick={() => handleRemoveFromWishlist(item)}
-                                className="bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-200 transition duration-300 flex items-center gap-2"
+                                className="py-2 px-4 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
+                                style={{
+                                  backgroundColor: 'var(--color-bg-section)',
+                                  color: 'var(--color-accent-primary)',
+                                  borderColor: 'var(--color-border-light)',
+                                  borderWidth: '1px'
+                                }}
+                                onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-border-light)')}
+                                onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
                               >
                                 <FaTrash /> Remove
                               </button>
 
-                              <Link to={`/product/${item.productId || item._id}`} className="ml-auto inline-flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">
+                              <Link to={`/product/${item.productId || item._id}`} className="ml-auto inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2" style={{
+                                borderColor: 'var(--color-border-light)',
+                                borderWidth: '1px',
+                                color: 'var(--color-text-primary)',
+                              }}
+                              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
+                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
+                              >
                                 View Product
                               </Link>
                             </div>
@@ -346,7 +379,13 @@ const WishlistPage = () => {
                           <ProductCard product={item} />
                           <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveFromWishlist(item); }}
-                            className="absolute top-3 right-3 z-50 bg-white p-2 rounded-full shadow hover:bg-gray-50 text-red-600"
+                            className="absolute top-3 right-3 z-50 p-2 rounded-full shadow transition duration-300"
+                            style={{
+                              backgroundColor: 'white',
+                              color: 'var(--color-accent-primary)',
+                            }}
+                            onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
+                            onMouseLeave={(e) => (e.target.style.backgroundColor = 'white')}
                             aria-label={`Remove ${item.name} from wishlist`}
                           >
                             <FaTrash />
@@ -363,17 +402,17 @@ const WishlistPage = () => {
 
             {/* Sidebar Summary */}
             <div className="lg:col-span-1">
-              <aside className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Wishlist Summary</h2>
+              <aside className="rounded-lg shadow-lg p-6 sticky top-24" style={{ backgroundColor: 'var(--color-bg-section)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
+                <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Wishlist Summary</h2>
 
                 <div className="mb-6 grid grid-cols-2 gap-4">
                   <div className="col-span-1">
-                    <p className="text-sm text-gray-900">Items</p>
-                    <p className="text-3xl font-extrabold text-gray-400">{wishlistItems.length}</p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Items</p>
+                    <p className="text-3xl font-extrabold" style={{ color: 'var(--color-accent-primary)' }}>{wishlistItems.length}</p>
                   </div>
                   <div className="col-span-1 text-right">
-                    <p className="text-sm text-gray-900">&nbsp;</p>
-                    <p className="text-2xl font-bold text-gray-900">&nbsp;</p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>&nbsp;</p>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>&nbsp;</p>
                   </div>
                 </div>
 
@@ -381,30 +420,48 @@ const WishlistPage = () => {
                   <button
                     onClick={handleMoveAllToCart}
                     disabled={wishlistItems.filter(computeIsAvailable).length === 0}
-                    className="w-full bg-gray-700 text-white py-3 px-4 rounded-lg font-bold hover:bg-gray-800 transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full text-white py-3 px-4 rounded-lg font-bold transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                    onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-accent-light)')}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
                   >
                     <FaShoppingCart /> Move All to Cart
                   </button>
                 </div>
 
                 <div className="flex gap-3 mb-4">
-                  <Link to="/products" className="flex-1 inline-flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">
+                  <Link to="/products" className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2" style={{
+                    borderColor: 'var(--color-border-light)',
+                    borderWidth: '1px',
+                    color: 'var(--color-text-primary)',
+                  }}
+                  onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-secondary)')}
+                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
+                  >
                     Continue Shopping
                   </Link>
                   <button
                     onClick={handleClearWishlist}
                     disabled={wishlistItems.length === 0}
-                    className="inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-200 disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg disabled:opacity-60"
+                    style={{
+                      backgroundColor: 'var(--color-bg-primary)',
+                      borderColor: 'var(--color-border-light)',
+                      borderWidth: '1px',
+                      color: 'var(--color-accent-primary)',
+                    }}
+                    onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-bg-section)')}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-bg-primary)')}
                   >
                     Clear
                   </button>
                 </div>
 
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600">Quick Preview</p>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Quick Preview</p>
                   <div className="mt-3 grid grid-cols-4 gap-2">
                     {wishlistItems.slice(0, 8).map((p) => (
-                      <div key={(p.productId || p._id) + (p.variantId ? `-${p.variantId}` : '')} className="w-full h-16 bg-gray-100 rounded overflow-hidden">
+                      <div key={(p.productId || p._id) + (p.variantId ? `-${p.variantId}` : '')} className="w-full h-16 rounded overflow-hidden" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
                         <img
                           src={getImgSrc((p.image) || (p.images && p.images[0]) || p.image) || 'https://via.placeholder.com/150'}
                           alt={p.name}
@@ -416,8 +473,13 @@ const WishlistPage = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 bg-gray-50 p-3 rounded border border-gray-100">
-                  <p className="text-sm text-gray-700">💡 Tip: Items may go out of stock. Move favourites to cart to reserve them.</p>
+                <div className="mt-4 p-3 rounded" style={{
+                  backgroundColor: 'var(--color-bg-primary)',
+                  borderColor: 'var(--color-border-light)',
+                  borderWidth: '1px',
+                  color: 'var(--color-text-secondary)'
+                }}>
+                  <p className="text-sm">💡 Tip: Items may go out of stock. Move favourites to cart to reserve them.</p>
                 </div>
               </aside>
             </div>

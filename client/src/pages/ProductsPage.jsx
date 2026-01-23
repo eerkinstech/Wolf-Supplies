@@ -93,15 +93,15 @@ const ProductsPage = () => {
   }, [filteredProducts, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--color-bg-primary)] py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Our Products</h1>
+          <h1 className="text-5xl md:text-6xl font-bold text-[var(--color-text-primary)] mb-4">Our Products</h1>
           {searchQuery ? (
             <div className="space-y-2">
-              <p className="text-xl text-gray-600">
-                Search results for: <span className="font-bold text-gray-900">"{searchQuery}"</span>
+              <p className="text-xl text-[var(--color-text-light)]">
+                Search results for: <span className="font-bold text-[var(--color-text-primary)]">"{searchQuery}"</span>
               </p>
               {hasSearchResults && (
                 <p className="text-sm text-green-600 font-semibold">
@@ -110,7 +110,7 @@ const ProductsPage = () => {
               )}
             </div>
           ) : (
-            <p className="text-xl text-gray-600">Browse our amazing collection of products</p>
+            <p className="text-xl text-[var(--color-text-light)]">Browse our amazing collection of products</p>
           )}
         </div>
 
@@ -130,18 +130,18 @@ const ProductsPage = () => {
             {loading ? (
               <div className="flex justify-center items-center h-96">
                 <div className="text-center">
-                  <FaSpinner className="text-6xl text-gray-400 animate-spin mx-auto mb-4" />
-                  <p className="text-xl text-gray-600">Loading products...</p>
+                  <FaSpinner className="text-6xl text-[var(--color-text-light)] animate-spin mx-auto mb-4" />
+                  <p className="text-xl text-[var(--color-text-light)]">Loading products...</p>
                 </div>
               </div>
             ) : filteredProducts.length > 0 ? (
               <div>
                 {/* Results Summary */}
-                <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                  <p className="text-gray-700">
-                    Showing <span className="font-bold text-gray-900">{filteredProducts.length}</span> product{filteredProducts.length !== 1 ? 's' : ''}
+                <div className="mb-8 p-4 bg-gradient-to-r from-[var(--color-bg-section)] to-[var(--color-bg-section)] rounded-lg border border-[var(--color-border-light)]">
+                  <p className="text-[var(--color-text-light)]">
+                    Showing <span className="font-bold text-[var(--color-text-primary)]">{filteredProducts.length}</span> product{filteredProducts.length !== 1 ? 's' : ''}
                     {searchQuery && (
-                      <span> matching "<span className="font-bold text-blue-600">{searchQuery}</span>"</span>
+                      <span> matching "<span className="font-bold text-[var(--color-accent-primary)]">{searchQuery}</span>"</span>
                     )}
                   </p>
                   {searchQuery && exactMatchCount > 0 && (
@@ -159,12 +159,12 @@ const ProductsPage = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg border border-gray-200">
+              <div className="text-center py-24 bg-gradient-to-br from-[var(--color-bg-section)] to-[var(--color-bg-section)] rounded-2xl shadow-lg border border-[var(--color-border-light)]">
                 <div className="text-6xl mb-6">🔍</div>
-                <p className="text-2xl text-gray-600 font-semibold mb-2">No products found</p>
+                <p className="text-2xl text-[var(--color-text-light)] font-semibold mb-2">No products found</p>
                 {searchQuery ? (
                   <div>
-                    <p className="text-gray-700 text-lg mb-4">
+                    <p className="text-[var(--color-text-light)] text-lg mb-4">
                       We couldn't find any products matching "<span className="font-bold">{searchQuery}</span>"
                     </p>
                     <button
@@ -172,13 +172,13 @@ const ProductsPage = () => {
                         dispatch(setFilter({ ...filters, search: '' }));
                         setSearchQuery('');
                       }}
-                      className="inline-block px-6 py-2 bg-black text-white font-bold rounded-lg hover:bg-gray-900 transition duration-300"
+                      className="inline-block px-6 py-2 bg-[var(--color-accent-primary)] text-white font-bold rounded-lg hover:bg-[var(--color-accent-light)] transition duration-300"
                     >
                       View All Products
                     </button>
                   </div>
                 ) : (
-                  <p className="text-gray-700 text-lg">Try adjusting your filters</p>
+                  <p className="text-[var(--color-text-light)] text-lg">Try adjusting your filters</p>
                 )}
               </div>
             )}

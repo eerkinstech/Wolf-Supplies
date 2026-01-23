@@ -50,14 +50,14 @@ const CategoriesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--color-bg-primary)] py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold text-[var(--color-text-primary)] mb-4">
             Shop by Category
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl">
+          <p className="text-xl text-[var(--color-text-light)] max-w-2xl">
             Explore our wide range of products organized by category. Find exactly what you're looking for.
           </p>
         </div>
@@ -73,20 +73,20 @@ const CategoriesPage = () => {
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <div className="text-center">
-              <FaSpinner className="text-6xl text-gray-400 animate-spin mx-auto mb-4" />
-              <p className="text-xl text-gray-600">Loading categories...</p>
+              <FaSpinner className="text-6xl text-[var(--color-text-light)] animate-spin mx-auto mb-4" />
+              <p className="text-xl text-[var(--color-text-light)]">Loading categories...</p>
             </div>
           </div>
         ) : error ? (
-          <div className="text-center py-24 bg-white rounded-2xl shadow-lg">
+          <div className="text-center py-24 bg-[var(--color-bg-primary)] rounded-2xl shadow-lg">
             <div className="text-6xl mb-6">⚠️</div>
             <p className="text-2xl text-red-600 font-semibold mb-2">Error Loading Categories</p>
-            <p className="text-gray-900 text-lg">{error}</p>
+            <p className="text-[var(--color-text-primary)] text-lg">{error}</p>
           </div>
         ) : filteredCategories.length > 0 ? (
           <div>
-            <p className="text-gray-600 mb-8 text-lg">
-              Showing <span className="font-bold text-gray-400">{filteredCategories.length}</span> categor{filteredCategories.length === 1 ? 'y' : 'ies'}
+            <p className="text-[var(--color-text-light)] mb-8 text-lg">
+              Showing <span className="font-bold text-[var(--color-accent-primary)]">{filteredCategories.length}</span> categor{filteredCategories.length === 1 ? 'y' : 'ies'}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
               {filteredCategories.map((category) => (
@@ -95,10 +95,10 @@ const CategoriesPage = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-24 bg-white rounded-2xl shadow-lg">
+          <div className="text-center py-24 bg-[var(--color-bg-primary)] rounded-2xl shadow-lg">
             <div className="text-6xl mb-6">🔍</div>
-            <p className="text-2xl text-gray-600 font-semibold mb-2">No categories found</p>
-            <p className="text-gray-900 text-lg">Try adjusting your search query</p>
+            <p className="text-2xl text-[var(--color-text-light)] font-semibold mb-2">No categories found</p>
+            <p className="text-[var(--color-text-primary)] text-lg">Try adjusting your search query</p>
           </div>
         )}
       </div>

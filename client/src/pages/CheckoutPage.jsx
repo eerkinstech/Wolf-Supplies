@@ -363,76 +363,76 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--color-bg-section)] py-12 px-4 sm:px-6 lg:px-8">
       {showThankYou && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full text-center">
-            <h2 className="text-2xl font-bold mb-2">Thank you!</h2>
-            <p className="text-gray-700 mb-4">Your order has been placed successfully.</p>
+          <div className="bg-[var(--color-bg-primary)] rounded-lg p-6 shadow-lg max-w-md w-full text-center">
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Thank you!</h2>
+            <p className="text-[var(--color-text-light)] mb-4">Your order has been placed successfully.</p>
           </div>
         </div>
       )}
       <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow p-8 space-y-6">
-            <h2 className="text-2xl font-bold">Contact </h2>
+          <div className="bg-[var(--color-bg-primary)] rounded-2xl shadow p-8 space-y-6">
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Contact </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="border p-3 rounded" />
-              <input placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} className="border p-3 rounded" />
-              <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="border p-3 rounded md:col-span-2" />
-              <input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="border p-3 rounded md:col-span-2" />
+              <input placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+              <input placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+              <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] md:col-span-2" />
+              <input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] md:col-span-2" />
             </div>
 
-            <h2 className="text-2xl font-bold">Shipping Address</h2>
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Shipping Address</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input placeholder="Address (street)" value={address} onChange={(e) => setAddress(e.target.value)} className="border p-3 rounded md:col-span-2" />
-              <input placeholder="Apt, suite (optional)" value={apartment} onChange={(e) => setApartment(e.target.value)} className="border p-3 rounded" />
-              <input placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="border p-3 rounded" />
-              <input placeholder="State / Region" value={stateRegion} onChange={(e) => setStateRegion(e.target.value)} className="border p-3 rounded" />
-              <input placeholder="Postal Code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="border p-3 rounded" />
-              <input placeholder="Country" value={country} onChange={(e) => setCountry(e.target.value)} className="border p-3 rounded" />
+              <input placeholder="Address (street)" value={address} onChange={(e) => setAddress(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] md:col-span-2" />
+              <input placeholder="Apt, suite (optional)" value={apartment} onChange={(e) => setApartment(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+              <input placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+              <input placeholder="State / Region" value={stateRegion} onChange={(e) => setStateRegion(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+              <input placeholder="Postal Code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+              <input placeholder="Country" value={country} onChange={(e) => setCountry(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
 
             </div>
             <div className="mt-3">
               <label className="inline-flex items-center gap-2">
                 <input type="checkbox" checked={billingOpen} onChange={(e) => setBillingOpen(e.target.checked)} />
-                <span className="text-sm">Add separate billing address</span>
+                <span className="text-sm text-[var(--color-text-light)]">Add separate billing address</span>
               </label>
             </div>
             {billingOpen && (
               <div className="mt-4 grid grid-cols-1 gap-3">
-                <input placeholder="Billing address (street)" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} className="border p-3 rounded" />
-                <input placeholder="Apt, suite (optional)" value={billingApartment} onChange={(e) => setBillingApartment(e.target.value)} className="border p-3 rounded" />
+                <input placeholder="Billing address (street)" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+                <input placeholder="Apt, suite (optional)" value={billingApartment} onChange={(e) => setBillingApartment(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <input placeholder="City" value={billingCity} onChange={(e) => setBillingCity(e.target.value)} className="border p-3 rounded" />
-                  <input placeholder="State / Region" value={billingStateRegion} onChange={(e) => setBillingStateRegion(e.target.value)} className="border p-3 rounded" />
-                  <input placeholder="Postal Code" value={billingPostalCode} onChange={(e) => setBillingPostalCode(e.target.value)} className="border p-3 rounded" />
-                  <input placeholder="Country" value={billingCountry} onChange={(e) => setBillingCountry(e.target.value)} className="border p-3 rounded" />
+                  <input placeholder="City" value={billingCity} onChange={(e) => setBillingCity(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+                  <input placeholder="State / Region" value={billingStateRegion} onChange={(e) => setBillingStateRegion(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+                  <input placeholder="Postal Code" value={billingPostalCode} onChange={(e) => setBillingPostalCode(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
+                  <input placeholder="Country" value={billingCountry} onChange={(e) => setBillingCountry(e.target.value)} className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
                 </div>
               </div>
             )}
-            <h2 className="text-2xl font-bold">Payment</h2>
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Payment</h2>
             <div className="space-y-4">
               <div className="">
-                <input placeholder="Name on card" value={nameOnCard} onChange={(e) => setNameOnCard(e.target.value)} className="border p-3 w-full rounded" />
+                <input placeholder="Name on card" value={nameOnCard} onChange={(e) => setNameOnCard(e.target.value)} className="border border-[var(--color-border-light)] p-3 w-full rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
               </div>
 
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Card details</label>
-                <div id="card-element" className="border p-3 rounded bg-white"></div>
-                <div id="card-errors" role="alert" className="text-red-600 text-sm mt-2"></div>
+                <label className="block text-sm font-medium text-[var(--color-text-light)] mb-2">Card details</label>
+                <div id="card-element" className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)]"></div>
+                <div id="card-errors" role="alert" className="text-[var(--color-error)] text-sm mt-2"></div>
               </div>
               <div className="flex items-center gap-3">
                 <input id="saveDetails" type="checkbox" checked={saveDetails} onChange={(e) => setSaveDetails(e.target.checked)} />
-                <label htmlFor="saveDetails" className="text-sm">Save my details for future purchases</label>
+                <label htmlFor="saveDetails" className="text-sm text-[var(--color-text-light)]">Save my details for future purchases</label>
               </div>
             </div>
           </div>
         </div>
 
         <div>
-          <div className="bg-white rounded-2xl shadow p-6 space-y-6 sticky top-24">
-            <h3 className="text-xl font-bold">Order Summary</h3>
+          <div className="bg-[var(--color-bg-primary)] rounded-2xl shadow p-6 space-y-6 sticky top-24">
+            <h3 className="text-xl font-bold text-[var(--color-text-primary)]">Order Summary</h3>
             <div className="space-y-3 max-h-60 overflow-y-auto">
               {items.map((i) => (
                 <div key={i._id} className="flex items-center justify-between">
@@ -452,14 +452,14 @@ const CheckoutPage = () => {
             <div className="pt-4 border-t space-y-2">
               <div className="flex justify-between text-sm text-gray-600"><span>Items</span><span>£{totalPrice.toFixed(2)}</span></div>
               <div className="flex justify-between text-sm text-gray-600"><span>Shipping</span><span>{shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`}</span></div>
-              <div className="flex justify-between font-bold text-lg"><span>Total</span><span>£{finalTotal.toFixed(2)}</span></div>
+              <div className="flex justify-between font-bold text-lg text-[var(--color-text-primary)]"><span>Total</span><span>£{finalTotal.toFixed(2)}</span></div>
             </div>
 
-            <button onClick={handlePlaceOrder} disabled={loading} className="w-full bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg font-bold shadow transition duration-300">
+            <button onClick={handlePlaceOrder} disabled={loading} className="w-full bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white py-3 rounded-lg font-bold shadow transition duration-300">
               {loading ? 'Placing Order…' : `Place Order — £${finalTotal.toFixed(2)}`}
             </button>
 
-            <p className="text-xs text-gray-900">We do not store your CVV. Saved details are stored locally in your browser.</p>
+            <p className="text-xs text-[var(--color-text-light)]">We do not store your CVV. Saved details are stored locally in your browser.</p>
           </div>
         </div>
       </div>

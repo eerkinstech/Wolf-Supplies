@@ -73,16 +73,16 @@ const FeaturedProducts = ({
         return sizeMap[sizeValue] || 'text-base';
     };
 
-    // Get grid columns class
+    // Get grid columns class with better responsive breakpoints
     const getColumnsClass = (col) => {
         const colMap = {
-            2: 'lg:grid-cols-2',
-            3: 'lg:grid-cols-3',
-            4: 'lg:grid-cols-4',
-            5: 'lg:grid-cols-4',
-            6: 'lg:grid-cols-6'
+            2: 'md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2',
+            3: 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3',
+            4: 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+            5: 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+            6: 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'
         };
-        return colMap[col] || 'lg:grid-cols-4';
+        return colMap[col] || 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
     };
 
     // Determine items per slide based on screen size
@@ -168,14 +168,14 @@ const FeaturedProducts = ({
 
     if (loading && products.length === 0) {
         return (
-            <section className="py-4 px-4  bg-white">
+            <section className="py-4 px-4 bg-[var(--color-bg-primary)]">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-12 flex items-center justify-between">
-                        <h2 className="text-5xl md:text-6xl font-bold text-[#2e2e2e] mb-4">{title}</h2>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--color-text-primary)] mb-4">{title}</h2>
                         {category && (
                             <button
                                 onClick={() => navigate(`/products?category=${category}`)}
-                                className="px-8 py-3 bg-black rounded-lg text-white font-bold text-sm uppercase tracking-wider hover:bg-gray-900 transition duration-300"
+                                className="px-8 py-3 bg-[var(--color-accent-primary)] rounded-lg text-white font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-[var(--color-accent-light)] transition duration-300"
                             >
                                 Shop All
                             </button>
@@ -197,21 +197,21 @@ const FeaturedProducts = ({
 
     if (filteredProducts.length === 0) {
         return (
-            <section className="py-4 px-4  bg-white">
+            <section className="py-4 px-4  bg-[var(--color-bg-primary)]">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-12 flex items-center justify-between">
-                        <h2 className="text-5xl md:text-6xl font-bold text-[#2e2e2e] mb-4">{title}</h2>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--color-text-primary)] mb-4">{title}</h2>
                         {category && (
                             <button
                                 onClick={() => navigate(`/products?category=${category}`)}
-                                className="px-8 py-3 bg-black text-white rounded-lg font-bold text-sm uppercase tracking-wider hover:bg-gray-900 transition duration-300"
+                                className="px-8 py-3 bg-[var(--color-accent-primary)] text-white rounded-lg font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-[var(--color-accent-light)] transition duration-300"
                             >
                                 Shop All
                             </button>
                         )}
                     </div>
-                    <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-gray-300">
-                        <p className="text-gray-600 text-xl font-medium">
+                    <div className="text-center py-20 bg-[var(--color-bg-primary)] rounded-2xl border-2 border-dashed border-[var(--color-border-light)]">
+                        <p className="text-[var(--color-text-light)] text-base sm:text-lg md:text-xl font-medium">
                             {category ? `No products found in ${category}` : 'No products available'}
                         </p>
                     </div>
@@ -221,26 +221,25 @@ const FeaturedProducts = ({
     }
 
     return (
-        <section className="py-4 px-4  bg-white">
+        <section className="py-4 px-4  bg-[var(--color-bg-primary)]">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12 flex items-center justify-between">
                     <div>
-                        <h2 className="text-5xl md:text-6xl font-bold text-[#2e2e2e] mb-4">{title}</h2>
-
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--color-text-primary)] mb-4">{title}</h2>
                     </div>
                     <button
                         onClick={() => navigate(category ? `/products?category=${category}` : '/products')}
-                        className="px-8 py-3 bg-[#1e40af] text-white font-bold rounded-lg text-sm uppercase tracking-wider hover:bg-gray-900 transition duration-300"
+                        className="px-8 py-3 bg-[var(--color-accent-primary)] text-white font-bold rounded-lg text-xs sm:text-sm uppercase tracking-wider hover:bg-gray-900 transition duration-300"
                     >
                         Shop All
                     </button>
                 </div>
 
                 {layout === 'grid' ? (
-                    // Grid Layout
-                    <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${getColumnsClass(columns)} gap-1 sm:gap-2 md:gap-4 lg:gap-8`}>
+                    // Grid Layout - More Responsive
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 ${getColumnsClass(columns)} gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8`}>
                         {filteredProducts.slice(0, limit).map((product) => (
-                            <div key={product._id} className="transform hover:scale-105 transition duration-300">
+                            <div key={product._id} className="w-full transform hover:scale-105 transition duration-300">
                                 <ProductCard product={product} />
                             </div>
                         ))}

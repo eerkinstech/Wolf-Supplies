@@ -17,7 +17,7 @@ const ProductList = ({ products }) => {
               <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
               <p className="text-gray-600 text-sm mb-2">{product.description}</p>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 font-bold text-lg">${product.price}</span>
+                <span className="text-gray-400 font-bold text-lg">£{product.price}</span>
                 <span className="text-gray-900 text-sm">Stock: {product.stock}</span>
               </div>
             </div>
