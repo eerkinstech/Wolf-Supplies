@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProductById, fetchProductBySlug } from '../redux/slices/productSlice';
+import useMetaTags from '../hooks/useMetaTags';
 import { addToCart, syncCart } from '../redux/slices/cartSlice';
 import { addToWishlist, removeFromWishlist, addItemToServer, removeItemFromServer } from '../redux/slices/wishlistSlice';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaSpinner, FaSearchPlus, FaArrowLeft, FaArrowRight, FaShoppingCart, FaCheck, FaHeart, FaShareAlt, FaTruck, FaUndoAlt, FaArrowAltCircleLeft, FaSync, FaArrowUp, FaArrowDown, FaBox, FaLock } from 'react-icons/fa';
@@ -71,6 +72,15 @@ const ProductDetailPage = () => {
     return '';
   };
 
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: product?.metaTitle || product?.name || 'Product',
+    description: product?.metaDescription || product?.description || 'Browse our product selection',
+    keywords: product?.metaKeywords || '',
+    image: product?.images?.[0] || '',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
   // Fetch review approval settings
   useEffect(() => {
     const fetchSettings = async () => {
@@ -93,6 +103,9 @@ const ProductDetailPage = () => {
     setSelectedColor(null);
     setSelectedVariants({});
     setCurrentImageIndex(0);
+    setIsInWishlist(false);
+    setSavedVariantId(null);
+    setSavedProductFlag(false);
 
     const ident = slug || id;
     if (ident) {
@@ -115,13 +128,15 @@ const ProductDetailPage = () => {
 
   // Prevent scroll jump when tab changes
   useEffect(() => {
-    // Store current scroll position when tab changes
-    const currentScroll = window.scrollY;
-    // Restore it on next frame to prevent browser default scrolling
-    const timer = requestAnimationFrame(() => {
-      window.scrollTo(0, currentScroll);
-    });
-    return () => cancelAnimationFrame(timer);
+    if (scrollPositionRef.current > 0) {
+      // Restore scroll position after tab content renders
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPositionRef.current);
+          scrollPositionRef.current = 0;
+        });
+      });
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -229,9 +244,12 @@ const ProductDetailPage = () => {
     }
   }, [product, wishlistItems, selectedVariants, selectedSize, selectedColor]);
 
-  // Auto-select first variant option when product loads
+  // Auto-select first variant option when product loads (ONLY for products with variants)
   useEffect(() => {
-    if (product && product.variantCombinations && product.variantCombinations.length > 0 && Object.keys(selectedVariants).length === 0) {
+    // Check if product actually has variants defined
+    const isVariantProduct = product && product.variants && product.variants.length > 0;
+
+    if (isVariantProduct && product.variantCombinations && product.variantCombinations.length > 0 && Object.keys(selectedVariants).length === 0) {
       // Extract variant options
       const options = {};
       for (const vc of product.variantCombinations) {
@@ -412,6 +430,12 @@ const ProductDetailPage = () => {
       if (typeof rawImage === 'string') normalizedImage = rawImage;
       else if (rawImage && typeof rawImage === 'object') normalizedImage = rawImage.url || rawImage.src || rawImage.path || '';
 
+      // Get variant image from the matching combination (this is the actual variant image)
+      let variantImageUrl = null;
+      if (matchingCombination && matchingCombination.image) {
+        variantImageUrl = getImgSrc(matchingCombination.image);
+      }
+
       // Create a deterministic cart key so different variant selections create distinct items
       const makeCartKey = (prodId, size, color, variants) => {
         const parts = [prodId || ''];
@@ -435,50 +459,53 @@ const ProductDetailPage = () => {
         product: product._id,
         name: product.name,
         image: normalizedImage,
+        variantImage: variantImageUrl || normalizedImage,
         price: Number(matchingCombination?.price ?? product.price ?? 0),
         category: product.category,
         discount: product.discount,
         quantity,
         selectedSize,
         selectedColor,
-        selectedVariants,
+        // Only include selectedVariants if product actually has variants
+        selectedVariants: (product.variants && product.variants.length > 0) ? selectedVariants : {},
+        variant: (product.variants && product.variants.length > 0) ? Object.values(selectedVariants).join(' - ') || null : null,
+        sku: matchingCombination?.sku || product.sku || null,
+        colorCode: selectedVariants?.['Color'] ? '#cccccc' : null,
       };
       dispatch(addToCart(cartItem));
-      // Persist cart to backend when authenticated via thunk — await result so we know it saved
-      if (token) {
-        // Treat items as identical only when product id AND variant selections match
-        const isSameCartItem = (a, b) => {
-          if (!a || !b) return false;
-          if ((a.product || '') !== (b.product || '')) return false;
-          if ((a.selectedSize || '') !== (b.selectedSize || '')) return false;
-          if ((a.selectedColor || '') !== (b.selectedColor || '')) return false;
-          const va = a.selectedVariants || {};
-          const vb = b.selectedVariants || {};
-          const ka = Object.keys(va).sort();
-          const kb = Object.keys(vb).sort();
-          if (ka.length !== kb.length) return false;
-          for (let i = 0; i < ka.length; i++) {
-            const k = ka[i];
-            if (k !== kb[i]) return false;
-            if (String(va[k]) !== String(vb[k])) return false;
-          }
-          return true;
-        };
+      // Persist cart to backend for both authenticated AND guest users via thunk
+      // Treat items as identical only when product id AND variant selections match
+      const isSameCartItem = (a, b) => {
+        if (!a || !b) return false;
+        if ((a.product || '') !== (b.product || '')) return false;
+        if ((a.selectedSize || '') !== (b.selectedSize || '')) return false;
+        if ((a.selectedColor || '') !== (b.selectedColor || '')) return false;
+        const va = a.selectedVariants || {};
+        const vb = b.selectedVariants || {};
+        const ka = Object.keys(va).sort();
+        const kb = Object.keys(vb).sort();
+        if (ka.length !== kb.length) return false;
+        for (let i = 0; i < ka.length; i++) {
+          const k = ka[i];
+          if (k !== kb[i]) return false;
+          if (String(va[k]) !== String(vb[k])) return false;
+        }
+        return true;
+      };
 
-        const existing = cartItems.find((i) => isSameCartItem(i, cartItem));
-        let newItems = [];
-        if (existing) {
-          newItems = cartItems.map((i) => isSameCartItem(i, cartItem) ? { ...i, quantity: (i.quantity || 0) + (cartItem.quantity || 1) } : i);
-        } else {
-          newItems = [...cartItems, cartItem];
-        }
-        try {
-          const resultAction = await dispatch(syncCart(newItems));
-          // resultAction.payload contains normalized returned items when fulfilled
-        } catch (err) {
-          console.error('ProductDetail: syncCart failed', err);
-          toast.error('Failed to save cart to server');
-        }
+      const existing = cartItems.find((i) => isSameCartItem(i, cartItem));
+      let newItems = [];
+      if (existing) {
+        newItems = cartItems.map((i) => isSameCartItem(i, cartItem) ? { ...i, quantity: (i.quantity || 0) + (cartItem.quantity || 1) } : i);
+      } else {
+        newItems = [...cartItems, cartItem];
+      }
+      try {
+        const resultAction = await dispatch(syncCart(newItems));
+        // resultAction.payload contains normalized returned items when fulfilled
+      } catch (err) {
+        console.error('ProductDetail: syncCart failed', err);
+        toast.error('Failed to save cart to server');
       }
 
       const variantText = Object.entries(selectedVariants)
@@ -512,45 +539,28 @@ const ProductDetailPage = () => {
         variantId: variantId || null,
       };
 
-      if (token) {
-        if (isInWishlist) {
-          // optimistic UI: mark removed immediately
-          setIsInWishlist(false);
-          // clear saved marker
-          setSavedVariantId(null);
-          setSavedProductFlag(false);
-          // remove specific variant if available, otherwise remove all product entries
-          dispatch(removeItemFromServer({ productId: product._id, variantId }));
-        } else {
-          // optimistic UI: mark saved immediately
-          setIsInWishlist(true);
-          // remember which variant/product was saved so the button remains 'Saved' until selection changes
-          if (variantId) {
-            setSavedVariantId(variantId);
-            setSavedProductFlag(false);
-          } else {
-            setSavedVariantId(null);
-            setSavedProductFlag(true);
-          }
-          dispatch(addItemToServer({ productId: product._id, snapshot }));
-        }
+      if (isInWishlist) {
+        // optimistic UI: mark removed immediately
+        setIsInWishlist(false);
+        // clear saved marker
+        setSavedVariantId(null);
+        setSavedProductFlag(false);
+        // remove specific variant if available, otherwise remove all product entries
+        // Works for both authenticated AND guest users
+        dispatch(removeItemFromServer({ productId: product._id, variantId }));
       } else {
-        if (isInWishlist) {
-          setIsInWishlist(false);
-          setSavedVariantId(null);
+        // optimistic UI: mark saved immediately
+        setIsInWishlist(true);
+        // remember which variant/product was saved so the button remains 'Saved' until selection changes
+        if (variantId) {
+          setSavedVariantId(variantId);
           setSavedProductFlag(false);
-          dispatch(removeFromWishlist({ productId: product._id, variantId }));
         } else {
-          setIsInWishlist(true);
-          if (variantId) {
-            setSavedVariantId(variantId);
-            setSavedProductFlag(false);
-          } else {
-            setSavedVariantId(null);
-            setSavedProductFlag(true);
-          }
-          dispatch(addToWishlist({ productId: product._id, snapshot }));
+          setSavedVariantId(null);
+          setSavedProductFlag(true);
         }
+        // Add to wishlist - works for both authenticated AND guest users
+        dispatch(addItemToServer({ productId: product._id, snapshot }));
       }
       toast.success(isInWishlist ? 'Removed from wishlist' : 'Added to wishlist!');
     }
@@ -712,38 +722,42 @@ const ProductDetailPage = () => {
           {/* Product Images */}
           <div className="space-y-4">
             <div className=" rounded-2xl  overflow-hidden p-2 sticky" style={{ top: 'var(--pdp-sticky-offset, 0px)' }}>
-              {/* Gallery Container - Thumbnails Left, Main Image Right */}
-              <div className="flex gap-2">
-                {/* Left Side: Thumbnail Gallery (Vertical) */}
+              {/* Gallery Container - Responsive: Vertical on Mobile, Horizontal on Desktop */}
+              <div className="flex flex-col lg:flex-row gap-3 w-full">
+                {/* Left Side: Thumbnail Gallery - Horizontal on Mobile, Vertical on Desktop */}
                 {displayImages.length > 1 && (
-                  <div className="flex-shrink-0 flex flex-col items-center">
-                    {/* Scroll Up Button - Circular */}
-
-
-                    {/* Thumbnails Container - Vertical Scroll */}
+                  <div className="w-full lg:flex-shrink-0 lg:w-auto">
+                    {/* Thumbnails Container - Responsive */}
                     <div
                       ref={thumbContainerRef}
-                      className="flex flex-col gap-4 max-h-80 overflow-auto px-1"
+                      className="flex lg:flex-col gap-2 lg:gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-hidden px-1 rounded-lg hide-scrollbar"
+                      style={{
+                        height: 'auto',
+                        minHeight: 'auto',
+                        scrollBehavior: 'smooth',
+                        maxWidth: '400px',
+                        maxHeight: '500px',
+                        lg: { maxHeight: '500px', maxWidth: 'none', minWidth: '120px', minHeight: '400px' }
+                      }}
                     >
                       {displayImages && displayImages.length > 0 ? (
-                        displayImages.slice(thumbStart, thumbStart + THUMB_VISIBLE).map((img, idx) => {
-                          const actualIndex = thumbStart + idx;
+                        displayImages.map((img, idx) => {
                           return (
                             <button
-                              key={actualIndex}
-                              onClick={() => setCurrentImageIndex(actualIndex)}
-                              className={`flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:scale-110 ${currentImageIndex === actualIndex
-                                ? 'border-[var(--color-accent-primary)] '
-                                : 'border-[var(--color-border-light)] hover:border-[var(--color-accent-primary)] shadow-md'
+                              key={idx}
+                              onClick={() => setCurrentImageIndex(idx)}
+                              className={`flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-lg overflow-hidden border-3 transition-all duration-300 hover:scale-105 ${currentImageIndex === idx
+                                ? 'border-[var(--color-accent-primary)] shadow-lg'
+                                : 'border-[var(--color-border-light)] hover:border-[var(--color-accent-primary)] shadow-sm'
                                 }`}
                             >
                               <img
-                                key={`thumb-${actualIndex}`}
+                                key={`thumb-${idx}`}
                                 src={getImgSrc(img)}
-                                alt={`Thumbnail ${actualIndex + 1}`}
-                                className="w-full h-full object-cover"
+                                alt={`Thumbnail ${idx + 1}`}
+                                className="w-full h-full object-contain"
                                 onError={(e) => {
-                                  console.warn(`Thumbnail ${actualIndex} failed to load:`, getImgSrc(img));
+                                  console.warn(`Thumbnail ${idx} failed to load:`, getImgSrc(img));
                                   e.target.style.opacity = '0';
                                 }}
                               />
@@ -751,85 +765,77 @@ const ProductDetailPage = () => {
                           );
                         })
                       ) : (
-                        <div className="w-24 h-24 bg-[var(--color-bg-section)] rounded-xl flex items-center justify-center text-[var(--color-text-light)]">
-                          <span>No Images</span>
+                        <div className="w-20 h-20 bg-[var(--color-bg-section)] rounded-lg flex items-center justify-center text-[var(--color-text-light)]">
+                          <span className="text-xs text-center">No Images</span>
                         </div>
                       )}
                     </div>
-
-
                   </div>
                 )}
 
                 {/* Right Side: Main Image */}
-                <div className="flex-1">
-                  {/* 3D Perspective Main Image Container */}
+                <div className="flex-1 flex flex-col w-full">
+                  {/* Main Image Container - Responsive: Mobile: max 400px, Desktop: max 600px */}
                   <div
-                    className="relative w-full aspect-square bg-[var(--color-bg-primary)] rounded-xl overflow-hidden group cursor-zoom-in flex items-center justify-center border border-[var(--color-border-light)]"
+                    className="relative rounded-xl overflow-hidden group cursor-zoom-in flex items-center justify-center mx-auto lg:mx-0"
+                    style={{
+                      aspectRatio: '1/1',
+                      width: '100%',
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                     onClick={() => { setZoomImageIndex(currentImageIndex); setShowZoomModal(true); }}
                   >
-                    {/* 3D Tilted Image Container */}
-                    <div
-                      className="relative w-full h-full flex items-center justify-center"
-
-                    >
-                      {/* Main Image with Shadow Effect */}
-                      <div className="relative w-full h-full shadow-2xl rounded-lg overflow-hidden bg-[var(--color-bg-section)] flex items-center justify-center">
-                        {displayImages && displayImages.length > 0 ? (
-                          <img
-                            key={currentImageIndex}
-                            src={getImgSrc(currentDisplayImage)}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                            onError={(e) => {
-                              console.warn('Image failed to load:', getImgSrc(currentDisplayImage));
-                              e.target.style.opacity = '0';
-                            }}
-                          />
-                        ) : (
-                          <div className="text-[var(--color-text-light)] text-center">
-                            <p className="text-lg font-semibold">No Images Available</p>
-                          </div>
-                        )}
-
-
-                        {/* Navigation Arrows */}
-                        {displayImages && displayImages.length > 1 && (
-                          <>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCurrentImageIndex((idx) => {
-                                  const newIdx = (idx - 1 + displayImages.length) % displayImages.length;
-                                  setThumbStart((s) => Math.max(0, Math.min(Math.max(0, displayImages.length - THUMB_VISIBLE), s - 1)));
-                                  return newIdx;
-                                });
-                              }}
-                              className="absolute left-4 top-1/2 -translate-y-1/2 bg-[var(--color-accent-primary)] bg-opacity-70 hover:bg-opacity-100 text-white p-3 rounded-full transition-all z-10 shadow-lg flex items-center justify-center"
-                              aria-label="Previous image"
-                            >
-                              <FaArrowLeft className="text-lg" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCurrentImageIndex((idx) => {
-                                  const newIdx = (idx + 1) % displayImages.length;
-                                  setThumbStart((s) => Math.min(Math.max(0, displayImages.length - THUMB_VISIBLE), s + 1));
-                                  return newIdx;
-                                });
-                              }}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 bg-[var(--color-accent-primary)] bg-opacity-70 hover:bg-opacity-100 text-white p-3 rounded-full transition-all z-10 shadow-lg flex items-center justify-center"
-                              aria-label="Next image"
-                            >
-                              <FaArrowRight className="text-lg" />
-                            </button>
-                          </>
-                        )}
-
-
+                    {displayImages && displayImages.length > 0 ? (
+                      <img
+                        key={currentImageIndex}
+                        src={getImgSrc(currentDisplayImage)}
+                        alt={product.name}
+                        className="w-full h-full object-contain group-hover:scale-105 transition duration-500"
+                        onError={(e) => {
+                          console.warn('Image failed to load:', getImgSrc(currentDisplayImage));
+                          e.target.style.opacity = '0';
+                        }}
+                      />
+                    ) : (
+                      <div className="text-[var(--color-text-light)] text-center">
+                        <p className="text-lg font-semibold">No Images Available</p>
                       </div>
-                    </div>
+                    )}
+
+                    {/* Navigation Arrows */}
+                    {displayImages && displayImages.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex((idx) => {
+                              const newIdx = (idx - 1 + displayImages.length) % displayImages.length;
+                              setThumbStart((s) => Math.max(0, Math.min(Math.max(0, displayImages.length - THUMB_VISIBLE), s - 1)));
+                              return newIdx;
+                            });
+                          }}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-[var(--color-accent-primary)] bg-opacity-70 hover:bg-opacity-100 text-white p-3 rounded-full transition-all z-10 shadow-lg flex items-center justify-center"
+                          aria-label="Previous image"
+                        >
+                          <FaArrowLeft className="text-lg" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex((idx) => {
+                              const newIdx = (idx + 1) % displayImages.length;
+                              setThumbStart((s) => Math.min(Math.max(0, displayImages.length - THUMB_VISIBLE), s + 1));
+                              return newIdx;
+                            });
+                          }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-[var(--color-accent-primary)] bg-opacity-70 hover:bg-opacity-100 text-white p-3 rounded-full transition-all z-10 shadow-lg flex items-center justify-center"
+                          aria-label="Next image"
+                        >
+                          <FaArrowRight className="text-lg" />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -839,22 +845,30 @@ const ProductDetailPage = () => {
           {/* Product Details */}
           <div className="space-y-8">
             {/* Header */}
-            <div>
+            <div className='m-0'>
+              {/* SKU Display - Show only if it exists */}
+              {(matchingCombination?.sku || product.sku) && (
+                <div className="text-sm text-[var(--color-text-light)] mb-3 font-semibold">
+                  SKU: {matchingCombination?.sku || product.sku}
+                </div>
+              )}
               {/* <div className="inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold mb-4">
                 {product.category}
               </div> */}
-              <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-4 leading-tight">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-[var(--color-text-primary)] leading-tight">{product.name}</h1>
 
               {/* Rating */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {renderStars(product.rating || 0, 'text-lg')}
+              {(product.numReviews || product.reviews?.length || 0) > 0 && (
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {renderStars(product.rating || 0, 'text-lg')}
+                    </div>
+                    <span className="text-lg font-bold text-[var(--color-text-primary)]">{(product.rating || 0).toFixed(1)}</span>
                   </div>
-                  <span className="text-lg font-bold text-[var(--color-text-primary)]">{(product.rating || 0).toFixed(1)}</span>
+                  <span className="text-[var(--color-text-light)]">({product.numReviews || product.reviews?.length || 0} verified reviews)</span>
                 </div>
-                <span className="text-[var(--color-text-light)]">({product.numReviews || product.reviews?.length || 0} verified reviews)</span>
-              </div>
+              )}
             </div>
 
             {/* Price Section */}
@@ -868,6 +882,7 @@ const ProductDetailPage = () => {
                 )}
               </div>
               <p className="text-[var(--color-text-light)] font-semibold">✓ Great Price • Free Shipping In UK Everywhere</p>
+              <p className="text-[var(--color-text-light)] text-sm mt-2">VAT 0 - We don't claim VAT</p>
             </div>
 
             {/* Stock Status (variant-aware) */}
@@ -944,9 +959,7 @@ const ProductDetailPage = () => {
                 </div>
               ))}
 
-
-
-              {/* Quantity Selector */}
+              {/* Quantity Selector and Add to Cart */}
               <div className="flex items-center gap-4">
                 <div className="flex items-center border-2 border-[var(--color-border-light)] rounded-lg overflow-hidden bg-[var(--color-bg-primary)]">
                   <button
@@ -974,43 +987,59 @@ const ProductDetailPage = () => {
                 </button>
               </div>
 
+              {/* Buy Now Button */}
+              <button
+                onClick={() => {
+                  if (isAvailable) {
+                    handleAddToCart();
+                    navigate('/checkout');
+                  }
+                }}
+                disabled={!isAvailable}
+                className={`w-full px-8 py-4 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-3 text-lg shadow-lg ${isAvailable ? 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white' : 'bg-[var(--color-border-light)] text-[var(--color-text-light)] cursor-not-allowed'}`}
+              >
+                <FaCheck /> {isAvailable ? 'Buy Now' : 'Sold Out'}
+              </button>
+
               {/* Selected Options Summary */}
-              {(selectedSize || selectedColor || Object.values(selectedVariants).some(v => v)) && (
-                <div className="bg-[var(--color-bg-section)] p-6 rounded-lg border-2 border-[var(--color-accent-primary)]">
-                  <h4 className="font-bold text-lg text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
-                    <span className="bg-[var(--color-accent-primary)] text-white px-3 py-1 rounded-full text-sm">✓</span>
-                    Your Selection Summary
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectedSize && (
+              {((selectedSize && product.specifications?.sizes) ||
+                (selectedColor && product.specifications?.colors) ||
+                (Object.values(selectedVariants).some(v => v) && Object.keys(variantOptions).length > 0)) && (
+                  <div className="bg-[var(--color-bg-section)] p-6 rounded-lg border-2 border-[var(--color-accent-primary)]">
+                    <h4 className="font-bold text-lg text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+                      <span className="bg-[var(--color-accent-primary)] text-white px-3 py-1 rounded-full text-sm">✓</span>
+                      Your Selection Summary
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {selectedSize && (
+                        <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
+                          <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Size</p>
+                          <p className="text-lg font-bold text-[var(--color-accent-primary)]">{selectedSize}</p>
+                        </div>
+                      )}
+                      {selectedColor && (
+                        <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
+                          <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Color</p>
+                          <p className="text-lg font-bold text-[var(--color-accent-primary)]">{selectedColor}</p>
+                        </div>
+                      )}
+                      {Object.entries(selectedVariants).filter(([_, val]) => val).map(([key, val]) => (
+                        <div key={key} className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
+                          <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">{key}</p>
+                          <p className="text-lg font-bold text-[var(--color-accent-primary)]">{val}</p>
+                        </div>
+                      ))}
                       <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
-                        <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Size</p>
-                        <p className="text-lg font-bold text-[var(--color-accent-primary)]">{selectedSize}</p>
+                        <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Quantity</p>
+                        <p className="text-lg font-bold text-[var(--color-accent-primary)]">x{quantity}</p>
                       </div>
-                    )}
-                    {selectedColor && (
-                      <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
-                        <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Color</p>
-                        <p className="text-lg font-bold text-[var(--color-accent-primary)]">{selectedColor}</p>
+                      <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg col-span-2">
+                        <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Total Price</p>
+                        <p className="text-2xl font-bold text-[var(--color-accent-primary)]">£{((matchingCombination?.price || product.price) * quantity).toFixed(2)}</p>
                       </div>
-                    )}
-                    {Object.entries(selectedVariants).filter(([_, val]) => val).map(([key, val]) => (
-                      <div key={key} className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
-                        <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">{key}</p>
-                        <p className="text-lg font-bold text-[var(--color-accent-primary)]">{val}</p>
-                      </div>
-                    ))}
-                    <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg">
-                      <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Quantity</p>
-                      <p className="text-lg font-bold text-[var(--color-accent-primary)]">x{quantity}</p>
-                    </div>
-                    <div className="bg-[var(--color-bg-primary)] p-3 rounded-lg col-span-2">
-                      <p className="text-xs text-[var(--color-text-light)] font-semibold uppercase">Total Price</p>
-                      <p className="text-2xl font-bold text-[var(--color-accent-primary)]">£{((matchingCombination?.price || product.price) * quantity).toFixed(2)}</p>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Secondary Actions */}
               <div className="grid grid-cols-2 gap-4">
@@ -1071,7 +1100,7 @@ const ProductDetailPage = () => {
 
             {/* Key Benefits (dynamic when available) */}
             <div className="bg-[var(--color-bg-section)] p-6 rounded-xl border-l-4 border-[var(--color-accent-primary)]">
-              <h3 className="font-bold text-lg text-[var(--color-text-primary)] mb-4">Why Buy This Product?</h3>
+              <h3 className="font-bold text-lg text-[var(--color-text-primary)] mb-4">{product.benefitsHeading || 'Why Buy This Product?'}</h3>
               {product.benefits && typeof product.benefits === 'string' && product.benefits.trim() ? (
                 <div
                   className="prose prose-sm max-w-none text-[var(--color-text-light)]"
@@ -1102,6 +1131,7 @@ const ProductDetailPage = () => {
               <button
                 onClick={(e) => {
                   e.preventDefault();
+                  scrollPositionRef.current = window.scrollY;
                   setActiveTab('description');
                 }}
                 className={`px-4 py-2 rounded-lg font-semibold transition ${activeTab === 'description' ? 'bg-[var(--color-accent-primary)] text-white' : 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)] hover:bg-[var(--color-border-light)]'}`}
@@ -1111,6 +1141,7 @@ const ProductDetailPage = () => {
               <button
                 onClick={(e) => {
                   e.preventDefault();
+                  scrollPositionRef.current = window.scrollY;
                   setActiveTab('reviews');
                 }}
                 className={`px-4 py-2 rounded-lg font-semibold transition ${activeTab === 'reviews' ? 'bg-[var(--color-accent-primary)] text-white' : 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)] hover:bg-[var(--color-border-light)]'}`}
@@ -1121,8 +1152,7 @@ const ProductDetailPage = () => {
           </div>
 
           {activeTab === 'description' ? (
-            <div className="p-6">
-
+            <div >
               <div
                 className="prose prose-sm max-w-none text-[var(--color-text-light)] leading-relaxed mb-8"
                 dangerouslySetInnerHTML={{ __html: product.description || '' }}

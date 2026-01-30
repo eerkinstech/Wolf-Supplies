@@ -66,18 +66,17 @@ const ProductCard = ({ product }) => {
     };
 
     dispatch(addToCart(cartItem));
-    if (token) {
-      // build items array as reducer would have
-      const existing = cartItems.find((i) => i._id === cartItem._id);
-      let newItems = [];
-      if (existing) newItems = cartItems.map((i) => i._id === cartItem._id ? { ...i, quantity: (i.quantity || 0) + 1 } : i);
-      else newItems = [...cartItems, cartItem];
-      try {
-        await dispatch(syncCart(newItems));
-      } catch (err) {
-        console.error('ProductCard: syncCart failed', err);
-        toast.error('Failed to save cart to server');
-      }
+    // Persist cart to server for both authenticated AND guest users
+    // build items array as reducer would have
+    const existing = cartItems.find((i) => i._id === cartItem._id);
+    let newItems = [];
+    if (existing) newItems = cartItems.map((i) => i._id === cartItem._id ? { ...i, quantity: (i.quantity || 0) + 1 } : i);
+    else newItems = [...cartItems, cartItem];
+    try {
+      await dispatch(syncCart(newItems));
+    } catch (err) {
+      console.error('ProductCard: syncCart failed', err);
+      toast.error('Failed to save cart to server');
     }
 
     toast.success('Added to cart!');
@@ -148,7 +147,7 @@ const ProductCard = ({ product }) => {
               onClick={handleAddToCart}
               className="w-full bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white py-2 rounded font-bold text-sm transition-all duration-300 mt-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0 shadow-md"
             >
-              Shop Now
+              Add to Cart
             </button>
           )}
         </div>

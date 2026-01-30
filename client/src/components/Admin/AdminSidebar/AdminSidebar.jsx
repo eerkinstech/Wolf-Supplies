@@ -47,8 +47,8 @@ const AdminSidebar = ({ activeTab }) => {
     <div className="w-64 text-white h-screen flex flex-col fixed left-0 top-0 z-40" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
       {/* Header */}
       <div className="p-6 border-b border-opacity-30" style={{ borderColor: 'white' }}>
-        <Link to="/admin" className="flex items-center gap-3">
-          <div className="text-3xl">⚙️</div>
+        <Link to="/admin" className="flex justify-center items-center gap-3">
+         
           <div>
             <h1 className="text-xl font-bold">Admin Panel</h1>
             <p className="text-xs opacity-75">Management</p>

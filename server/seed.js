@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import User from './models/User.js';
 import Category from './models/Category.js';
 import Product from './models/Product.js';
+import Page from './models/Page.js';
+import Policy from './models/Policy.js';
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ const seedDB = async () => {
     await User.deleteMany({});
     await Category.deleteMany({});
     await Product.deleteMany({});
+    await Page.deleteMany({});
+    await Policy.deleteMany({});
     console.log('Cleared existing data');
 
     // Hash passwords
@@ -268,10 +272,78 @@ const seedDB = async () => {
     ]);
 
     console.log(`✓ ${products.length} products created`);
+
+    // Create Pages
+    const pages = await Page.insertMany([
+      {
+        title: 'About Us',
+        slug: 'about',
+        description: 'Learn more about our company and mission',
+        content: '<h1>About Our Store</h1><p>We are committed to providing the best shopping experience with quality products and excellent customer service. Our mission is to make shopping convenient, affordable, and enjoyable for everyone.</p>',
+        metaDescription: 'About our e-commerce store - quality products and customer service',
+        metaKeywords: 'about, company, mission, quality products',
+        isPublished: true,
+      },
+      {
+        title: 'Contact Us',
+        slug: 'contact',
+        description: 'Get in touch with our customer support team',
+        content: '<h1>Contact Us</h1><p>Have a question? We\'d love to hear from you. Please reach out to our support team at support@ecommerce.com or call us at 1-800-SHOP-NOW.</p><p>Email: support@ecommerce.com<br/>Phone: 1-800-SHOP-NOW<br/>Hours: Monday - Friday, 9AM - 6PM EST</p>',
+        metaDescription: 'Contact our customer support team',
+        metaKeywords: 'contact, support, customer service',
+        isPublished: true,
+      }
+    ]);
+
+    console.log(`✓ ${pages.length} pages created`);
+
+    // Create Policies
+    const policies = await Policy.insertMany([
+      {
+        title: 'Shipping Policy',
+        slug: 'shipping',
+        description: 'Learn about our shipping and delivery options',
+        content: '<h1>Shipping Policy</h1><p><strong>Free Shipping:</strong> Orders over $50 qualify for free standard shipping (5-7 business days).</p><p><strong>Express Shipping:</strong> Available for $9.99 (2-3 business days).</p><p><strong>Overnight Shipping:</strong> Available for $19.99.</p><p>Orders are typically shipped within 1-2 business days. Tracking information will be provided via email.</p>',
+        metaDescription: 'Our shipping policy and delivery information',
+        metaKeywords: 'shipping, delivery, free shipping, express',
+        isPublished: true,
+      },
+      {
+        title: 'Returns & Refunds',
+        slug: 'returns-refunds',
+        description: 'Easy returns and refund policy',
+        content: '<h1>Returns & Refunds Policy</h1><p><strong>30-Day Return Window:</strong> All items can be returned within 30 days of purchase for a full refund.</p><p><strong>Condition Requirements:</strong> Items must be unused, in original packaging, and in resalable condition.</p><p><strong>Refund Process:</strong> Once received and inspected, refunds are processed within 5-7 business days.</p><p><strong>Return Shipping:</strong> We cover return shipping for defective items. Standard returns are customer-paid.</p>',
+        metaDescription: 'Our returns and refunds policy',
+        metaKeywords: 'returns, refunds, return policy, money back',
+        isPublished: true,
+      },
+      {
+        title: 'Privacy Policy',
+        slug: 'privacy',
+        description: 'How we protect your personal information',
+        content: '<h1>Privacy Policy</h1><p><strong>Data Collection:</strong> We collect personal information you provide during registration, checkout, and account management.</p><p><strong>Information Use:</strong> Your information is used to process orders, improve services, and send promotional content (opt-out available).</p><p><strong>Data Security:</strong> We use industry-standard SSL encryption to protect your data during transmission.</p><p><strong>Third Parties:</strong> We never sell or share your personal information with third parties without your consent.</p><p><strong>Contact:</strong> For privacy concerns, please contact privacy@ecommerce.com</p>',
+        metaDescription: 'Our privacy policy and data protection',
+        metaKeywords: 'privacy, data protection, security',
+        isPublished: true,
+      },
+      {
+        title: 'Terms of Service',
+        slug: 'terms',
+        description: 'Terms and conditions for using our store',
+        content: '<h1>Terms of Service</h1><p><strong>Acceptance:</strong> By using our store, you agree to these terms and conditions.</p><p><strong>Product Information:</strong> We strive to provide accurate product descriptions and pricing. We reserve the right to correct any errors.</p><p><strong>Limitations of Liability:</strong> Our store is provided "as-is". We are not liable for indirect or consequential damages.</p><p><strong>Modifications:</strong> We reserve the right to modify these terms at any time. Changes are effective immediately upon posting.</p>',
+        metaDescription: 'Terms of service for our e-commerce store',
+        metaKeywords: 'terms, conditions, service agreement',
+        isPublished: true,
+      }
+    ]);
+
+    console.log(`✓ ${policies.length} policies created`);
     console.log('✅ Database seeded successfully!');
     console.log('📝 Test Credentials:');
     console.log('   Admin: admin@ecommerce.com / Admin@123');
     console.log('   User: john@example.com / User@123');
+    console.log('📄 Pages created: About (about), Contact (contact)');
+    console.log('⚖️  Policies created: Shipping, Returns & Refunds, Privacy Policy, Terms of Service');
 
     process.exit(0);
   } catch (error) {

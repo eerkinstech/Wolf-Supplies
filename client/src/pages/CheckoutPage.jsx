@@ -11,8 +11,8 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totalPrice, totalQuantity } = useSelector((state) => state.cart);
 
-  const shippingCost = totalPrice > 50 ? 0 : 5.99;
-  const finalTotal = totalPrice + shippingCost;
+  const shippingCost = 0; // Free shipping
+  const finalTotal = totalPrice;
 
   const API = import.meta.env.VITE_API_URL || '';
   const getImgSrc = (img) => {
@@ -229,10 +229,14 @@ const CheckoutPage = () => {
           qty: i.quantity,
           product: i.product || i._id,
           image: i.image,
+          variantImage: i.variantImage || null,
           // variant snapshot fields (if present)
           selectedVariants: i.selectedVariants || null,
           selectedSize: i.selectedSize || null,
           selectedColor: i.selectedColor || null,
+          colorCode: i.colorCode || null,
+          variant: i.variant || null,
+          sku: i.sku || null,
           variantId: i.variantId || i.snapshot?.variantId || null,
         })),
         shippingAddress: {
@@ -267,12 +271,13 @@ const CheckoutPage = () => {
       if (!stripeReady) {
         // fallback: create hosted Checkout session
         const token = localStorage.getItem('token');
-        const resSession = await fetch(`${import.meta.env.VITE_API_URL }/api/payments/create-checkout-session`, {
+        const resSession = await fetch(`${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
+          credentials: 'include', // Send httpOnly cookies
           body: JSON.stringify(payload),
         });
         const sessionData = await resSession.json();
@@ -285,12 +290,13 @@ const CheckoutPage = () => {
       }
 
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_URL }/api/payments/create-payment-intent`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payments/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
+        credentials: 'include', // Send httpOnly cookies
         body: JSON.stringify(payload),
       });
 
@@ -451,7 +457,8 @@ const CheckoutPage = () => {
 
             <div className="pt-4 border-t space-y-2">
               <div className="flex justify-between text-sm text-gray-600"><span>Items</span><span>£{totalPrice.toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm text-gray-600"><span>Shipping</span><span>{shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`}</span></div>
+              <div className="flex justify-between text-sm text-gray-600"><span>Shipping</span><span>£0.00</span></div>
+              <div className="flex justify-between text-sm text-gray-600"><span>VAT</span><span>£0.00</span></div>
               <div className="flex justify-between font-bold text-lg text-[var(--color-text-primary)]"><span>Total</span><span>£{finalTotal.toFixed(2)}</span></div>
             </div>
 

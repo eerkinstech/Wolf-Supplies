@@ -3,19 +3,31 @@ import Product from '../models/Product.js';
 
 export const getCategories = async (req, res) => {
   try {
-    // Get all main categories (no parent) with their subcategories populated
-    let categories = await Category.find({ parent: null })
-      .populate({
-        path: 'subcategories',
-        populate: {
+    // Get all categories (both main and subcategories) based on query param
+    const allCategories = req.query.all === 'true';
+    
+    let categories;
+    
+    if (allCategories) {
+      // Get ALL categories without hierarchy filter
+      categories = await Category.find({})
+        .lean()
+        .sort({ name: 1 });
+    } else {
+      // Get only main categories (no parent) with their subcategories populated
+      categories = await Category.find({ parent: null })
+        .populate({
           path: 'subcategories',
           populate: {
             path: 'subcategories',
+            populate: {
+              path: 'subcategories',
+            },
           },
-        },
-      })
-      .lean() // Use lean() to get plain objects for better property handling
-      .sort({ name: 1 });
+        })
+        .lean() // Use lean() to get plain objects for better property handling
+        .sort({ name: 1 });
+    }
 
     // Add product count to each category recursively
     const addProductCount = async (categoryArray) => {
@@ -44,7 +56,7 @@ export const getCategories = async (req, res) => {
 
 export const createCategory = async (req, res) => {
   try {
-    const { name, slug, description, parent, image, color } = req.body;
+    const { name, slug, description, parent, image, color, metaTitle, metaDescription, metaKeywords } = req.body;
 
     // Generate slug from name if not provided
     const finalSlug = slug || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -58,7 +70,10 @@ export const createCategory = async (req, res) => {
       description,
       parent: parent || null,
       image,
-      color
+      color,
+      metaTitle: metaTitle || name || '',
+      metaDescription: metaDescription || '',
+      metaKeywords: metaKeywords || ''
     });
 
     // Add product count to response
@@ -169,7 +184,7 @@ export const updateCategory = async (req, res) => {
       });
     if (!category) return res.status(404).json({ message: 'Category not found' });
 
-    const { name, slug, description, parent, image, color } = req.body;
+    const { name, slug, description, parent, image, color, metaTitle, metaDescription, metaKeywords } = req.body;
 
     // Only update fields if they are provided
     if (name) category.name = name;
@@ -178,6 +193,9 @@ export const updateCategory = async (req, res) => {
     if (parent !== undefined) category.parent = parent;
     if (image) category.image = image; // Handle base64 or URL images
     if (color) category.color = color;
+    if (metaTitle) category.metaTitle = metaTitle;
+    if (metaDescription) category.metaDescription = metaDescription;
+    if (metaKeywords) category.metaKeywords = metaKeywords;
 
     const updated = await category.save();
 

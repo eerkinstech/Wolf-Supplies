@@ -68,7 +68,7 @@ const AboutSection = () => {
                 {/* Why Choose Us Section */}
                 <div className="mb-12 p-8 rounded-lg" style={{ backgroundColor: 'var(--color-desert-200)' }}>
                     <h3 className="text-3xl font-bold mb-8" style={{ color: 'var(--color-accent-secondary)' }}>
-                        Why Choose PropertyWolf?
+                        Why Choose Wolf Supplies LTD?
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex items-start space-x-4">

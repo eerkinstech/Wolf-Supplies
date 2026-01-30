@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../hooks/useMetaTags';
 import { FaArrowLeft, FaStar, FaCheck, FaUsers, FaGlobeEurope, FaTrophy, FaLeaf } from 'react-icons/fa';
 
 // Load images from src/assets using Vite glob and pick those that mention "warehouse".
@@ -28,6 +29,13 @@ const warehouseImages = Object.keys(allImgs)
   });
 
 const AboutUsPage = () => {
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'About Wolf Supplies LTD | Our Story & Mission',
+    description: 'Learn about Wolf Supplies LTD - our mission to provide quality products, trusted service, and exceptional value to customers worldwide.',
+    keywords: 'about us, company, story, mission, quality, trusted service',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
   return (
     <div className="min-h-screen bg-[var(--color-bg-section)]">
       {/* Header Section */}
@@ -166,7 +174,7 @@ const AboutUsPage = () => {
                 '✓ 24/7 Customer Support',
                 '✓ Secure Payment Processing',
                 '✓ UK GDPR Compliant Data Protection',
-                '✓ Easy Returns & Refunds'
+                '✓ Easy Return & Refunds'
               ].map((feature, idx) => (
                 <p key={idx} className="text-lg text-gray-700 font-semibold flex items-center gap-3">
                   <span className="text-gray-400 text-2xl">✓</span>

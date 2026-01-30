@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaChevronDown, FaChevronRight, FaCloudUploadAlt, FaTimes, FaBox, FaLayerGroup, FaSpinner } from 'react-icons/fa';
 import CategoryProducts from './CategoryProducts';
+import SEOMetaForm from '../SEOMetaForm/SEOMetaForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategories } from '../../../redux/slices/categorySlice';
 import toast from 'react-hot-toast';
@@ -104,13 +105,24 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                             placeholder="Enter category description"
                         />
                     </div>
+
+                    {/* SEO Meta Information */}
+                    <div className="border-t pt-4 mt-4">
+                        <SEOMetaForm
+                            metaTitle={formData.metaTitle}
+                            metaDescription={formData.metaDescription}
+                            metaKeywords={formData.metaKeywords}
+                            onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+                            defaultTitle={formData.name}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex gap-3 p-6 transition duration-300" style={{ borderTopWidth: '1px', borderColor: 'var(--color-border-light)', backgroundColor: 'var(--color-bg-section)' }}>
                     <button
                         onClick={() => {
                             onClose();
-                            setFormData({ name: '', description: '', image: null, productCount: 0 });
+                            setFormData({ name: '', description: '', image: null, productCount: 0, metaTitle: '', metaDescription: '', metaKeywords: '' });
                         }}
                         className="flex-1 px-4 py-2.5 border rounded-lg font-semibold transition duration-300"
                         style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)', backgroundColor: 'var(--color-bg-primary)' }}
@@ -230,13 +242,24 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                             placeholder="Enter subcategory description"
                         />
                     </div>
+
+                    {/* SEO Meta Information */}
+                    <div className="border-t pt-4 mt-4">
+                        <SEOMetaForm
+                            metaTitle={formData.metaTitle}
+                            metaDescription={formData.metaDescription}
+                            metaKeywords={formData.metaKeywords}
+                            onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+                            defaultTitle={formData.name}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex gap-3 p-6 transition duration-300" style={{ borderTopWidth: '1px', borderColor: 'var(--color-border-light)', backgroundColor: 'var(--color-bg-section)' }}>
                     <button
                         onClick={() => {
                             onClose();
-                            setFormData({ name: '', description: '', image: null, productCount: 0 });
+                            setFormData({ name: '', description: '', image: null, productCount: 0, metaTitle: '', metaDescription: '', metaKeywords: '' });
                         }}
                         className="flex-1 px-4 py-2.5 border rounded-lg font-semibold transition duration-300"
                         style={{ borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)', backgroundColor: 'var(--color-bg-primary)' }}
@@ -460,6 +483,9 @@ const CategoryManagement = () => {
                 description: formData.description,
                 slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
                 image: formData.image,
+                metaTitle: formData.metaTitle,
+                metaDescription: formData.metaDescription,
+                metaKeywords: formData.metaKeywords,
             };
 
             if (editingCategory) {
@@ -493,7 +519,7 @@ const CategoryManagement = () => {
             toast.error(error.message);
         }
 
-        setFormData({ name: '', description: '', image: null });
+        setFormData({ name: '', description: '', image: null, metaTitle: '', metaDescription: '', metaKeywords: '' });
         setShowAddCategoryModal(false);
     };
 
@@ -503,6 +529,9 @@ const CategoryManagement = () => {
             name: category.name,
             description: category.description,
             image: category.image,
+            metaTitle: category.metaTitle || '',
+            metaDescription: category.metaDescription || '',
+            metaKeywords: category.metaKeywords || '',
         });
         setShowAddCategoryModal(true);
     };
@@ -592,6 +621,9 @@ const CategoryManagement = () => {
                 description: formData.description,
                 slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
                 image: formData.image,
+                metaTitle: formData.metaTitle,
+                metaDescription: formData.metaDescription,
+                metaKeywords: formData.metaKeywords,
                 ...(editingCategory ? {} : { parent: selectedCategoryId }),
             };
 
@@ -610,7 +642,7 @@ const CategoryManagement = () => {
             }
 
             toast.success(editingCategory ? 'Subcategory updated successfully' : 'Subcategory added successfully');
-            setFormData({ name: '', description: '', image: null });
+            setFormData({ name: '', description: '', image: null, metaTitle: '', metaDescription: '', metaKeywords: '' });
             setShowAddSubcategoryModal(false);
             setEditingCategory(null);
 
@@ -636,6 +668,9 @@ const CategoryManagement = () => {
             description: subcategory.description,
             image: subcategory.image,
             productCount: subcategory.productCount,
+            metaTitle: subcategory.metaTitle || '',
+            metaDescription: subcategory.metaDescription || '',
+            metaKeywords: subcategory.metaKeywords || '',
         });
         setShowAddSubcategoryModal(true);
     };

@@ -1,6 +1,8 @@
 import express from 'express';
 import {
     submitContactForm,
+    submitChatMessage,
+    moveContactToChat,
     getConversations,
     getConversationById,
     sendAdminMessage,
@@ -23,8 +25,13 @@ const router = express.Router();
 
 // ===== PUBLIC ROUTES (No authentication required) =====
 
-// Chat - User side
+// Contact Form submission
 router.post('/contact', submitContactForm);
+
+// Chat Button submission (separate from contact form)
+router.post('/chat', submitChatMessage);
+
+// User side
 router.get('/contact/user', getUserConversations);
 
 // ===== ADMIN ROUTES (Admin authentication required) =====
@@ -33,6 +40,7 @@ router.get('/contact/user', getUserConversations);
 router.get('/contact', protect, admin, getConversations);
 router.get('/contact/:conversationId', protect, admin, getConversationById);
 router.post('/contact/admin/send', protect, admin, sendAdminMessage);
+router.patch('/contact/:id/moveToChat', protect, admin, moveContactToChat);
 router.patch('/contact/:conversationId/assign', protect, admin, assignConversation);
 router.patch('/contact/:conversationId/close', protect, admin, closeConversation);
 router.delete('/contact/:conversationId', protect, admin, deleteConversation);

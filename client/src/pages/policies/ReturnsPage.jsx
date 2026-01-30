@@ -1,8 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../../hooks/useMetaTags';
 import { FaUndoAlt, FaMoneyBillWave, FaClock, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 const PoliciesReturnsPage = () => {
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: '31 Days Return & Refunds Policy | Wolf Supplies LTD',
+    description: 'Wolf Supplies LTD 31 Days Return & Refund Policy. Easy returns, full refunds, and hassle-free exchanges guaranteed.',
+    keywords: 'returns, refunds, policy, returns policy, 31 days, money back guarantee',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-section)]">
       {/* Header Section */}

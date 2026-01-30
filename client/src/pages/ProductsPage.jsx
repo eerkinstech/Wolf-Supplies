@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import useMetaTags from '../hooks/useMetaTags';
 import { fetchProducts, setFilter } from '../redux/slices/productSlice';
 import ProductCard from '../components/Products/ProductCard/ProductCard';
 import ProductFilter from '../components/Products/ProductFilter/ProductFilter';
@@ -12,6 +13,14 @@ const ProductsPage = () => {
   const { products, loading, filters } = useSelector((state) => state.product);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Shop All Products | Wolf Supplies LTD',
+    description: 'Browse our complete range of quality products. Fast UK delivery, competitive prices, and excellent customer service.',
+    keywords: 'products, shop, buy, online store, quality, affordable',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
 
   // Extract search query from URL params
   useEffect(() => {
@@ -33,6 +42,9 @@ const ProductsPage = () => {
   useEffect(() => {
     let result = products;
     const searchTerm = filters.search?.toLowerCase() || '';
+
+    // Filter out draft products - only show active/published products
+    result = result.filter(p => !p.isDraft);
 
     // Categorize products
     let exactMatches = [];

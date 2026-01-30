@@ -7,7 +7,7 @@ import wolfLogo from '../../assets/Wolf Supplies LTD.png';
 import {
     FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt,
     FaChevronDown, FaSearch, FaPhone, FaHeart,
-    FaList, FaUserShield, FaCog, FaEdit, FaEnvelope, FaMicrophone
+    FaList, FaUserShield, FaCog, FaEdit, FaEnvelope, FaMicrophone, FaBox
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
@@ -36,8 +36,9 @@ const Header = ({ hideMenu = false }) => {
 
     // Menu source: prefer saved browseMenu from settings, otherwise fall back to categories
     const menuSource = (browseMenu && browseMenu.length > 0) ? browseMenu : mainCategories;
-    const [activeMenuIndex, setActiveMenuIndex] = useState(0);
+    const [activeMenuPath, setActiveMenuPath] = useState([0]); // Track path: [mainIdx, level2Idx, level3Idx, ...]
     const [browseOpen, setBrowseOpen] = useState(false);
+    const [expandedMobileMenus, setExpandedMobileMenus] = useState({});
 
     const handleLogout = () => {
         logout();
@@ -166,6 +167,23 @@ const Header = ({ hideMenu = false }) => {
         }
     }, [mobileSearchOpen]);
 
+    // Validate that all menu items have links (recursively check nested items)
+    const validateMenuLinks = (items, path = 'root') => {
+        if (!items || !Array.isArray(items)) return;
+        items.forEach((item, idx) => {
+            const itemPath = `${path}[${idx}]`;
+            const hasLink = item.url || item.link;
+            const linkValue = item.url || item.link;
+            console.log(`✓ ${itemPath}: "${item.label || item.name}" → ${hasLink ? `"${linkValue}"` : '❌ NO LINK'}`);
+
+            // Recursively check submenu items
+            const submenuItems = item.submenu || item.sub || [];
+            if (submenuItems.length > 0) {
+                validateMenuLinks(submenuItems, itemPath);
+            }
+        });
+    };
+
     // Load saved browse menu from server (falls back to categories if empty)
     useEffect(() => {
         const loadMenu = async () => {
@@ -174,7 +192,14 @@ const Header = ({ hideMenu = false }) => {
                 const res = await fetch(`${API}/api/settings/menu`);
                 if (!res.ok) return;
                 const data = await res.json();
-                if (data && Array.isArray(data.browseMenu)) setBrowseMenu(data.browseMenu);
+                if (data && Array.isArray(data.browseMenu)) {
+                    console.log('=== MENU LOADED FROM API ===');
+                    console.log('Menu data:', data.browseMenu);
+                    console.log('=== VALIDATING MENU LINKS ===');
+                    validateMenuLinks(data.browseMenu);
+                    console.log('=== VALIDATION COMPLETE ===');
+                    setBrowseMenu(data.browseMenu);
+                }
             } catch (err) {
                 console.warn('Could not load browse menu', err);
             }
@@ -193,11 +218,94 @@ const Header = ({ hideMenu = false }) => {
     }, [dispatch]);
 
     // When menuSource changes ensure activeMenuIndex resets to 0 (if available)
-    useEffect(() => {
-        if (menuSource && menuSource.length > 0) {
-            setActiveMenuIndex(0);
-        }
-    }, [menuSource]);
+    // useEffect(() => {
+    //     if (menuSource && menuSource.length > 0) {
+    //         setActiveMenuIndex(0);
+    //     }
+    // }, [menuSource]);
+
+    // Recursive function to render nested menus as dropdowns on hover
+    const renderNestedMenu = (items, level = 0) => {
+        if (!items || items.length === 0) return null;
+
+        return (
+            <div className="space-y-0">
+                {items.map((item, idx) => {
+                    const hasSubmenu = (item.submenu && item.submenu.length > 0) || (item.sub && item.sub.length > 0);
+                    const submenuItems = item.submenu || item.sub || [];
+
+                    return (
+                        <div key={item.id || `item_${level}_${idx}`} className="relative group">
+                            <Link
+                                to={item.url || item.link || '#'}
+                                className={`block px-4 py-2 rounded transition duration-150 ${level === 0
+                                    ? 'text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] font-semibold text-sm'
+                                    : 'text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] text-sm px-3 py-2'
+                                    } ${hasSubmenu ? 'flex items-center justify-between' : ''}`}
+                            >
+                                {item.label || item.name}
+                                {hasSubmenu && level === 0 && <FaChevronDown className="text-xs ml-2" />}
+                            </Link>
+
+                            {/* Dropdown submenu - only visible on hover */}
+                            {hasSubmenu && (
+                                <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-lg z-50 min-w-max border border-[var(--color-border-light)]">
+                                    {renderNestedMenu(submenuItems, level + 1)}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    // Recursive function for mobile menu rendering with expand/collapse
+    const toggleMobileMenuExpand = (itemId) => {
+        setExpandedMobileMenus((prev) => ({
+            ...prev,
+            [itemId]: !prev[itemId]
+        }));
+    };
+
+    const renderMobileNestedMenu = (items, parentId = 'root') => {
+        if (!items || items.length === 0) return null;
+
+        return (
+            <div className="space-y-1">
+                {items.map((item, idx) => {
+                    const itemId = `${parentId}_${item.id || idx}`;
+                    const submenuItems = item.submenu || item.sub || [];
+                    const hasSubmenu = submenuItems && submenuItems.length > 0;
+                    const isExpanded = expandedMobileMenus[itemId];
+
+                    return (
+                        <div key={itemId} className="ml-4">
+                            <div className="flex items-center justify-between">
+                                <Link
+                                    to={item.url || item.link || '#'}
+                                    className="flex-1 px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg text-sm font-semibold transition duration-150"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    {item.label || item.name}
+                                </Link>
+                                {hasSubmenu && (
+                                    <button
+                                        onClick={() => toggleMobileMenuExpand(itemId)}
+                                        className="px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] rounded-lg transition duration-150"
+                                        aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                                    >
+                                        {isExpanded ? '▼' : '▶'}
+                                    </button>
+                                )}
+                            </div>
+                            {hasSubmenu && isExpanded && renderMobileNestedMenu(submenuItems, itemId)}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
 
     return (
         <header className="w-full bg-[var(--color-bg-primary)] z-50">
@@ -215,7 +323,7 @@ const Header = ({ hideMenu = false }) => {
                             </Link>
                             <div className="hidden sm:block text-white text-opacity-60">|</div>
                             <Link to="/policies/returns-refund" className="hidden md:block hover:text-[var(--color-bg-section)] transition duration-300 font-semibold">
-                                Returns Policy
+                                Return & Refunds
                             </Link>
                         </div>
                         <div className="flex items-center gap-3 sm:gap-5">
@@ -240,9 +348,6 @@ const Header = ({ hideMenu = false }) => {
                                                     <div className="border-b border-[var(--color-border-light)]"></div>
                                                 </>
                                             )}
-                                            <Link to="/account" className="px-4 py-2.5 hover:bg-[var(--color-bg-section)] text-sm flex items-center gap-2">
-                                                <FaCog /> Account Settings
-                                            </Link>
                                             <button
                                                 onClick={handleLogout}
                                                 className="w-full text-left px-4 py-2.5 hover:bg-[var(--color-border-light)] text-sm rounded-b-lg flex items-center gap-2 text-[var(--color-text-primary)] font-semibold"
@@ -252,11 +357,7 @@ const Header = ({ hideMenu = false }) => {
                                         </div>
                                     </div>
                                 </div>
-                            ) : (
-                                <Link to="/login" className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold flex items-center gap-1.5 whitespace-nowrap">
-                                    <FaUser /> Sign In
-                                </Link>
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </div>
@@ -265,7 +366,7 @@ const Header = ({ hideMenu = false }) => {
             {/* Main Header */}
             <div className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-light)]">
                 <div className="max-w-7xl mx-auto sm:px-2 lg:px-2 pt-3">
-                    <div className='px-2 py-4'>
+                    <div className='px-2 py-4 border-b border-[var(--color-border-light)]'>
                         <div className="flex items-center justify-between gap-3 md:gap-6">
                             {/* Logo & Menu */}
                             <div className="flex items-center gap-2 md:gap-4">
@@ -347,6 +448,11 @@ const Header = ({ hideMenu = false }) => {
                                     )}
                                 </Link>
 
+                                {/* Order Lookup */}
+                                <Link to="/order-lookup" className="text-[var(--color-text-light)] hidden lg:block hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg" title="Order Lookup">
+                                    <FaBox className="text-lg md:text-xl" />
+                                </Link>
+
                                 {/* Cart */}
                                 <Link to="/cart" className="relative text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg">
                                     <FaShoppingCart className="text-lg md:text-xl" />
@@ -370,100 +476,183 @@ const Header = ({ hideMenu = false }) => {
                         </div>
                     </div>
 
-                    {/* Category Menu - Desktop Only */}
+                    {/* Category Menu - Desktop Only - Multi-Column Progressive Menu */}
                     {!hideMenu && (
-                        <div className="hidden md:block sticky top-0 w-full bg-[var(--color-bg-primary)]   z-30"
-                            onMouseEnter={() => setBrowseOpen(true)}
-                            onMouseLeave={() => setBrowseOpen(false)}
-                        >
-                            <div className="flex items-center gap-4">
-                                {/* Shop By Category Button - Left */}
+                        <div className="hidden md:block sticky top-0 w-full bg-white border-b border-[var(--color-border-light)] z-30">
+                            {/* Top Bar: Browse Button + Main Navigation */}
+                            <div className="flex items-center gap-4 px-4 py-2 overflow-x-auto">
+                                {/* Browse Categories Button */}
                                 <button
-                                    className="flex items-center gap-2 px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-primary)] text-sm md:text-base whitespace-nowrap"
+                                    onMouseEnter={() => setBrowseOpen(true)}
+                                    onMouseLeave={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                    className="flex items-center gap-2   text-black hover:opacity-90 transition duration-300 font-bold text-lg whitespace-nowrap min-w-fit"
                                 >
-                                    <FaList className="text-base" /> Shop By Category
-                                </button>
-                                {/* Divider */}
-                                <div className="h-6 w-px bg-[var(--color-border-light)]"></div>
+                                    <svg viewBox="0 0 16 12" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.4">
+                                        <line x1="1" y1="2" x2="15" y2="2"></line>
+                                        <line x1="1" y1="6" x2="12" y2="6"></line>
+                                        <line x1="1" y1="10" x2="8" y2="10"></line>
+                                    </svg>
+                                    <span>Shop By Category</span>
 
-                                {/* Secondary Navigation - Top Menu - Right */}
-                                <div className="flex items-center gap-1   ">
-                                    <Link to="/" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
+                                </button>
+
+                                {/* Vertical Divider */}
+                                <div className="h-6 w-px bg-[var(--color-border-light)] mx-2"></div>
+
+                                {/* Main Navigation - Shows all items from menuSource */}
+                                <nav className="flex items-center gap-0 flex-1">
+                                    <Link
+                                        to="/"
+                                        className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap"
+                                    >
                                         Home
                                     </Link>
-                                    <Link to="/about" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
+                                    <Link
+                                        to="/about"
+                                        className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap"
+                                    >
                                         About Us
                                     </Link>
-                                    <Link to="/products/" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
+                                    <Link
+                                        to="/products"
+                                        className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap"
+                                    >
                                         Shop
                                     </Link>
-                                    <Link to="/contact" className="px-4 py-3 hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg transition duration-300 font-semibold text-[var(--color-text-light)] text-sm md:text-base">
-                                        Contact Us
+                                    
+                                    <Link
+                                        to="/contact"
+                                        className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap"
+                                    >
+                                        Contact
                                     </Link>
-                                </div>
+
+                                </nav>
                             </div>
-                            {/* Mega Menu */}
-                            <div className={`absolute left-0 right-0 top-full transition duration-300 z-40 ${browseOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-                                <div className="w-full bg-white shadow-2xl" onMouseLeave={() => setBrowseOpen(false)}>
-                                    <div className="flex w-full h-auto">
-                                        {/* Left Sidebar - Always Visible */}
-                                        <div className="w-72 border-r-4 border-gray-400 max-h-full overflow-y-auto bg-white">
-                                            {menuSource.map((item, idx) => (
-                                                <Link
-                                                    key={item.id || `m_${idx}`}
-                                                    to={item.url || item.link || '/'}
-                                                    onMouseEnter={() => setActiveMenuIndex(idx)}
-                                                    className={`block w-full text-left px-6 py-4 border-b border-[var(--color-border-light)] transition duration-150 font-semibold text-base ${activeMenuIndex === idx ? 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)]' : 'bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-section)]'}`}
-                                                >
-                                                    <div className="flex items-center justify-between">
-                                                        <span>{item.label || item.name}</span>
-                                                        <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
-                                                    </div>
-                                                </Link>
-                                            ))}
+
+                            {/* Mega Menu Panel - Progressive Multi-Column Layout */}
+                            {browseOpen && (
+                                <div
+                                    className="absolute left-0 right-0 top-full z-40 opacity-100 visible translate-y-0"
+                                    onMouseEnter={() => setBrowseOpen(true)}
+                                    onMouseLeave={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                >
+                                    <div className="w-full bg-white shadow-2xl border-t border-[var(--color-border-light)] flex h-96 overflow-x-auto">
+                                        {/* Left Column - All Main Categories */}
+                                        <div className="w-56 bg-[var(--color-bg-primary)] border-r border-[var(--color-border-light)] overflow-y-auto p-0 flex flex-col flex-shrink-0">
+                                            {menuSource.map((item, idx) => {
+                                                const hasLink = item.url || item.link;
+                                                const link = item.url || item.link || '#';
+                                                const hasSubmenu = (item.submenu && item.submenu.length > 0) || (item.sub && item.sub.length > 0);
+                                                const isActive = activeMenuPath[0] === idx;
+
+                                                return (
+                                                    <Link
+                                                        key={item.id || `m_${idx}`}
+                                                        to={link}
+                                                        onMouseEnter={() => setActiveMenuPath([idx])}
+                                                        onClick={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                                        className={`w-full text-left px-6 py-4 border-b border-[var(--color-border-light)] transition duration-150 font-semibold text-base flex items-center justify-between no-underline ${isActive
+                                                            ? 'bg-white text-[var(--color-accent-primary)]'
+                                                            : 'bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] hover:bg-white hover:text-[var(--color-accent-primary)]'
+                                                            }`}
+                                                    >
+                                                        <span>{item.label || item.name || 'Menu Item'}</span>
+                                                        {hasSubmenu && (
+                                                            <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                        )}
+                                                    </Link>
+                                                );
+                                            })}
                                         </div>
 
-                                        {/* Right Content - Shows on Hover */}
-                                        {activeMenuIndex >= 0 && (
-                                            <div className="flex-1 bg-[var(--color-bg-primary)] flex flex-col">
-                                                {/* Top Category Tabs */}
-                                                <div className="border-b border-[var(--color-border-light)] px-6 py-4 flex gap-6 overflow-x-auto">
-                                                    {menuSource.map((item, idx) => (
-                                                        <button
-                                                            key={item.id || `tab_${idx}`}
-                                                            onMouseEnter={() => setActiveMenuIndex(idx)}
-                                                            className={`text-sm font-semibold transition duration-150 whitespace-nowrap pb-2 border-b-2 ${activeMenuIndex === idx ? 'text-[var(--color-accent-primary)] border-[var(--color-accent-primary)]' : 'text-[var(--color-text-light)] border-transparent hover:text-[var(--color-text-primary)]'}`}
-                                                        >
-                                                            {item.label || item.name}
-                                                        </button>
-                                                    ))}
-                                                </div>
+                                        {/* Dynamic Columns for Nested Menus */}
+                                        {(() => {
+                                            const columns = [];
+                                            let currentLevel = menuSource;
+                                            let currentPath = [...activeMenuPath];
 
-                                                {/* Subcategories Section */}
-                                                <div className="flex-1 bg-[var(--color-bg-primary)] overflow-y-auto">
-                                                    <div className="space-y-3">
-                                                        {menuSource[activeMenuIndex]?.sub && menuSource[activeMenuIndex].sub.length > 0 ? (
-                                                            menuSource[activeMenuIndex].sub.map((subItem) => (
-                                                                <Link
-                                                                    key={subItem.id}
-                                                                    to={subItem.link || '#'}
-                                                                    className="block px-4 py-2.5 mb-0 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:underline font-semibold text-base transition duration-150"
-                                                                >
-                                                                    {subItem.name}
-                                                                </Link>
-                                                            ))
-                                                        ) : (
-                                                            <div className="flex items-center justify-center py-12">
-                                                                <p className="text-[var(--color-text-muted)] text-center">Menu item details</p>
+                                            // Always build the first submenu column
+                                            if (currentPath.length > 0) {
+                                                const itemIndex = currentPath[0];
+                                                if (itemIndex >= 0 && itemIndex < currentLevel.length) {
+                                                    const currentItem = currentLevel[itemIndex];
+                                                    const nextLevel = (currentItem?.submenu || currentItem?.sub) || [];
+
+                                                    if (nextLevel.length > 0) {
+                                                        columns.push(
+                                                            <div key="col_1" className="w-56 bg-white border-r border-[var(--color-border-light)] overflow-y-auto p-0 flex flex-col flex-shrink-0">
+                                                                {nextLevel.map((item, idx) => {
+                                                                    const hasSubmenu = (item.submenu && item.submenu.length > 0) || (item.sub && item.sub.length > 0);
+                                                                    const isActive = idx === currentPath[1];
+                                                                    return (
+                                                                        <Link
+                                                                            key={item.id || `sub_${idx}`}
+                                                                            to={item.url || item.link || '#'}
+                                                                            onClick={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                                                            onMouseEnter={() => setActiveMenuPath([currentPath[0], idx])}
+                                                                            className={`w-full text-left px-6 py-4 border-b border-[var(--color-border-light)] transition duration-150 font-semibold text-base flex items-center justify-between no-underline ${isActive
+                                                                                ? 'bg-[var(--color-bg-section)] text-[var(--color-accent-primary)]'
+                                                                                : 'bg-white text-[var(--color-text-primary)] hover:bg-[var(--color-bg-section)] hover:text-[var(--color-accent-primary)]'
+                                                                                }`}
+                                                                        >
+                                                                            <span>{item.label || item.name}</span>
+                                                                            {hasSubmenu && (
+                                                                                <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                                            )}
+                                                                        </Link>
+                                                                    );
+                                                                })}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+                                                        );
+                                                        currentLevel = nextLevel;
+                                                    }
+                                                }
+                                            }
+
+                                            // Build additional columns for deeper nesting
+                                            for (let depth = 1; depth < currentPath.length && currentLevel && currentLevel.length > 0; depth++) {
+                                                const itemIndex = currentPath[depth];
+                                                if (itemIndex >= 0 && itemIndex < currentLevel.length) {
+                                                    const currentItem = currentLevel[itemIndex];
+                                                    const nextLevel = (currentItem?.submenu || currentItem?.sub) || [];
+
+                                                    if (nextLevel.length > 0) {
+                                                        columns.push(
+                                                            <div key={`col_${depth + 1}`} className="w-56 bg-white border-r border-[var(--color-border-light)] overflow-y-auto p-0 flex flex-col flex-shrink-0">
+                                                                {nextLevel.map((item, idx) => {
+                                                                    const hasSubmenu = (item.submenu && item.submenu.length > 0) || (item.sub && item.sub.length > 0);
+                                                                    const isActive = idx === currentPath[depth + 1];
+                                                                    return (
+                                                                        <Link
+                                                                            key={item.id || `item_${depth}_${idx}`}
+                                                                            to={item.url || item.link || '#'}
+                                                                            onClick={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                                                            onMouseEnter={() => setActiveMenuPath([...currentPath.slice(0, depth + 1), idx])}
+                                                                            className={`w-full text-left px-6 py-4 border-b border-[var(--color-border-light)] transition duration-150 font-semibold text-base flex items-center justify-between no-underline ${isActive
+                                                                                ? 'bg-[var(--color-bg-section)] text-[var(--color-accent-primary)]'
+                                                                                : 'bg-white text-[var(--color-text-primary)] hover:bg-[var(--color-bg-section)] hover:text-[var(--color-accent-primary)]'
+                                                                                }`}
+                                                                        >
+                                                                            <span>{item.label || item.name}</span>
+                                                                            {hasSubmenu && (
+                                                                                <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                                            )}
+                                                                        </Link>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        );
+                                                        currentLevel = nextLevel;
+                                                    }
+                                                }
+                                            }
+
+                                            return columns;
+                                        })()}
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -507,42 +696,8 @@ const Header = ({ hideMenu = false }) => {
                                 <FaList className="text-[var(--color-accent-primary)]" /> Browse All Categories
                             </Link>
 
-                            {menuSource.map((item) => (
-                                <div key={item.id || item.label || item.name} className="mb-2">
-                                    <Link
-                                        to={item.url || item.link || '#'}
-                                        className="flex items-center gap-2 px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg text-sm font-semibold"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <span className="text-lg"></span>
-                                        {item.label || item.name}
-                                    </Link>
-                                    {item.sub && item.sub.length > 0 && (
-                                        <div className="ml-6 space-y-1">
-                                            {item.sub.slice(0, 3).map((sub) => (
-                                                <Link
-                                                    key={sub.id}
-                                                    to={sub.link || '#'}
-                                                    className="px-2 py-1.5 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] text-xs hover:bg-[var(--color-bg-section)] rounded flex items-center gap-1"
-                                                    onClick={() => setMobileMenuOpen(false)}
-                                                >
-                                                    <span></span>
-                                                    {sub.name}
-                                                </Link>
-                                            ))}
-                                            {item.sub.length > 3 && (
-                                                <Link
-                                                    to={item.url || item.link || '#'}
-                                                    className="block px-2 py-1.5 text-[var(--color-text-primary)] text-xs font-semibold hover:bg-[var(--color-bg-section)] rounded"
-                                                    onClick={() => setMobileMenuOpen(false)}
-                                                >
-                                                    See all ({item.sub.length})
-                                                </Link>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                            {/* Recursive Nested Mobile Menu */}
+                            {renderMobileNestedMenu(menuSource)}
                         </div>
 
                         <div className="border-t border-[var(--color-border-light)] pt-4 space-y-2">
@@ -560,6 +715,7 @@ const Header = ({ hideMenu = false }) => {
                             >
                                 Shop
                             </Link>
+
                             <Link
                                 to="/about"
                                 className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
@@ -573,6 +729,13 @@ const Header = ({ hideMenu = false }) => {
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 Contact Us
+                            </Link>
+                            <Link
+                                to="/order-lookup"
+                                className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm flex items-center gap-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <FaBox className="text-[var(--color-accent-primary)]" /> Order Lookup
                             </Link>
                             {isAdmin && (
                                 <Link
@@ -593,13 +756,6 @@ const Header = ({ hideMenu = false }) => {
                                         <span>{user?.name || 'User'}</span>
                                     </div>
                                     <p className="text-xs text-[var(--color-text-light)] px-3 py-1">{user?.email}</p>
-                                    <Link
-                                        to="/account"
-                                        className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm mt-2 flex items-center gap-2"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <FaCog /> Account Settings
-                                    </Link>
                                     <button
                                         onClick={handleLogout}
                                         className="w-full text-left px-3 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm mt-2 flex items-center gap-2"
@@ -607,24 +763,7 @@ const Header = ({ hideMenu = false }) => {
                                         <FaSignOutAlt /> Logout
                                     </button>
                                 </>
-                            ) : (
-                                <>
-                                    <Link
-                                        to="/login"
-                                        className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        Login
-                                    </Link>
-                                    <Link
-                                        to="/register"
-                                        className="block bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-4 py-2 rounded-lg font-semibold transition duration-300 text-center text-sm mt-2"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        Sign Up
-                                    </Link>
-                                </>
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </nav>

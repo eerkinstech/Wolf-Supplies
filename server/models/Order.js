@@ -6,15 +6,20 @@ const orderItemSchema = new mongoose.Schema({
   price: Number,
   product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
   image: String,
+  variantImage: { type: String }, // Image of the selected variant
   selectedVariants: { type: Object },
   selectedSize: { type: String },
   selectedColor: { type: String },
+  colorCode: { type: String }, // Hex color code for visual display
+  variant: { type: String }, // Variant name/type
+  sku: { type: String }, // Product SKU
   variantId: { type: String },
 });
 
 const orderSchema = new mongoose.Schema({
   orderId: { type: String, unique: true, index: true, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', sparse: true }, // Allow null for guest orders
+  guestId: { type: String, sparse: true, index: true }, // UUID for guest tracking
   orderItems: [orderItemSchema],
   contactDetails: {
     firstName: String,
@@ -46,9 +51,11 @@ const orderSchema = new mongoose.Schema({
   totalPrice: Number,
   isPaid: { type: Boolean, default: false },
   paidAt: Date,
+  isShipped: { type: Boolean, default: false }, // Track shipped status separately
   isDelivered: { type: Boolean, default: false },
   deliveredAt: Date,
   status: { type: String, default: 'pending' },
+  remarks: { type: String, default: '' },
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);

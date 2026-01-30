@@ -26,9 +26,9 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // Not authenticated - redirect to login
+  // Not authenticated - redirect to admin login
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   // Authenticated but not admin - show access denied

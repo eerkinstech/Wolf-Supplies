@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import useMetaTags from '../hooks/useMetaTags';
 import Layout from '../components/Layout/Layout';
 import FeaturedCategories from '../components/Categories/FeaturedCategories/FeaturedCategories';
 import FeaturedProducts from '../components/Products/FeaturedProducts/FeaturedProducts';
@@ -16,6 +17,14 @@ const HomePage = () => {
 
   const [featuredCategoriesConfig, setFeaturedCategoriesConfig] = useState(null);
   const [featuredProductsConfig, setFeaturedProductsConfig] = useState([]);
+
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Wolf Supplies LTD | Premium Products & Quality Solutions',
+    description: 'Shop premium products at Wolf Supplies LTD. Find quality solutions, fast UK delivery, and exceptional customer service.',
+    keywords: 'products, supplies, shopping, UK delivery, quality, premium',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
 
   /**
    * Load home page data once on component mount

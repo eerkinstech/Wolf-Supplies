@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
     const timestamp = Date.now().toString();
     const random = Math.floor(Math.random() * 1000000000).toString();
     const ext = path.extname(file.originalname);
-    
+
     // Get basename and sanitize: remove spaces, special chars, keep only alphanumeric, dash, underscore
     let name = path.basename(file.originalname, ext);
     name = name
@@ -35,10 +35,10 @@ const storage = multer.diskStorage({
       .replace(/\s+/g, '-')  // Replace spaces with dashes
       .replace(/[^a-z0-9\-_]/g, '')  // Remove special characters, keep only alphanumeric, dash, underscore
       .replace(/^-+|-+$/g, '');  // Remove leading/trailing dashes
-    
+
     // Ensure name is not empty
     if (!name) name = 'file';
-    
+
     const filename = `${name}-${timestamp}-${random}${ext}`;
     console.log(`Generated filename: ${filename} (types: ${typeof filename})`);
     cb(null, filename);

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTimes, FaCloudUploadAlt, FaCheck, FaSearch, FaChevronDown, FaArrowLeft, FaChevronRight, FaPlus, FaTrashAlt, FaMinus, FaTags } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import RichTextEditor from '../../components/RichTextEditor/RichTextEditor';
+import SEOMetaForm from '../../components/Admin/SEOMetaForm/SEOMetaForm';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -14,6 +15,7 @@ const AdminAddProductPage = () => {
   const token = authState.token || localStorage.getItem('token');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [saveStatus, setSaveStatus] = useState(null); // 'saving', 'saved', or null
 
   const [formData, setFormData] = useState({
     name: '',
@@ -23,11 +25,15 @@ const AdminAddProductPage = () => {
     stock: '',
     categories: [],
     description: '',
+    benefitsHeading: 'Why Buy This Product',
     benefitsText: '',
     images: [],
     options: [],
     variants: [],
     isDraft: false,
+    metaTitle: '',
+    metaDescription: '',
+    metaKeywords: '',
   });
 
   const GALLERY_VISIBLE = 7;
@@ -47,6 +53,8 @@ const AdminAddProductPage = () => {
   const [showGroupImageModal, setShowGroupImageModal] = useState(false);
   const [selectedGroupForImage, setSelectedGroupForImage] = useState(null);
   const [priorityGroup, setPriorityGroup] = useState(null);
+  const [showAddVariantModal, setShowAddVariantModal] = useState(false);
+  const [newVariantOptions, setNewVariantOptions] = useState({});
 
   // Edit mode detection (move early so `id` is available for initial state)
   const { id } = useParams();
@@ -91,6 +99,7 @@ const AdminAddProductPage = () => {
           categories: prod.categories ? prod.categories.map((c) => (c._id ? c._id : c)) : [],
           description: prod.description || '',
           whyBuyText: prod.whyBuyText || '',
+          benefitsHeading: prod.benefitsHeading || 'Why Buy This Product',
           benefitsText: benefitsText,
           images: Array.isArray(prod.images) ? prod.images : (prod.images ? [prod.images] : []),
           options: prod.variants || [],
@@ -102,6 +111,9 @@ const AdminAddProductPage = () => {
             stock: vc.stock || 0,
             image: vc.image || '',
           })),
+          metaTitle: prod.metaTitle || '',
+          metaDescription: prod.metaDescription || '',
+          metaKeywords: prod.metaKeywords || '',
         }));
       } catch (err) {
         console.error('Failed to load product for editing', err);
@@ -166,6 +178,7 @@ const AdminAddProductPage = () => {
       variantCombinations,
       categories: formData.categories || [],
       benefits: formData.benefitsText || '',
+      benefitsHeading: formData.benefitsHeading || 'Why Buy This Product',
     };
   };
 
@@ -223,6 +236,13 @@ const AdminAddProductPage = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [formData, originalFormData]);
+
+  // Reset saveStatus when form is edited
+  React.useEffect(() => {
+    if (saveStatus === 'saved' && hasUnsavedChanges()) {
+      setSaveStatus(null);
+    }
+  }, [formData]);
 
   // Prevent React Router navigation if there are unsaved changes
   const handleNavigation = (callback) => {
@@ -451,6 +471,7 @@ const AdminAddProductPage = () => {
     }
 
     setLoading(true);
+    setSaveStatus('saving');
     try {
       // Build images array from unified `images` field
       const images = Array.isArray(formData.images) ? formData.images : [];
@@ -488,6 +509,10 @@ const AdminAddProductPage = () => {
         variantCombinations,
         categories: formData.categories || [],
         benefits: formData.benefitsText || '',
+        benefitsHeading: formData.benefitsHeading || 'Why Buy This Product',
+        metaTitle: formData.metaTitle || '',
+        metaDescription: formData.metaDescription || '',
+        metaKeywords: formData.metaKeywords || '',
         isDraft: publish ? false : true,
       };
 
@@ -519,6 +544,7 @@ const AdminAddProductPage = () => {
           categories: refreshedProd.categories ? refreshedProd.categories.map((c) => (c._id ? c._id : c)) : [],
           description: refreshedProd.description || '',
           benefitsText: refreshedBenefitsText,
+          benefitsHeading: refreshedProd.benefitsHeading || 'Why Buy This Product',
           images: Array.isArray(refreshedProd.images) ? refreshedProd.images : (refreshedProd.images ? [refreshedProd.images] : []),
           options: refreshedProd.variants || [],
           variants: (refreshedProd.variantCombinations || []).map((vc, idx) => ({
@@ -534,6 +560,10 @@ const AdminAddProductPage = () => {
 
         setFormData(refreshedFormData);
         setOriginalFormData(JSON.parse(JSON.stringify(refreshedFormData)));
+
+        // Show "Saved" status for 2 seconds
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 2000);
       } else {
         // Create new product
         const res = await axios.post(`${API}/api/products`, payload, { headers });
@@ -553,13 +583,18 @@ const AdminAddProductPage = () => {
             images: [],
             options: [],
             variants: [],
+            isDraft: false,
           });
           setOriginalFormData(null);
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus(null), 2000);
           // Redirect after publish
           setTimeout(() => navigate('/admin/products'), 1200);
         } else {
           // If saved as draft, navigate to edit page for continued editing
           toast.success('Draft created. Redirecting to editor...');
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus(null), 2000);
           setTimeout(() => navigate(`/admin/products/edit/${created._id}`), 800);
         }
       }
@@ -568,11 +603,23 @@ const AdminAddProductPage = () => {
       const errorMsg = err.response?.data?.message || err.message || 'Error creating/updating product';
       toast.error(errorMsg);
       setError(errorMsg);
+      setSaveStatus(null);
     } finally {
       setLoading(false);
     }
   };
   const handleAddVariant = () => {
+    // Initialize modal with empty selections for each option
+    const initialOptions = {};
+    formData.options.forEach((opt) => {
+      initialOptions[opt.name] = '';
+    });
+    setNewVariantOptions(initialOptions);
+    setShowAddVariantModal(true);
+  };
+
+  const handleConfirmAddVariant = () => {
+    // Create variant with selected option values
     setFormData({
       ...formData,
       variants: [
@@ -580,7 +627,7 @@ const AdminAddProductPage = () => {
         {
           id: `variant-${Date.now()}`,
           name: `Variant ${formData.variants.length + 1}`,
-          optionValues: {},
+          optionValues: newVariantOptions,
           sku: '',
           price: formData.price || '',
           stock: 0,
@@ -588,6 +635,8 @@ const AdminAddProductPage = () => {
         },
       ],
     });
+    setShowAddVariantModal(false);
+    toast.success('Variant added');
   };
 
   const handleUpdateVariant = (id, updates) => {
@@ -854,7 +903,7 @@ const AdminAddProductPage = () => {
                 setFormData({ ...formData, categories: localSelected });
                 onClose();
               }}
-              className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-black"
+              className="px-4 py-2 rounded bg-[var(--color-accent-primary)] text-white hover:bg-black"
             >
               Save
             </button>
@@ -971,7 +1020,7 @@ const AdminAddProductPage = () => {
                   </div>
                 </div>
                 {selectedVariantForImage?.image === img && (
-                  <div className="absolute top-2 right-2 bg-gray-800 text-white px-2 py-1 rounded text-xs font-semibold">
+                  <div className="absolute top-2 right-2 bg-[var(--color-accent-primary)] text-white px-2 py-1 rounded text-xs font-semibold">
                     Selected
                   </div>
                 )}
@@ -1053,6 +1102,82 @@ const AdminAddProductPage = () => {
     );
   };
 
+  // Add Variant Modal Component
+  const AddVariantModal = ({ show, onClose }) => {
+    if (!show) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white rounded-lg shadow-2xl w-[min(500px,95%)] p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold">Add New Variant</h3>
+            <button
+              onClick={onClose}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <FaTimes className="text-xl" />
+            </button>
+          </div>
+
+          {formData.options.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">No options added yet.</p>
+              <p className="text-sm text-gray-500">Add options (like Size, Color) first to create variants.</p>
+            </div>
+          ) : (
+            <div className="space-y-4 mb-6">
+              {formData.options.map((opt) => (
+                <div key={opt.name}>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    {opt.name}
+                  </label>
+                  <select
+                    value={newVariantOptions[opt.name] || ''}
+                    onChange={(e) =>
+                      setNewVariantOptions((prev) => ({
+                        ...prev,
+                        [opt.name]: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-800 outline-none"
+                  >
+                    <option value="">Select {opt.name}</option>
+                    {opt.values.map((val) => (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmAddVariant}
+              disabled={
+                formData.options.length === 0 ||
+                formData.options.some((opt) => !newVariantOptions[opt.name])
+              }
+              className="px-4 py-2 rounded bg-[var(--color-accent-primary)] text-white hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add Variant
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
@@ -1065,26 +1190,44 @@ const AdminAddProductPage = () => {
             <FaArrowLeft /> Back
           </button>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 w-full">
-            <h1 className="text-3xl font-bold text-gray-900">{isEditing ? 'Edit Product' : 'Add New Product'}</h1>
+            <h1 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Product' : 'Add New Product'}</h1>
 
-            {/* Draft status badge + toggle */}
+            {/* Status and Save/Discard buttons */}
             <div className="ml-auto flex items-center gap-3">
-              <div
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${formData.isDraft ? 'bg-gray-200 text-gray-800' : 'bg-gray-100 text-gray-800'}`}
-                title={formData.isDraft ? 'Draft (unsaved until you Save Draft)' : 'Published'}
-              >
-                {formData.isDraft ? 'Draft' : 'Published'}
-              </div>
+              {/* Save status indicator */}
+              {saveStatus === 'saving' && (
+                <span className="text-sm text-gray-600">Saving...</span>
+              )}
+              {saveStatus === 'saved' && (
+                <span className="text-sm text-green-600 font-semibold">Saved</span>
+              )}
 
-              <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  checked={Boolean(formData.isDraft)}
-                  onChange={(e) => setFormData({ ...formData, isDraft: e.target.checked })}
-                  className="h-4 w-4"
-                />
-                <span className="select-none">Draft</span>
-              </label>
+              {/* Status select dropdown */}
+              <select
+                value={formData.isDraft ? 'draft' : 'published'}
+                onChange={(e) => setFormData({ ...formData, isDraft: e.target.value === 'draft' })}
+                className="px-3 py-1 rounded-lg text-sm font-semibold border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-800"
+              >
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+              </select>
+
+              {/* Save button */}
+              <button
+                onClick={() => handleSubmit(null, !formData.isDraft)}
+                disabled={loading || Boolean(comparePriceError)}
+                className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition disabled:opacity-50"
+              >
+                {loading ? 'Saving...' : 'Save'}
+              </button>
+
+              {/* Discard button */}
+              <button
+                onClick={() => handleNavigation(() => navigate('/admin/products'))}
+                className="px-4 py-1 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-semibold transition"
+              >
+                Discard
+              </button>
             </div>
           </div>
         </div>
@@ -1097,10 +1240,9 @@ const AdminAddProductPage = () => {
         )}
 
         {/* Main Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-4">
           {/* Basic Information Section */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Basic Information</h2>
             <div className="grid gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
@@ -1245,7 +1387,17 @@ const AdminAddProductPage = () => {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Why Buy This Product
+                  Benefits Section Heading
+                </label>
+                <input
+                  type="text"
+                  value={formData.benefitsHeading}
+                  onChange={(e) => setFormData({ ...formData, benefitsHeading: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 outline-none mb-4"
+                  placeholder="Why Buy This Product"
+                />
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Benefits Description
                 </label>
                 <RichTextEditor
                   value={formData.benefitsText}
@@ -1261,12 +1413,12 @@ const AdminAddProductPage = () => {
           {/* Images Section */}
           <div className="mb-8 pb-8 border-b">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Media</h2>
-            <div className="grid grid-cols-5 gap-3">
-              {/* Main Image - Left Side, Spans 2 Rows */}
-              <div className="col-span-2 row-span-2">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Main Image</label>
+            <div className="grid grid-cols-6 gap-3">
+              {/* Main Image - Left Side */}
+              <div className="col-span-1">
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Main</label>
                 <div
-                  className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gray-50 w-full h-64 flex items-center justify-center relative"
+                  className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gray-50 w-full aspect-square flex items-center justify-center relative"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();
@@ -1281,12 +1433,12 @@ const AdminAddProductPage = () => {
                       <img
                         src={getImgSrc(formData.images[0])}
                         alt="Main"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveImage(0)}
-                        className="absolute top-2 right-2 bg-gray-700 text-white p-1.5 rounded-full hover:bg-gray-800"
+                        className="absolute top-2 right-2 bg-gray-700 text-white p-1.5 rounded-full hover:bg-[var(--color-accent-primary)]"
                         aria-label="Remove main image"
                       >
                         <FaTimes className="text-sm" />
@@ -1320,26 +1472,25 @@ const AdminAddProductPage = () => {
                 </div>
               </div>
 
-              {/* Gallery Images - Right Side, 2 Columns x 2 Rows */}
-              <div className="col-span-3">
+              {/* Gallery Images - Right Side */}
+              <div className="col-span-5">
                 <label className="block text-sm font-semibold text-gray-900 mb-2">Gallery images</label>
 
                 {(() => {
                   const imgs = formData.images || [];
-                  const topFour = imgs.slice(1, 5); // Show images 1-4 (skip main at 0)
-                  const bottomTwo = imgs.slice(5, 7); // Show images 5-6
-                  const remaining = Math.max(0, imgs.length - 7);
+                  const displayImages = imgs.slice(1, 20); // Show images 1-11 (full 2 rows)
+                  const remainingCount = Math.max(0, imgs.length - 20);
 
                   return (
-                    <div className="space-y-3">
-                      {/* Top row - 4 images */}
-                      <div className="grid grid-cols-4 gap-3 h-32">
-                        {topFour.map((img, idx) => {
+                    <div className="space-y-2">
+                      {/* Images - Limited to 2 rows */}
+                      <div className="flex flex-wrap gap-2">
+                        {displayImages.map((img, idx) => {
                           const actualIdx = idx + 1;
                           return (
                             <div
                               key={actualIdx}
-                              className="relative group rounded-lg overflow-hidden bg-gray-100 cursor-grab border border-gray-200"
+                              className="relative group h-20 aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-grab border border-gray-200"
                               draggable
                               onDragStart={(e) => {
                                 e.dataTransfer.effectAllowed = 'move';
@@ -1353,42 +1504,7 @@ const AdminAddProductPage = () => {
                               }}
                               onDoubleClick={() => handleReorderImages(actualIdx, 0)}
                             >
-                              <img src={getImgSrc(img)} alt={`Gallery ${actualIdx}`} className="w-full h-full object-cover" />
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveImage(actualIdx)}
-                                className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
-                                aria-label="Remove image"
-                              >
-                                <FaTimes className="text-xs" />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Bottom row - 2 images + buttons */}
-                      <div className="grid grid-cols-4 gap-3 h-32">
-                        {bottomTwo.map((img, idx) => {
-                          const actualIdx = idx + 5;
-                          return (
-                            <div
-                              key={actualIdx}
-                              className="relative group rounded-lg overflow-hidden bg-gray-100 cursor-grab border border-gray-200"
-                              draggable
-                              onDragStart={(e) => {
-                                e.dataTransfer.effectAllowed = 'move';
-                                e.dataTransfer.setData('text/plain', String(actualIdx));
-                              }}
-                              onDragOver={(e) => e.preventDefault()}
-                              onDrop={(e) => {
-                                e.preventDefault();
-                                const from = Number(e.dataTransfer.getData('text/plain'));
-                                if (!isNaN(from)) handleReorderImages(from, actualIdx);
-                              }}
-                              onDoubleClick={() => handleReorderImages(actualIdx, 0)}
-                            >
-                              <img src={getImgSrc(img)} alt={`Gallery ${actualIdx}`} className="w-full h-full object-cover" />
+                              <img src={getImgSrc(img)} alt={`Gallery ${actualIdx}`} className="w-full h-full object-contain" />
                               <button
                                 type="button"
                                 onClick={() => handleRemoveImage(actualIdx)}
@@ -1401,45 +1517,24 @@ const AdminAddProductPage = () => {
                           );
                         })}
 
-                        {/* +More Images button or Add New Images button */}
-                        {remaining > 0 ? (
-                          <button
-                            type="button"
-                            onClick={() => setShowAllImagesModal(true)}
-                            className="relative rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-gray-800 transition cursor-pointer"
-                          >
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-gray-700">+{remaining}</div>
-                              <div className="text-xs text-gray-600 mt-1">More Images</div>
-                            </div>
-                          </button>
-                        ) : (
-                          <label className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-800 transition bg-white">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              onChange={(e) => {
-                                const files = e.target.files;
-                                if (files) {
-                                  Array.from(files).forEach(async (file) => {
-                                    const imageUrl = await uploadImageToServer(file);
-                                    if (imageUrl) {
-                                      handleAddImages(imageUrl);
-                                    }
-                                  });
-                                }
-                              }}
-                              className="hidden"
-                            />
-                            <div className="flex flex-col items-center gap-2 text-gray-600">
-                              <span className="text-2xl">+</span>
-                              <span className="text-xs font-semibold text-center">Add New Images</span>
-                            </div>
-                          </label>
+                        {/* Show remaining count if there are more images */}
+                        {remainingCount > 0 && (
+                          <div className="h-20 aspect-square rounded-lg overflow-hidden bg-gray-600 flex items-center justify-center border border-gray-400">
+                            <span className="text-white font-bold text-lg">+{remainingCount}</span>
+                          </div>
                         )}
 
-                        <label className="inline-flex items-center gap-3 px-5 py-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-800 cursor-pointer bg-white">
+                        {/* Media Library Button */}
+                        <button
+                          type="button"
+                          onClick={() => setShowAllImagesModal(true)}
+                          className="flex items-center justify-center h-20 aspect-square rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-800 transition bg-white"
+                        >
+                          <span className="text-2xl">📁</span>
+                        </button>
+
+                        {/* Upload Now Button */}
+                        <label className="flex items-center justify-center h-20 aspect-square rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-800 transition bg-white">
                           <input
                             type="file"
                             accept="image/*"
@@ -1457,9 +1552,8 @@ const AdminAddProductPage = () => {
                             }}
                             className="hidden"
                           />
-                          <span className="text-gray-700 text-center font-semibold">+ Add More Images</span>
+                          <span className="text-2xl">⬆️</span>
                         </label>
-
                       </div>
                     </div>
                   );
@@ -1493,7 +1587,7 @@ const AdminAddProductPage = () => {
                 <button
                   type="button"
                   onClick={handleAddOption}
-                  className="flex items-center gap-2 bg-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-black"
+                  className="flex items-center gap-2 bg-[var(--color-accent-primary)] text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-black"
                   aria-label="Add option"
                 >
                   <FaPlus className="text-sm" />
@@ -1572,7 +1666,7 @@ const AdminAddProductPage = () => {
                                     input.value = '';
                                   }
                                 }}
-                                className="bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium hover:bg-black"
+                                className="bg-[var(--color-accent-primary)] text-white px-4 py-2 rounded text-sm font-medium hover:bg-black"
                               >
                                 Add Value
                               </button>
@@ -1610,7 +1704,7 @@ const AdminAddProductPage = () => {
                     generateVariantsFromOptions();
                     setVariantsOpen(true);
                   }}
-                  className="mt-4 bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-black"
+                  className="mt-4 bg-[var(--color-accent-primary)] text-white px-4 py-2 rounded-lg font-medium hover:bg-black"
                 >
                   Generate Variants
                 </button>
@@ -1642,7 +1736,7 @@ const AdminAddProductPage = () => {
                       handleAddVariant();
                       setVariantsOpen(true);
                     }}
-                    className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black"
+                    className="bg-[var(--color-accent-primary)] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black"
                   >
                     Add Variant
                   </button>
@@ -1726,7 +1820,6 @@ const AdminAddProductPage = () => {
                                       <div className="text-lg font-bold">{grp}</div>
                                       <div className="flex items-center gap-2">
                                         <span className="text-sm text-gray-900">{variantsInGroup.length} variant(s)</span>
-                                        <span className="inline-block bg-gray-200 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full">Group</span>
                                       </div>
                                     </div>
                                   </div>
@@ -1807,6 +1900,16 @@ const AdminAddProductPage = () => {
                                         <span className="text-xs text-gray-700 hover:underline font-semibold">Gallery & Drag</span>
                                       </label>
                                     </div>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAddVariant()}
+                                      className="flex items-center gap-2 bg-[var(--color-accent-primary)] text-white px-3 py-1 rounded text-sm font-medium hover:bg-black transition"
+                                      aria-label="Add variant to group"
+                                    >
+                                      <FaPlus className="text-xs" />
+                                      <span className="hidden sm:inline-block">Add Variant</span>
+                                    </button>
                                   </div>
                                 </div>
 
@@ -1822,7 +1925,7 @@ const AdminAddProductPage = () => {
                                           <button
                                             type="button"
                                             onClick={() => handleUndoDelete(idx)}
-                                            className="px-4 py-1.5 bg-gray-800 hover:bg-black text-white rounded text-sm font-semibold transition"
+                                            className="px-4 py-1.5 bg-[var(--color-accent-primary)] hover:bg-black text-white rounded text-sm font-semibold transition"
                                           >
                                             ↩️ Undo
                                           </button>
@@ -1834,7 +1937,7 @@ const AdminAddProductPage = () => {
                                       return (
                                         <div key={variant.id} className="relative border border-gray-200 rounded-lg p-3 bg-white flex gap-3 h-full shadow-sm hover:shadow-md transition">
                                           {/* Left: Option values and 3 columns (SKU, Price, Stock) */}
-                                          <div className="flex-1 flex flex-col gap-2">
+                                          <div className="flex-1 flex flex-col ">
                                             {/* Header: Option values */}
                                             <div className="text-sm text-gray-600 font-medium">{formatOptionValues(variant.optionValues)}</div>
 
@@ -1874,7 +1977,7 @@ const AdminAddProductPage = () => {
                                             </div>
                                           </div>
                                           {/* Right: Image area with drag/gallery option */}
-                                          <div className="flex flex-col gap-2 w-32">
+                                          <div className="flex flex-col gap-2 h-20 w-24">
                                             <label
                                               className="flex flex-col gap-2 cursor-pointer group relative h-24"
                                               onDragOver={(e) => {
@@ -1953,7 +2056,24 @@ const AdminAddProductPage = () => {
           </div>
 
           {/* Form Actions */}
-          <div className="flex gap-4 justify-end">
+          <SEOMetaForm
+            metaTitle={formData.metaTitle}
+            metaDescription={formData.metaDescription}
+            metaKeywords={formData.metaKeywords}
+            onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+            defaultTitle={formData.name}
+          />
+
+          {/* Form Actions */}
+          <div className="flex gap-4 justify-end items-center">
+            {/* Save status indicator */}
+            {saveStatus === 'saving' && (
+              <span className="text-sm text-gray-600">Saving...</span>
+            )}
+            {saveStatus === 'saved' && (
+              <span className="text-sm text-green-600 font-semibold">Saved, published</span>
+            )}
+
             <button
               type="button"
               onClick={() => {
@@ -1985,17 +2105,17 @@ const AdminAddProductPage = () => {
               <button
                 type="submit"
                 disabled={loading || Boolean(comparePriceError)}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-black text-white rounded-lg font-semibold transition disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-3 bg-[var(--color-accent-primary)] hover:bg-black text-white rounded-lg font-semibold transition disabled:opacity-50"
               >
                 <FaCheck /> {loading ? (isEditing ? 'Saving...' : 'Publishing...') : (isEditing ? 'Save' : 'Publish')}
               </button>
             )}
           </div>
         </form>
-      </div>
+      </div >
 
       {/* Category Modal */}
-      <CategoryModal show={showCategoryModal} onClose={() => setShowCategoryModal(false)} />
+      < CategoryModal show={showCategoryModal} onClose={() => setShowCategoryModal(false)} />
 
       {/* All Images Modal */}
       <AllImagesModal show={showAllImagesModal} onClose={() => setShowAllImagesModal(false)} />
@@ -2012,7 +2132,10 @@ const AdminAddProductPage = () => {
         setSelectedGroupForImage(null);
       }} />
 
-    </div>
+      {/* Add Variant Modal */}
+      <AddVariantModal show={showAddVariantModal} onClose={() => setShowAddVariantModal(false)} />
+
+    </div >
   );
 };
 

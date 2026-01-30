@@ -138,7 +138,7 @@ const Reviews = ({
               }
               setShowReviewForm((s) => !s);
             }}
-            className="py-2 px-4 bg-black text-white rounded-lg font-semibold hover:bg-black transition"
+            className="py-2 px-4 text-[10px] sm:text-xl bg-black text-white rounded-lg font-semibold hover:bg-black transition"
           >
             {showReviewForm ? 'Cancel' : 'Write a review'}
           </button>

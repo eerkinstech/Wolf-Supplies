@@ -44,7 +44,7 @@ const Newsletter = ({ content = {} }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/forms/newsletter/subscribe', {
+      const response = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

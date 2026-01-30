@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { fetchCart } from './cartSlice';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -13,11 +14,15 @@ const initialState = {
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (credentials, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue, dispatch }) => {
     try {
       const response = await axios.post(`${API}/api/users/login`, credentials);
       const data = response.data;
       localStorage.setItem('token', data.token);
+
+      // Fetch cart after login
+      dispatch(fetchCart());
+
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -28,14 +33,7 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async (userData, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${API}/api/users/register`, userData);
-      const data = response.data;
-      localStorage.setItem('token', data.token);
-      return data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
-    }
+    return rejectWithValue('User registration is disabled. Only admin login is available.');
   }
 );
 

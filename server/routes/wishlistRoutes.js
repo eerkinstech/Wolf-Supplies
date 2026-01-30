@@ -4,8 +4,8 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/').get(protect, getWishlist).post(protect, addToWishlist).delete(protect, clearWishlist);
+router.route('/').get(getWishlist).post(addToWishlist).delete(clearWishlist);
 // DELETE /api/wishlist/:productId?variantId=... will remove specific variant snapshot when provided
-router.route('/:productId').delete(protect, removeFromWishlist);
+router.route('/:productId').delete(removeFromWishlist);
 
 export default router;

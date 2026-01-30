@@ -4,14 +4,17 @@ import axios from 'axios';
 const API = import.meta.env.VITE_API_URL || '';
 
 export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
+  console.log('==== fetchCart thunk called ====');
   const token = localStorage.getItem('token');
-  if (!token) return [];
+  console.log('Token in fetchCart:', !!token);
+
   try {
-    const res = await axios.get(`${API}/api/cart`, { 
-      headers: { Authorization: `Bearer ${token}` } 
-    });
+    // Fetch from server with or without token (server handles both via guestId or userId)
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await axios.get(`${API}/api/cart`, { headers });
+    console.log('fetchCart response:', res.data);
+
     const data = res.data;
-    // Normalize server items to client shape
     const items = (data.items || []).map((it) => {
       const product = it.product || null;
       return {
@@ -20,48 +23,77 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) 
         name: it.name || (product && product.name) || '',
         price: Number(it.price ?? (product && product.price) ?? 0),
         image: it.image || (product && (product.image || (product.images && product.images[0]))) || '',
+        variantImage: it.variantImage || null,
         quantity: it.quantity || 1,
         selectedVariants: it.selectedVariants || {},
+        selectedSize: it.selectedSize || null,
+        selectedColor: it.selectedColor || null,
+        variant: it.variant || null,
+        sku: it.sku || null,
+        colorCode: it.colorCode || null,
       };
     });
     return items;
   } catch (err) {
-    console.error('fetchCart error', err);
+    console.error('fetchCart error:', err);
     return [];
   }
 });
 
 export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI) => {
   const token = localStorage.getItem('token');
-  if (!token) return items;
+
   try {
-    // Convert client items to server-friendly shape: ensure `product` field is set to product id
     const extractProductId = (it) => {
       if (!it) return undefined;
       if (it.product) return it.product;
       if (typeof it._id === 'string') {
-        // handle composite client _id like '<productId>|size:...'
         const candidate = it._id.includes('|') ? it._id.split('|')[0] : it._id;
         return candidate;
       }
       return undefined;
     };
 
-    const serverItems = (items || []).map((it) => ({
-      product: extractProductId(it) || undefined,
-      name: it.name,
-      quantity: it.quantity || 1,
-      price: it.price,
-      selectedVariants: it.selectedVariants || {},
-      image: it.image || '',
-    }));
+    // Deduplicate items: combine items with same product + variants
+    const deduped = {};
+    for (const it of (items || [])) {
+      const productId = extractProductId(it);
+      const variantKey = JSON.stringify({
+        product: productId,
+        size: it.selectedSize || '',
+        color: it.selectedColor || '',
+        variants: it.selectedVariants || {}
+      });
 
-    const res = await axios.post(`${API}/api/cart`, 
-      { items: serverItems },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      if (deduped[variantKey]) {
+        deduped[variantKey].quantity += it.quantity || 1;
+      } else {
+        deduped[variantKey] = {
+          product: productId || undefined,
+          name: it.name,
+          quantity: it.quantity || 1,
+          price: it.price,
+          selectedVariants: it.selectedVariants || {},
+          selectedSize: it.selectedSize || null,
+          selectedColor: it.selectedColor || null,
+          image: it.image || '',
+          variantImage: it.variantImage || null,
+          variant: it.variant || null,
+          sku: it.sku || null,
+          colorCode: it.colorCode || null,
+        };
+      }
+    }
+
+    const serverItems = Object.values(deduped);
+
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const payload = { items: serverItems };
+
+    const res = await axios.post(`${API}/api/cart`, payload, { headers });
     const data = res.data;
-    // Normalize returned items to client shape just like fetchCart
+
+    // Normalize returned items to client shape
     const returned = (data.items || []).map((it) => {
       const product = it.product || null;
       return {
@@ -70,8 +102,14 @@ export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI
         name: it.name || (product && product.name) || '',
         price: Number(it.price ?? (product && product.price) ?? 0),
         image: it.image || (product && (product.image || (product.images && product.images[0]))) || '',
+        variantImage: it.variantImage || null,
         quantity: it.quantity || 1,
         selectedVariants: it.selectedVariants || {},
+        selectedSize: it.selectedSize || null,
+        selectedColor: it.selectedColor || null,
+        variant: it.variant || null,
+        sku: it.sku || null,
+        colorCode: it.colorCode || null,
       };
     });
     return returned;
@@ -83,10 +121,11 @@ export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI
 
 export const clearServerCart = createAsyncThunk('cart/clearServerCart', async (_, thunkAPI) => {
   const token = localStorage.getItem('token');
-  if (!token) return [];
+
   try {
-    const res = await axios.delete(`${API}/api/cart`, { 
-      headers: { Authorization: `Bearer ${token}` } 
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await axios.delete(`${API}/api/cart`, {
+      headers
     });
     const data = res.data;
     return data.items || [];
@@ -114,7 +153,25 @@ const cartSlice = createSlice({
     },
     addToCart: (state, action) => {
       const item = action.payload;
-      const existingItem = state.items.find((i) => i._id === item._id);
+
+      // Helper to check if two items are the same (same product + same variants)
+      const isSameItem = (a, b) => {
+        if (!a || !b) return false;
+        if ((a.product || a._id) !== (b.product || b._id)) return false;
+        if ((a.selectedSize || '') !== (b.selectedSize || '')) return false;
+        if ((a.selectedColor || '') !== (b.selectedColor || '')) return false;
+        const va = a.selectedVariants || {};
+        const vb = b.selectedVariants || {};
+        const ka = Object.keys(va).sort();
+        const kb = Object.keys(vb).sort();
+        if (ka.length !== kb.length) return false;
+        for (let i = 0; i < ka.length; i++) {
+          if (ka[i] !== kb[i] || String(va[ka[i]]) !== String(vb[kb[i]])) return false;
+        }
+        return true;
+      };
+
+      const existingItem = state.items.find((i) => isSameItem(i, item));
 
       if (existingItem) {
         existingItem.quantity += item.quantity || 1;
@@ -175,4 +232,3 @@ const cartSlice = createSlice({
 
 export const { setCart, addToCart, removeFromCart, updateCartItem, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
-// Thunks are exported at declaration (`export const ...`) so no re-export is needed here.

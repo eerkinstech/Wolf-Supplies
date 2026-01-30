@@ -1,10 +1,10 @@
 import express from 'express';
-import { registerUser, authUser, getUserProfile, updateUserProfile } from '../controllers/authController.js';
+import { authUser, getUserProfile, updateUserProfile } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/register', registerUser);
+// Only admin login is available (users login through admin login endpoint)
 router.post('/login', authUser);
 router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);

@@ -75,29 +75,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password) => {
-    try {
-      setLoading(true);
-      const response = await axios.post(`${API}/api/users/register`, { name, email, password });
-      const data = response.data;
-      localStorage.setItem('token', data.token);
-      setToken(data.token);
-      setUser(data.user || data);
-      setIsAdmin(false);
-      // hydrate cart after register
-      try {
-        dispatch(fetchCart());
-      } catch (err) {
-        console.error('Failed to dispatch fetchCart after register', err);
-      }
-      toast.success('Registration successful!');
-      return { success: true, user: data.user || data };
-    } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Registration failed';
-      toast.error(message);
-      return { success: false, error: message };
-    } finally {
-      setLoading(false);
-    }
+    toast.error('User registration is disabled. Only admin login is available.');
+    return { success: false, error: 'Registration is not available' };
   };
 
   const logout = () => {

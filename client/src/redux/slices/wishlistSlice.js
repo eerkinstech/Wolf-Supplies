@@ -15,20 +15,30 @@ const initialState = {
 export const fetchWishlist = createAsyncThunk('wishlist/fetchWishlist', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token');
+
+    // Fetch from server with or without token (server handles both via guestId or userId)
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const res = await axios.get(`${API}/api/wishlist`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      headers,
     });
     const data = res.data;
+    console.log('fetchWishlist response:', { itemCount: data.items?.length });
+    
     // normalize items: prefer snapshot if present, otherwise product
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
         // ensure snapshot has product id and keep populated product for availability checks
-        const pid = it.product?._id || it.snapshot.productId || it.snapshot._id || null;
+        const pid = (it.product && it.product._id) || it.snapshot._id || null;
+        console.log('Fetched snapshot item: pid =', pid);
         return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
       }
-      if (it.product) return { ...it.product, __isSnapshot: false };
+      if (it.product) {
+        console.log('Fetched product item: _id =', it.product._id);
+        return { ...it.product, __isSnapshot: false };
+      }
       return it;
     });
+    console.log('Fetched wishlist items count:', items.length);
     return items;
   } catch (err) {
     return rejectWithValue(err.message);
@@ -37,25 +47,30 @@ export const fetchWishlist = createAsyncThunk('wishlist/fetchWishlist', async (_
 
 export const addItemToServer = createAsyncThunk('wishlist/addItemToServer', async (payload, { rejectWithValue }) => {
   try {
-    // payload can be productId string or { productId, snapshot }
     const token = localStorage.getItem('token');
+
+    // Sync to server for both authenticated AND guest users
     let body = {};
     if (typeof payload === 'string') body.productId = payload;
     else body = payload || {};
 
-    const res = await axios.post(`${API}/api/wishlist`, body, {
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await axios.post(`${API}/api/wishlist`, body, { headers });
+    
+    console.log('addItemToServer response:', res.data);
+    
     const data = res.data;
     // normalize return items like fetchWishlist
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
-        const pid = it.product?._id || it.snapshot.productId || it.snapshot._id || null;
+        const pid = (it.product && it.product._id) || it.snapshot._id || null;
+        console.log('Added snapshot item: pid =', pid);
         return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
       }
-      if (it.product) return { ...it.product, __isSnapshot: false };
+      if (it.product) {
+        console.log('Added product item: _id =', it.product._id);
+        return { ...it.product, __isSnapshot: false };
+      }
       return it;
     });
     return items;
@@ -66,8 +81,9 @@ export const addItemToServer = createAsyncThunk('wishlist/addItemToServer', asyn
 
 export const removeItemFromServer = createAsyncThunk('wishlist/removeItemFromServer', async (payload, { rejectWithValue }) => {
   try {
-    // payload can be productId string or { productId, variantId }
     const token = localStorage.getItem('token');
+
+    // Sync to server for both authenticated AND guest users
     let productId = null;
     let variantId = null;
     if (typeof payload === 'string') productId = payload;
@@ -78,22 +94,55 @@ export const removeItemFromServer = createAsyncThunk('wishlist/removeItemFromSer
 
     if (!productId) throw new Error('productId is required to remove wishlist item');
 
-    const url = variantId ? `${API}/api/wishlist/${productId}?variantId=${encodeURIComponent(variantId)}` : `${API}/api/wishlist/${productId}`;
-    const res = await axios.delete(url, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    console.log('=== removeItemFromServer ===');
+    console.log('productId:', productId);
+    console.log('productId type:', typeof productId);
+    console.log('variantId:', variantId);
+
+    let url = variantId ? `${API}/api/wishlist/${productId}?variantId=${encodeURIComponent(variantId)}` : `${API}/api/wishlist/${productId}`;
+    
+    console.log('DELETE URL:', url);
+
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await axios.delete(url, { headers });
+    
+    console.log('=== removeItemFromServer Response ===');
+    console.log('Status:', res.status);
+    console.log('Items count:', res.data.items?.length || 0);
+    console.log('Response:', res.data);
+    
     const data = res.data;
     // normalize items similar to fetchWishlist / addItemToServer
     const items = (data.items || []).map((it) => {
+      console.log('Normalizing item:', { 
+        hasProduct: !!it.product, 
+        hasSnapshot: !!it.snapshot,
+        productId: it.product?._id
+      });
+      
       if (it.snapshot) {
-        const pid = it.product?._id || it.snapshot.productId || it.snapshot._id || null;
-        return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
+        // Get product ID from the product object reference
+        const pid = (it.product && it.product._id) || it.snapshot._id || null;
+        console.log('Snapshot item: using pid =', pid);
+        return { 
+          ...it.snapshot, 
+          _id: pid || it.snapshot._id, 
+          __isSnapshot: true, 
+          product: it.product || null 
+        };
       }
-      if (it.product) return { ...it.product, __isSnapshot: false };
+      if (it.product) {
+        console.log('Regular product item: _id =', it.product._id);
+        return { ...it.product, __isSnapshot: false };
+      }
       return it;
     });
+    console.log('Normalized items count:', items.length);
     return items;
   } catch (err) {
+    console.error('=== removeItemFromServer ERROR ===');
+    console.error('Error message:', err.message);
+    console.error('Error response:', err.response?.data);
     return rejectWithValue(err.message);
   }
 });
@@ -101,52 +150,54 @@ export const removeItemFromServer = createAsyncThunk('wishlist/removeItemFromSer
 export const clearWishlistServer = createAsyncThunk('wishlist/clearWishlistServer', async (_, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.delete(`${API}/api/wishlist`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+
+    // Clear server wishlist for both authenticated AND guest users
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await axios.delete(`${API}/api/wishlist`, { headers });
     return [];
   } catch (err) {
     return rejectWithValue(err.message);
   }
 });
 
+
 const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState,
   reducers: {
     addToWishlist: (state, action) => {
-        let item = action.payload;
-        if (!item) return;
-        // If payload is { productId, snapshot }
-        if (item.snapshot) {
-          const pid = item.productId || item._id || (item.product && item.product._id) || null;
-          const existing = state.items.find((i) => i._id === pid && i.__isSnapshot && i.variantId && item.snapshot.variantId && String(i.variantId) === String(item.snapshot.variantId));
-          if (!existing) {
-            const entry = { ...item.snapshot, _id: pid || item.snapshot._id, __isSnapshot: true };
-            // keep variantId as top-level for easier checks
-            if (item.snapshot.variantId) entry.variantId = item.snapshot.variantId;
-            state.items.push(entry);
-            state.totalItems = state.items.length;
-          }
-          return;
-        }
-
-        // If payload is a plain product object, store as product-like entry
-        if (item.product) item = item.product;
-        if (typeof item === 'string') {
-          const existing = state.items.find((i) => i._id === item);
-          if (!existing) {
-            state.items.push({ _id: item });
-            state.totalItems = state.items.length;
-          }
-          return;
-        }
-
-        const existingItem = state.items.find((i) => i._id === item._id && !i.__isSnapshot);
-        if (!existingItem) {
-          state.items.push({ ...item, __isSnapshot: false });
+      let item = action.payload;
+      if (!item) return;
+      // If payload is { productId, snapshot }
+      if (item.snapshot) {
+        const pid = item.productId || item._id || (item.product && item.product._id) || null;
+        const existing = state.items.find((i) => i._id === pid && i.__isSnapshot && i.variantId && item.snapshot.variantId && String(i.variantId) === String(item.snapshot.variantId));
+        if (!existing) {
+          const entry = { ...item.snapshot, _id: pid || item.snapshot._id, __isSnapshot: true };
+          // keep variantId as top-level for easier checks
+          if (item.snapshot.variantId) entry.variantId = item.snapshot.variantId;
+          state.items.push(entry);
           state.totalItems = state.items.length;
         }
+        return;
+      }
+
+      // If payload is a plain product object, store as product-like entry
+      if (item.product) item = item.product;
+      if (typeof item === 'string') {
+        const existing = state.items.find((i) => i._id === item);
+        if (!existing) {
+          state.items.push({ _id: item });
+          state.totalItems = state.items.length;
+        }
+        return;
+      }
+
+      const existingItem = state.items.find((i) => i._id === item._id && !i.__isSnapshot);
+      if (!existingItem) {
+        state.items.push({ ...item, __isSnapshot: false });
+        state.totalItems = state.items.length;
+      }
     },
     removeFromWishlist: (state, action) => {
       const payload = action.payload;

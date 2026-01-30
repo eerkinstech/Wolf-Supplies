@@ -1,8 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../../hooks/useMetaTags';
 import { FaFileContract, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 const PoliciesTermsPage = () => {
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Terms of Service | Wolf Supplies LTD',
+    description: 'Wolf Supplies LTD Terms of Service. Legal agreement outlining your rights, responsibilities, and our policies.',
+    keywords: 'terms, conditions, legal, terms of service, agreement',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
       {/* Header Section */}

@@ -97,12 +97,12 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
         </div>
 
         {/* Quantity & Total Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4" style={{ borderColor: 'var(--color-border-light)', borderTopWidth: '1px' }}>
+        <div className="flex sm:flex-row sm:items-center justify-between gap-4 pt-4" style={{ borderColor: 'var(--color-border-light)', borderTopWidth: '1px' }}>
           {/* Quantity Control */}
           <div className="flex items-center rounded-lg w-fit" style={{ borderWidth: '2px', borderColor: 'var(--color-border-light)', backgroundColor: 'var(--color-bg-primary)' }}>
             <button
               onClick={() => onUpdateQuantity(item._id, item.quantity - 1)}
-              className="px-5 py-2 font-bold text-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 font-bold text-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ color: 'var(--color-accent-primary)' }}
               onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
               onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
@@ -110,10 +110,10 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
             >
               −
             </button>
-            <span className="px-8 py-2 font-bold text-lg w-16 text-center" style={{ borderLeftWidth: '2px', borderRightWidth: '2px', borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}>{item.quantity}</span>
+            <span className="px-3 py-2 font-bold text-lg w-10 text-center" style={{ borderLeftWidth: '2px', borderRightWidth: '2px', borderColor: 'var(--color-border-light)', color: 'var(--color-text-primary)' }}>{item.quantity}</span>
             <button
               onClick={() => onUpdateQuantity(item._id, item.quantity + 1)}
-              className="px-5 py-2 font-bold text-lg transition duration-300"
+              className="px-3 py-2 font-bold text-lg transition duration-300"
               style={{ color: 'var(--color-accent-primary)' }}
               onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
               onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
@@ -139,7 +139,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
                 console.error('CartItem remove handler error', err);
               }
             }}
-            className="w-full sm:w-auto px-4 py-2 font-semibold flex items-center justify-center gap-2 transition duration-300 rounded-lg"
+            className="w-16 sm:w-auto px-4 py-2 font-semibold flex items-center justify-center gap-2 transition duration-300 rounded-lg"
             style={{
               borderWidth: '2px',
               borderColor: 'var(--color-border-light)',

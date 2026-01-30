@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FiTruck, FiLock, FiHeadphones, FiRotateCcw } from 'react-icons/fi';
 
 const FeaturesSection = () => {
@@ -9,6 +10,7 @@ const FeaturesSection = () => {
             subtitle: '31 Days Return & Refund',
             icon: FiRotateCcw,
             color: 'text-[var(--color-accent-primary)]',
+            link: '/policies/returns-refund',
         },
         {
             id: 2,
@@ -16,6 +18,7 @@ const FeaturesSection = () => {
             subtitle: '2 - 4 business Days',
             icon: FiTruck,
             color: 'text-[var(--color-accent-primary)]',
+            link: '/policies/shipping',
         },
         {
             id: 3,
@@ -23,6 +26,7 @@ const FeaturesSection = () => {
             subtitle: 'We Ensure Secure Payment',
             icon: FiLock,
             color: 'text-[var(--color-accent-primary)]',
+            link: '/payment-options',
         },
         {
             id: 4,
@@ -30,6 +34,7 @@ const FeaturesSection = () => {
             subtitle: 'Mon - Fri 9:00 AM To 6:00 PM',
             icon: FiHeadphones,
             color: 'text-[var(--color-accent-primary)]',
+            link: '/contact',
         },
     ];
 
@@ -40,28 +45,33 @@ const FeaturesSection = () => {
                     {features.map((feature) => {
                         const IconComponent = feature.icon;
                         return (
-                            <div
+                            <Link
                                 key={feature.id}
-                                className="flex flex-row items-center gap-6 hover:scale-105 transition-transform duration-300 p-4 border border-[var(--color-accent-primary)] rounded-lg bg-[var(--color-bg-secondary)]"
+                                to={feature.link}
+                                className="no-underline"
                             >
-                                <div className="flex-shrink-0">
-                                    {/* Icon */}
-                                    <div className="p-4 bg-[var(--color-bg-section)] rounded-lg flex items-center justify-center w-16 h-16">
-                                        <IconComponent className={`${feature.color} text-3xl`} />
+                                <div
+                                    className="flex flex-row items-center gap-6 hover:scale-105 transition-transform duration-300 p-4 border border-[var(--color-accent-primary)] rounded-lg bg-[var(--color-bg-secondary)] cursor-pointer h-full"
+                                >
+                                    <div className="flex-shrink-0">
+                                        {/* Icon */}
+                                        <div className="p-4 bg-[var(--color-bg-section)] rounded-lg flex items-center justify-center w-16 h-16">
+                                            <IconComponent className={`${feature.color} text-3xl`} />
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 pt-1">
+                                        {/* Title */}
+                                        <h3 className="text-base font-bold text-[var(--color-text-primary)] mb-1">
+                                            {feature.title}
+                                        </h3>
+
+                                        {/* Subtitle */}
+                                        <p className="text-sm text-[var(--color-text-light)] leading-relaxed">
+                                            {feature.subtitle}
+                                        </p>
                                     </div>
                                 </div>
-                                <div className="flex-1 pt-1">
-                                    {/* Title */}
-                                    <h3 className="text-base font-bold text-[var(--color-text-primary)] mb-1">
-                                        {feature.title}
-                                    </h3>
-
-                                    {/* Subtitle */}
-                                    <p className="text-sm text-[var(--color-text-light)] leading-relaxed">
-                                        {feature.subtitle}
-                                    </p>
-                                </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>

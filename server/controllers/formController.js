@@ -3,7 +3,7 @@ import ContactSubmission from '../models/ContactSubmission.js';
 // ===== CHAT SUPPORT HANDLERS =====
 
 /**
- * User sends initial message or reply to start/continue conversation
+ * User submits contact form
  */
 export const submitContactForm = async (req, res) => {
   try {
@@ -30,11 +30,12 @@ export const submitContactForm = async (req, res) => {
     let conversation = await ContactSubmission.findOne({ userEmail: emailLower });
 
     if (!conversation) {
-      // Create new conversation
+      // Create new conversation from contact form
       conversation = new ContactSubmission({
         userEmail: emailLower,
         userName: name,
         userPhone: phone || '',
+        fromContactForm: true,
         messages: [{
           sender: 'user',
           senderName: name,
@@ -68,6 +69,7 @@ export const submitContactForm = async (req, res) => {
       conversation.messageCount += 1;
       conversation.unreadCount += 1;
       conversation.status = 'active'; // Reactivate if was closed
+      conversation.fromContactForm = true;
     }
 
     await conversation.save();
@@ -82,6 +84,128 @@ export const submitContactForm = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message || 'Error sending message'
+    });
+  }
+};
+
+/**
+ * User sends message through chat button (NOT contact form)
+ */
+export const submitChatMessage = async (req, res) => {
+  try {
+    const { name, email, phone, subject, message } = req.body;
+
+    // Validation
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, and message are required'
+      });
+    }
+
+    if (message.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Message cannot be empty'
+      });
+    }
+
+    const emailLower = email.toLowerCase();
+
+    // Find or create conversation
+    let conversation = await ContactSubmission.findOne({ userEmail: emailLower });
+
+    if (!conversation) {
+      // Create new conversation from chat button
+      conversation = new ContactSubmission({
+        userEmail: emailLower,
+        userName: name,
+        userPhone: phone || '',
+        fromContactForm: false, // Chat button conversations
+        messages: [{
+          sender: 'user',
+          senderName: name,
+          senderEmail: emailLower,
+          senderPhone: phone || '',
+          subject: subject || 'New Conversation',
+          message: message.trim(),
+          isRead: false
+        }],
+        lastMessage: message.trim(),
+        lastMessageAt: new Date(),
+        lastMessageSender: 'user',
+        messageCount: 1,
+        unreadCount: 1,
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent')
+      });
+    } else {
+      // Add message to existing conversation
+      conversation.messages.push({
+        sender: 'user',
+        senderName: name,
+        senderEmail: emailLower,
+        senderPhone: phone || '',
+        message: message.trim(),
+        isRead: false
+      });
+      conversation.lastMessage = message.trim();
+      conversation.lastMessageAt = new Date();
+      conversation.lastMessageSender = 'user';
+      conversation.messageCount += 1;
+      conversation.unreadCount += 1;
+      conversation.status = 'active'; // Reactivate if was closed
+      conversation.fromContactForm = false; // Keep as chat conversation
+    }
+
+    await conversation.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Message sent successfully',
+      data: conversation
+    });
+  } catch (error) {
+    console.error('Chat message error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error sending message'
+    });
+  }
+};
+
+/**
+ * Move contact form submission to chat (convert fromContactForm: true to false)
+ * Admin can now reply and it will show in Chat tab
+ */
+export const moveContactToChat = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const contact = await ContactSubmission.findById(id);
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contact submission not found'
+      });
+    }
+
+    // Convert from contact form to chat conversation
+    contact.fromContactForm = false;
+    contact.movedToChat = true;
+    contact.movedToChatAt = new Date();
+    await contact.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Contact moved to chat successfully',
+      data: contact
+    });
+  } catch (error) {
+    console.error('Move contact to chat error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error moving contact to chat'
     });
   }
 };
@@ -197,8 +321,7 @@ export const getConversations = async (req, res) => {
     const conversations = await ContactSubmission.find(query)
       .sort({ lastMessageAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit))
-      .select('conversationId userEmail userName userPhone lastMessage lastMessageAt lastMessageSender status messageCount unreadCount');
+      .limit(parseInt(limit));
 
     const total = await ContactSubmission.countDocuments(query);
 

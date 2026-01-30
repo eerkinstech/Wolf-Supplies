@@ -4,8 +4,9 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', protect, getCart);
-router.post('/', protect, updateCart);
-router.delete('/', protect, clearCart);
+// Cart routes - allow both authenticated and guest users
+router.get('/', getCart);
+router.post('/', updateCart);
+router.delete('/', clearCart);
 
 export default router;

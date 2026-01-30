@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../hooks/useMetaTags';
 import { FaArrowLeft, FaPhone, FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaClock, FaHeadset } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const ContactUsPage = () => {
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Contact Wolf Supplies LTD | Get In Touch',
+    description: 'Contact Wolf Supplies LTD for customer support, inquiries, and assistance. Available 24/7 for your convenience.',
+    keywords: 'contact, support, customer service, inquiries, help',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -232,7 +241,7 @@ const ContactUsPage = () => {
                   className="block p-3 rounded hover:opacity-80 transition duration-300 font-semibold"
                   style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)', color: 'var(--color-accent-primary, #a5632a)' }}
                 >
-                  🔄 Returns & Refunds
+                  🔄 Return & Refunds
                 </Link>
                 <Link
                   to="/policies/privacy"

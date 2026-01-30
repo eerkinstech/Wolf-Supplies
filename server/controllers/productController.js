@@ -123,6 +123,10 @@ export const createProduct = async (req, res) => {
       variants,
       variantCombinations,
       benefits,
+      benefitsHeading,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
     } = req.body;
 
     // Helper to safely parse arrays that might be sent as JSON strings
@@ -191,11 +195,15 @@ export const createProduct = async (req, res) => {
       discount: discount || 0,
       categories: categoryIds.length > 0 ? categoryIds : [],
       images: images || [],
+      benefitsHeading: benefitsHeading || 'Why Buy This Product',
       benefits: normalizeBenefitsToHtml(benefits),
       isDraft: req.body.isDraft === true || req.body.isDraft === 'true' ? true : false,
       stock: stock !== undefined ? Number(stock) : 0,
       variants: safeVariants,
       variantCombinations: safeVariantCombinations,
+      metaTitle: metaTitle || name || '',
+      metaDescription: metaDescription || '',
+      metaKeywords: metaKeywords || '',
       createdBy: req.user ? req.user._id : null,
     });
 
@@ -213,7 +221,7 @@ export const updateProduct = async (req, res) => {
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
     // Update basic scalar fields if provided
-    const updatable = ['name', 'slug', 'description', 'price', 'originalPrice', 'discount', 'categories', 'images', 'inStock', 'isDraft'];
+    const updatable = ['name', 'slug', 'description', 'price', 'originalPrice', 'discount', 'categories', 'images', 'inStock', 'isDraft', 'metaTitle', 'metaDescription', 'metaKeywords'];
     updatable.forEach((f) => {
       if (req.body[f] !== undefined) product[f] = req.body[f];
     });
@@ -279,6 +287,11 @@ export const updateProduct = async (req, res) => {
       } catch (e) {
         product.benefits = '';
       }
+    }
+
+    // Benefits Heading
+    if (req.body.benefitsHeading !== undefined) {
+      product.benefitsHeading = req.body.benefitsHeading || 'Why Buy This Product';
     }
 
     const updated = await product.save();

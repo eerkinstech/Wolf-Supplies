@@ -16,12 +16,11 @@ if (STRIPE_KEY) {
 // Base URL for building absolute image paths. Prefer server API URL if available.
 const SERVER_BASE = process.env.SERVER_URL || process.env.VITE_API_URL || process.env.CLIENT_URL;
 
-// Create an order and Stripe Checkout session
+// Create an order and Stripe Checkout session (guest or authenticated users)
 export const createCheckoutSession = async (req, res, next) => {
     try {
         if (!stripe) return res.status(500).json({ message: 'Stripe is not configured on the server. Set STRIPE_SECRET_KEY in environment.' });
-        const user = req.user; // requires auth middleware
-        if (!user) return res.status(401).json({ message: 'Not authorized' });
+        const user = req.user; // optional - can be null for guest users
 
         const {
             orderItems,
@@ -47,7 +46,7 @@ export const createCheckoutSession = async (req, res, next) => {
 
         const order = new Order({
             orderId,
-            user: user._id,
+            user: user?._id || null, // Allow null for guest users
             orderItems: orderItems.map((it) => ({
                 name: it.name,
                 qty: it.qty || it.quantity || it.quantityOrdered || 1,
@@ -190,7 +189,7 @@ export const createCheckoutSession = async (req, res, next) => {
                 line_items,
                 success_url: `${SERVER_BASE.replace(/\/$/, '')}/order/${order._id}`,
                 cancel_url: `${SERVER_BASE.replace(/\/$/, '')}/checkout?canceled=true`,
-                metadata: { orderId: order._id.toString(), userId: user._id.toString() },
+                metadata: { orderId: order._id.toString(), userId: user?._id?.toString() || 'guest' },
             });
         } catch (stripeErr) {
             // Return Stripe error details to client for debugging
@@ -208,8 +207,7 @@ export const createCheckoutSession = async (req, res, next) => {
 export const createPaymentIntent = async (req, res, next) => {
     try {
         if (!stripe) return res.status(500).json({ message: 'Stripe is not configured on the server.' });
-        const user = req.user;
-        if (!user) return res.status(401).json({ message: 'Not authorized' });
+        const user = req.user; // Optional - can be null for guest users
 
         const { orderItems, shippingAddress, billingAddress, paymentMethod, itemsPrice, shippingPrice, totalAmount } = req.body;
         if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) return res.status(400).json({ message: 'No order items' });
@@ -218,7 +216,7 @@ export const createPaymentIntent = async (req, res, next) => {
         const orderId = `ORD-${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}`;
         const order = new Order({
             orderId,
-            user: user._id,
+            user: user?._id || null, // Allow null for guest users
             orderItems: orderItems.map((it) => ({
                 name: it.name,
                 qty: it.qty || it.quantity || 1,
@@ -280,7 +278,7 @@ export const createPaymentIntent = async (req, res, next) => {
         const intent = await stripe.paymentIntents.create({
             amount,
             currency: 'gbp',
-            metadata: { orderId: order._id.toString(), userId: user._id.toString() },
+            metadata: { orderId: order._id.toString(), userId: user?._id?.toString() || 'guest' },
         });
 
         return res.json({ clientSecret: intent.client_secret, orderId: order._id });

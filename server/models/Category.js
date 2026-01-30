@@ -7,6 +7,10 @@ const categorySchema = new mongoose.Schema({
   parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
   image: { type: String },
   color: { type: String },
+  // SEO Metadata
+  metaTitle: { type: String, default: '' },
+  metaDescription: { type: String, default: '' },
+  metaKeywords: { type: String, default: '' },
 }, { timestamps: true, toJSON: { virtuals: true, versionKey: false }, toObject: { virtuals: true } });
 
 // Virtual for subcategories

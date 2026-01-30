@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import useMetaTags from '../hooks/useMetaTags';
 import { fetchCategories, setSearchQuery, clearSearchQuery } from '../redux/slices/categorySlice';
 import CategoryCard from '../components/Categories/CategoryCard/CategoryCard';
 import CategoryFilter from '../components/Categories/CategoryFilter/CategoryFilter';
@@ -9,6 +10,14 @@ const CategoriesPage = () => {
   const dispatch = useDispatch();
   const { categories, loading, error, searchQuery } = useSelector((state) => state.category);
   const [filteredCategories, setFilteredCategories] = useState([]);
+
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Product Categories | Wolf Supplies LTD',
+    description: 'Explore all our product categories. Find exactly what you need from our wide selection of quality products.',
+    keywords: 'categories, products, browse, shop, selection',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
 
   useEffect(() => {
     dispatch(fetchCategories());

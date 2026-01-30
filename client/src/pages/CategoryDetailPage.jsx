@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategoryBySlug } from '../redux/slices/categorySlice';
+import useMetaTags from '../hooks/useMetaTags';
 import { fetchProducts, setFilter } from '../redux/slices/productSlice';
 import ProductCard from '../components/Products/ProductCard/ProductCard';
 import ProductFilter from '../components/Products/ProductFilter/ProductFilter';
@@ -18,6 +19,15 @@ const CategoryDetailPage = () => {
 
   const [filteredProducts, setFilteredProducts] = React.useState([]);
   const [subcategories, setSubcategories] = React.useState([]);
+
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: selectedCategory?.metaTitle || selectedCategory?.name || 'Category',
+    description: selectedCategory?.metaDescription || selectedCategory?.description || 'Browse our product categories',
+    keywords: selectedCategory?.metaKeywords || '',
+    image: selectedCategory?.image || '',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
 
   useEffect(() => {
     // Reset filter state and fetch category and products on mount/slug change

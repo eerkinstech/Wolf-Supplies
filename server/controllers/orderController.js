@@ -26,20 +26,45 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
-// Get single order
+// Get orders by guestId (for order history without login)
+export const getOrdersByGuestId = async (req, res) => {
+  try {
+    const guestId = req.guestId;
+
+    console.log('Fetching orders for guestId:', guestId);
+
+    const orders = await Order.find({ guestId })
+      .populate('orderItems.product', 'name price image')
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get single order (anyone can view any order)
 export const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id)
-      .populate('user', 'name email')
-      .populate('orderItems.product', 'name price image');
+    const { id } = req.params;
+    let order = null;
+
+    // First try to find by orderId (guest order lookup)
+    if (id && typeof id === 'string' && id.startsWith('ORD-')) {
+      order = await Order.findOne({ orderId: id })
+        .populate('user', 'name email')
+        .populate('orderItems.product', 'name price image');
+    }
+
+    // If not found and id looks like MongoDB ObjectId, try findById
+    if (!order && id && id.match(/^[0-9a-fA-F]{24}$/)) {
+      order = await Order.findById(id)
+        .populate('user', 'name email')
+        .populate('orderItems.product', 'name price image');
+    }
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
-    }
-
-    // Check authorization: user can only see their own orders
-    if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Not authorized to access this order' });
     }
 
     res.json(order);
@@ -48,11 +73,16 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-// Create new order
+// Create new order (guest or authenticated users)
 export const createOrder = async (req, res) => {
   const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalAmount, billingAddress } = req.body;
 
   try {
+    const guestId = req.guestId;
+    const userId = req.user?._id;
+
+    console.log('Creating order for guestId:', guestId, 'userId:', userId);
+
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'No order items' });
     }
@@ -60,20 +90,49 @@ export const createOrder = async (req, res) => {
     // create deterministic-ish unique order id
     const orderId = `ORD-${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}`;
 
-    const order = new Order({
-      orderId,
-      user: req.user.id,
-      orderItems: orderItems.map((it) => ({
+    // Clean selectedVariants for non-variant products before saving
+    const cleanedOrderItems = await Promise.all(orderItems.map(async (it) => {
+      const itemData = {
         name: it.name,
         qty: it.qty || it.quantity || 1,
         price: it.price,
         product: it.product || it._id || null,
         image: it.image,
+        variantImage: it.variantImage || null,
         selectedVariants: it.selectedVariants || null,
         selectedSize: it.selectedSize || null,
         selectedColor: it.selectedColor || null,
+        colorCode: it.colorCode || null,
+        variant: it.variant || null,
+        sku: it.sku || null,
         variantId: it.variantId || null,
-      })),
+      };
+
+      // Check if this product actually has variants defined
+      if (itemData.product) {
+        try {
+          const Product = (await import('../models/Product.js')).default;
+          const product = await Product.findById(itemData.product).select('variants');
+
+          // If product has no variants array or empty variants, clear selectedVariants
+          if (!product || !product.variants || product.variants.length === 0) {
+            itemData.selectedVariants = null;
+            itemData.variant = null;
+          }
+        } catch (err) {
+          console.error('Error checking product variants:', err);
+          // On error, be conservative and keep the data as-is
+        }
+      }
+
+      return itemData;
+    }));
+
+    const order = new Order({
+      orderId,
+      user: userId || null, // Allow null user for guest orders
+      guestId: guestId, // Always set guestId for tracking
+      orderItems: cleanedOrderItems,
       contactDetails: {
         firstName: shippingAddress?.firstName || '',
         lastName: shippingAddress?.lastName || '',
@@ -105,11 +164,28 @@ export const createOrder = async (req, res) => {
     });
 
     const createdOrder = await order.save();
+
+    // Log purchase event
+    try {
+      await EventLog.create({
+        guestId,
+        eventType: 'purchase',
+        metadata: {
+          orderId: createdOrder.orderId,
+          cartValue: totalAmount,
+          itemCount: orderItems.length,
+        },
+      });
+    } catch (eventErr) {
+      console.warn('Failed to log purchase event:', eventErr.message);
+    }
+
     res.status(201).json(createdOrder);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Update order status (admin only)
 export const updateOrderStatus = async (req, res) => {
@@ -160,11 +236,15 @@ export const updateOrderPayment = async (req, res) => {
 // Update order delivery status (admin only)
 export const updateOrderDelivery = async (req, res) => {
   try {
-    const { isDelivered, deliveredAt } = req.body;
+    const { isShipped, isDelivered, deliveredAt } = req.body;
 
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { isDelivered, deliveredAt: isDelivered ? deliveredAt || Date.now() : null },
+      {
+        isShipped: isShipped !== undefined ? isShipped : undefined,
+        isDelivered,
+        deliveredAt: isDelivered ? deliveredAt || Date.now() : null
+      },
       { new: true }
     );
 
@@ -188,6 +268,90 @@ export const deleteOrder = async (req, res) => {
     }
 
     res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update order remarks (admin only)
+export const updateOrderRemarks = async (req, res) => {
+  try {
+    const { remarks } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { remarks: remarks || '' },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update contact details (admin only)
+export const updateOrderContact = async (req, res) => {
+  try {
+    const { contactDetails } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { contactDetails },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update shipping address (admin only)
+export const updateOrderShipping = async (req, res) => {
+  try {
+    const { shippingAddress } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { shippingAddress },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update billing address (admin only)
+export const updateOrderBilling = async (req, res) => {
+  try {
+    const { billingAddress } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { billingAddress },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

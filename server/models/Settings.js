@@ -1,5 +1,21 @@
 import mongoose from 'mongoose';
 
+// Define a recursive submenu schema
+const submenuSchema = new mongoose.Schema(
+  {
+    id: { type: String },
+    label: { type: String },
+    name: { type: String },
+    url: { type: String },
+    link: { type: String },
+    submenu: {
+      type: [this],
+      default: [],
+    },
+  },
+  { _id: false }
+);
+
 const settingsSchema = new mongoose.Schema(
   {
     requireReviewApproval: {
@@ -11,13 +27,20 @@ const settingsSchema = new mongoose.Schema(
       type: String,
       default: 'claude-haiku-4.5',
     },
-    // Browse menu structure for site header/navigation
+    // Browse menu structure for site header/navigation (supports unlimited nesting)
     browseMenu: {
       type: [
         {
           id: { type: String },
+          label: { type: String },
           name: { type: String },
+          url: { type: String },
           link: { type: String },
+          submenu: {
+            type: [submenuSchema],
+            default: [],
+          },
+          // Keep legacy 'sub' field for backward compatibility
           sub: [
             {
               id: { type: String },

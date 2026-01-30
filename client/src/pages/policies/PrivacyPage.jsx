@@ -1,8 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../../hooks/useMetaTags';
 import { FaLock, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 const PoliciesPrivacyPage = () => {
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Privacy Policy | GDPR Compliant Data Protection',
+    description: 'Wolf Supplies LTD Privacy Policy - GDPR compliant data protection. Learn how we protect your personal information and privacy rights.',
+    keywords: 'privacy, GDPR, data protection, privacy policy, security, personal data',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
       {/* Header Section */}

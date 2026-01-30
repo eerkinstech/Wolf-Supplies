@@ -153,9 +153,8 @@ const AdminLoginPage = () => {
           {/* Support Links */}
           <div className="space-y-3 text-center">
             <p className="text-gray-400">
-              Not an admin?{' '}
-              <Link to="/login" className="text-black hover:text-gray-700 font-bold">
-                User Login
+              <Link to="/" className="text-black hover:text-gray-700 font-bold">
+                ← Back to Home
               </Link>
             </p>
             <p className="text-gray-400">

@@ -40,7 +40,7 @@ const ProductManagement = () => {
 
   const visibleProducts = (localProducts || []).filter(p => {
     const matchesTab = activeTab === 'all' ? true : (activeTab === 'active' ? !p.isDraft : Boolean(p.isDraft));
-    const matchesSearch = searchQuery.trim() === '' || 
+    const matchesSearch = searchQuery.trim() === '' ||
       (p.name && p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesTab && matchesSearch;
   });

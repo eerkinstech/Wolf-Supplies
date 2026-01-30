@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../hooks/useMetaTags';
 import { SiVisa, SiMastercard, SiDiscover, SiApplepay, SiGooglepay } from 'react-icons/si';
 import { FaLock, FaShieldAlt, FaCheckCircle } from 'react-icons/fa';
 
 const PaymentOptionsPage = () => {
+    // Set up meta tags for SEO
+    useMetaTags({
+        title: 'Payment Options | Secure & Flexible Payment Methods',
+        description: 'Wolf Supplies LTD accepts multiple payment methods including credit cards, digital wallets, and bank transfers. Secure checkout guaranteed.',
+        keywords: 'payment, checkout, credit card, secure, payment options, digital wallets',
+        url: typeof window !== 'undefined' ? window.location.href : '',
+    });
+
     const [expandedCard, setExpandedCard] = useState(null); // All open by default
 
     const paymentMethods = [
@@ -245,7 +254,7 @@ const PaymentOptionsPage = () => {
                   <p className="text-gray-600 text-sm">Learn about our delivery times and shipping methods.</p>
                 </li>
                 <li>
-                  <Link to="/policies/returns-refund" className="text-blue-600 hover:underline font-semibold">✓ Returns & Refunds Policy</Link>
+                  <Link to="/policies/returns-refund" className="text-blue-600 hover:underline font-semibold">✓ Return & Refunds Policy</Link>
                   <p className="text-gray-600 text-sm">31-day returns, no questions asked. Full refund guarantee.</p>
                 </li>
                 <li>

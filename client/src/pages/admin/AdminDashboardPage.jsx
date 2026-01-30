@@ -13,9 +13,106 @@ const AdminDashboardPage = () => {
   const [stats, setStats] = useState({ products: 0, categories: 0, totalValue: 0, orders: 0, revenue: 0 });
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState('today');
+  const [filterMode, setFilterMode] = useState('fixed'); // 'fixed' or 'rolling'
   const { products } = useSelector((state) => state.product);
   const { categories } = useSelector((state) => state.category);
   const { orders = [] } = useSelector((state) => state.order);
+
+  const datePresets = [
+    { label: 'Today', value: 'today' },
+    { label: 'Yesterday', value: 'yesterday' },
+    { label: 'Last 30 minutes', value: 'last30m' },
+    { label: 'Last 12 hours', value: 'last12h' },
+    { label: 'Last 7 days', value: 'last7d' },
+    { label: 'Last 30 days', value: 'last30d' },
+    { label: 'Last 90 days', value: 'last90d' },
+    { label: 'Last 365 days', value: 'last365d' },
+    { label: 'Last 12 months', value: 'last12m' },
+    { label: 'Last week', value: 'lastweek' },
+    { label: 'Last month', value: 'lastmonth' },
+  ];
+
+  // Initialize with today's date on component mount
+  useEffect(() => {
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+    setDateFrom(todayString);
+    setDateTo(todayString);
+  }, []);
+
+  const handlePresetClick = (presetValue) => {
+    setSelectedPreset(presetValue);
+    const now = new Date();
+    let from, to;
+
+    switch (presetValue) {
+      case 'today':
+        from = new Date(now);
+        from.setHours(0, 0, 0, 0);
+        to = new Date(now);
+        to.setHours(23, 59, 59, 999);
+        break;
+      case 'yesterday':
+        from = new Date(now);
+        from.setDate(from.getDate() - 1);
+        from.setHours(0, 0, 0, 0);
+        to = new Date(from);
+        to.setHours(23, 59, 59, 999);
+        break;
+      case 'last30m':
+        from = new Date(now.getTime() - 30 * 60000);
+        to = new Date(now);
+        break;
+      case 'last12h':
+        from = new Date(now.getTime() - 12 * 60 * 60000);
+        to = new Date(now);
+        break;
+      case 'last7d':
+        from = new Date(now);
+        from.setDate(from.getDate() - 7);
+        to = new Date(now);
+        break;
+      case 'last30d':
+        from = new Date(now);
+        from.setDate(from.getDate() - 30);
+        to = new Date(now);
+        break;
+      case 'last90d':
+        from = new Date(now);
+        from.setDate(from.getDate() - 90);
+        to = new Date(now);
+        break;
+      case 'last365d':
+        from = new Date(now);
+        from.setDate(from.getDate() - 365);
+        to = new Date(now);
+        break;
+      case 'lastweek':
+        from = new Date(now);
+        from.setDate(from.getDate() - from.getDay() - 7);
+        to = new Date(from);
+        to.setDate(to.getDate() + 6);
+        break;
+      case 'lastmonth':
+        from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        to = new Date(now.getFullYear(), now.getMonth(), 0);
+        break;
+      case 'last12m':
+        from = new Date(now);
+        from.setFullYear(from.getFullYear() - 1);
+        to = new Date(now);
+        break;
+      default:
+        from = new Date(now);
+        from.setHours(0, 0, 0, 0);
+        to = new Date(now);
+    }
+
+    setDateFrom(from.toISOString().split('T')[0]);
+    setDateTo(to.toISOString().split('T')[0]);
+  };
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -77,268 +174,212 @@ const AdminDashboardPage = () => {
     }
   }, [products, categories, orders, dateFrom, dateTo]);
 
-  const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }) => (
-    <div className="rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
+  const StatCard = ({ icon: Icon, label, value, trend, trendUp }) => (
+    <div className="rounded-lg shadow p-4 hover:shadow-md transition" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase opacity-90" style={{ color: 'var(--color-text-secondary)' }}>{label}</p>
-          <p className="text-lg font-bold mt-2" style={{ color: 'var(--color-text-primary)' }}>{value}</p>
+        <div className="flex-1">
+          <p className="text-xs font-semibold opacity-70" style={{ color: 'var(--color-text-light)' }}>{label}</p>
+          <p className="text-2xl font-bold mt-1.5" style={{ color: 'var(--color-accent-primary)' }}>{value}</p>
           {trend && (
-            <p className={`text-sm mt-2 flex items-center gap-1`} style={{ color: trendUp ? 'var(--color-text-secondary)' : '#dc2626' }}>
-              {trendUp ? <FaArrowUp /> : <FaArrowDown />}
+            <p className={`text-xs font-medium mt-1.5 flex items-center gap-1`} style={{ color: trendUp ? '#22c55e' : '#dc2626' }}>
+              {trendUp ? <FaArrowUp size={9} /> : <FaArrowDown size={9} />}
               {trend}
             </p>
           )}
         </div>
-        <Icon className="text-4xl" style={{ color: 'var(--color-accent-primary)' }} />
+        <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-bg-section)' }}>
+          <Icon className="text-lg" style={{ color: 'var(--color-accent-primary)' }} />
+        </div>
       </div>
     </div>
   );
 
   return (
     <AdminLayout activeTab="dashboard">
-      <div className="p-8" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+      <div className="p-6" style={{ backgroundColor: 'var(--color-bg-section)' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Dashboard</h1>
-          <p style={{ color: 'var(--color-text-light)' }}>Welcome back! Here's your store overview.</p>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>Dashboard</h1>
+          <p className="text-sm" style={{ color: 'var(--color-text-light)' }}>Welcome back! Here's your store overview.</p>
         </div>
 
-        {/* Date filter */}
-        <div className="flex items-center gap-3 mb-6">
-          <label className="text-sm" style={{ color: 'var(--color-text-light)' }}>From</label>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="px-3 py-2 rounded-md"
-            style={{ borderColor: 'var(--color-border-light)', borderWidth: '1px' }}
-          />
-          <label className="text-sm" style={{ color: 'var(--color-text-light)' }}>To</label>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="px-3 py-2 rounded-md"
-            style={{ borderColor: 'var(--color-border-light)', borderWidth: '1px' }}
-          />
+        {/* Date filter with Presets */}
+        <div className="mb-6 rounded-lg p-4 shadow" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
           <button
-            onClick={() => {
-              // effect depends on dateFrom/dateTo, so updating state is enough
-              // we keep the button for UX but no-op since state already set by inputs
-            }}
-            className="text-white px-4 py-2 rounded-md ml-2"
-            style={{ backgroundColor: 'var(--color-accent-primary)' }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
-          >
-            Apply
-          </button>
-          <button
-            onClick={() => {
-              setDateFrom('');
-              setDateTo('');
-            }}
-            className="px-3 py-2 rounded-md ml-2"
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="text-sm font-semibold px-3 py-1.5 rounded"
             style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-border-light)'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-bg-section)'}
           >
-            Reset
+            📅 {showDatePicker ? 'Hide' : 'Show'} Date Filter
           </button>
-          {(dateFrom || dateTo) && (
-            <div className="text-xs ml-4" style={{ color: 'var(--color-text-primary)' }}>
-              Showing stats for {dateFrom || 'start'} — {dateTo || 'now'}
+
+          {showDatePicker && (
+            <div className="flex gap-4 mt-4">
+              {/* Preset Options */}
+              <div className="w-48 border-r" style={{ borderColor: 'var(--color-border-light)' }}>
+                <div className="text-xs font-semibold mb-2" style={{ color: 'var(--color-text-light)' }}>QUICK SELECT</div>
+                <div className="space-y-1">
+                  {datePresets.map((preset) => (
+                    <button
+                      key={preset.value}
+                      onClick={() => handlePresetClick(preset.value)}
+                      className="w-full text-left text-xs py-1.5 px-2 rounded transition"
+                      style={{
+                        backgroundColor: selectedPreset === preset.value ? 'var(--color-accent-primary)' : 'transparent',
+                        color: selectedPreset === preset.value ? 'white' : 'var(--color-text-primary)',
+                      }}
+                    >
+                      {selectedPreset === preset.value && '✓ '}
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filter Mode & Calendar */}
+              <div className="flex-1">
+                <div className="flex gap-4 mb-3">
+                  <div className="flex-1">
+                    <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-light)' }}>From</label>
+                    <input
+                      type="date"
+                      value={dateFrom}
+                      onChange={(e) => setDateFrom(e.target.value)}
+                      className="w-full px-2.5 py-1 text-xs rounded"
+                      style={{ borderColor: 'var(--color-border-light)', borderWidth: '1px', backgroundColor: 'var(--color-bg-section)' }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-light)' }}>To</label>
+                    <input
+                      type="date"
+                      value={dateTo}
+                      onChange={(e) => setDateTo(e.target.value)}
+                      className="w-full px-2.5 py-1 text-xs rounded"
+                      style={{ borderColor: 'var(--color-border-light)', borderWidth: '1px', backgroundColor: 'var(--color-bg-section)' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 mb-4">
+                  <input type="checkbox" id="includeCurrent" className="w-3 h-3" defaultChecked />
+                  <label htmlFor="includeCurrent" className="text-xs" style={{ color: 'var(--color-text-light)' }}>Include current period</label>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => {
+                      setShowDatePicker(false);
+                      setDateFrom('');
+                      setDateTo('');
+                      setSelectedPreset('');
+                    }}
+                    className="px-3 py-1 text-xs rounded font-semibold"
+                    style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => setShowDatePicker(false)}
+                    className="px-3 py-1 text-xs rounded font-semibold text-white"
+                    style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
             icon={FaBox}
-            label="Total Products"
+            label="Products"
             value={stats.products}
-            trend="Active in store"
+            trend="Active"
             trendUp={true}
-            color="from-blue-500 to-blue-600"
-          />
-          <StatCard
-            icon={FaPoundSign}
-            label="Inventory Value"
-            value={`£${stats.totalValue}`}
-            trend="Stock valuation"
-            trendUp={true}
-            color="from-gray-500 to-black-400"
-
           />
           <StatCard
             icon={FaShoppingCart}
-            label="Total Orders"
+            label="Orders"
             value={stats.orders}
-            trend="Since start"
+            trend="Total"
             trendUp={false}
-            color="from-purple-500 to-purple-600"
           />
           <StatCard
             icon={FaChartLine}
             label="Revenue"
             value={`£${stats.revenue}`}
-            trend="Gross revenue"
+            trend="Gross"
             trendUp={true}
-            color="from-indigo-500 to-indigo-600"
+          />
+          <StatCard
+            icon={FaUsers}
+            label="System"
+            value="Online"
+            trend="Active"
+            trendUp={true}
           />
         </div>
+      </div>
 
-        {/* Quick Actions & Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Quick Actions */}
-          <div className="lg:col-span-2 rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-              <FaChartLine style={{ color: 'var(--color-accent-primary)' }} />
-              Quick Actions
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                onClick={() => navigate('/admin/products')}
-                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
-                style={{ backgroundColor: 'var(--color-accent-primary)' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
-              >
-                📦 Add New Product
-              </button>
-              <button
-                onClick={() => navigate('/admin/orders')}
-                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
-                style={{ backgroundColor: 'var(--color-accent-primary)' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
-              >
-                📋 Manage Orders
-              </button>
-              <button
-                onClick={() => navigate('/admin/categories')}
-                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
-                style={{ backgroundColor: 'var(--color-accent-primary)' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
-              >
-                🏷️ Manage Categories
-              </button>
-              <button
-                onClick={() => navigate('/admin/analytics')}
-                className="text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
-                style={{ backgroundColor: 'var(--color-accent-primary)' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
-              >
-                📊 View Analytics
-              </button>
-            </div>
-          </div>
-
-          {/* System Status */}
-          <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-            <h2 className="text-lg font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>System Status</h2>
-            <div className="space-y-4">
-              {[
-                { label: 'Database', status: 'Online', color: 'var(--color-accent-primary)' },
-                { label: 'API Server', status: 'Online', color: 'var(--color-accent-primary)' },
-                { label: 'Backend', status: 'Running', color: 'var(--color-accent-primary)' },
-                { label: 'Frontend', status: 'Active', color: 'var(--color-accent-primary)' },
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between">
-                  <span className="text-sm font-semibold" style={{ color: 'var(--color-text-light)' }}>{item.label}</span>
-                  <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-accent-primary)' }}>
-                    ✓ {item.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+      {/* Quick Actions & Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Quick Actions */}
+        <div className="lg:col-span-2 rounded-lg shadow p-5" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+          <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Actions</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => navigate('/admin/products')}
+              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              style={{ backgroundColor: 'var(--color-accent-primary)' }}
+            >
+              📦 Products
+            </button>
+            <button
+              onClick={() => navigate('/admin/orders')}
+              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              style={{ backgroundColor: 'var(--color-accent-primary)' }}
+            >
+              📋 Orders
+            </button>
+            <button
+              onClick={() => navigate('/admin/categories')}
+              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              style={{ backgroundColor: 'var(--color-accent-primary)' }}
+            >
+              🏷️ Categories
+            </button>
+            <button
+              onClick={() => navigate('/admin/analytics')}
+              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              style={{ backgroundColor: 'var(--color-accent-primary)' }}
+            >
+              📊 Analytics
+            </button>
           </div>
         </div>
 
-        {/* Additional Panels: Recent Orders & Low Stock */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          <div className="lg:col-span-2 rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Recent Orders</h2>
-            {orders && orders.length > 0 ? (
-              (() => {
-                // show the filtered recent orders if a date range is active, otherwise recent orders
-                const toYMD = (d) => {
-                  if (!d) return null;
-                  const dt = new Date(d);
-                  if (isNaN(dt)) return null;
-                  const y = dt.getFullYear();
-                  const m = String(dt.getMonth() + 1).padStart(2, '0');
-                  const day = String(dt.getDate()).padStart(2, '0');
-                  return `${y}-${m}-${day}`;
-                };
-                const startY = toYMD(dateFrom);
-                const endY = toYMD(dateTo);
-                const filteredOrders = (orders || []).filter((o) => {
-                  if (!startY && !endY) return true;
-                  const createdY = toYMD(o.createdAt);
-                  if (!createdY) return false;
-                  if (startY && endY) return createdY >= startY && createdY <= endY;
-                  if (startY) return createdY >= startY;
-                  if (endY) return createdY <= endY;
-                  return true;
-                });
-                const list = (startY || endY) ? filteredOrders : orders;
-                return (
-                  <ul className="space-y-3">
-                    {list
-                      .slice()
-                      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                      .slice(0, 6)
-                      .map((o) => (
-                        <li key={o._id} className="flex items-center justify-between py-3" style={{ borderColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}>
-                          <div>
-                            <div className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Order #{o._id.slice(-6)}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>{o.user?.email || o.user || '—'}</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-bold" style={{ color: 'var(--color-accent-primary)' }}>£{(o.totalPrice || 0).toFixed(2)}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>{new Date(o.createdAt).toLocaleDateString()}</div>
-                          </div>
-                        </li>
-                      ))}
-                  </ul>
-                );
-              })()
-            ) : (
-              <p style={{ color: 'var(--color-text-primary)' }}>No orders yet.</p>
-            )}
-          </div>
-
-          <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Low Stock</h2>
-            {products && products.length > 0 ? (
-              <ul className="space-y-3">
-                {products
-                  .filter((p) => {
-                    const baseStock = p.countInStock || p.stock || 0;
-                    const hasLowVariant = p.variantCombinations && p.variantCombinations.some((v) => (v.stock || v.countInStock || baseStock) < 10);
-                    return (baseStock < 20) || hasLowVariant;
-                  })
-                  .slice(0, 8)
-                  .map((p) => (
-                    <li key={p._id} className="flex items-center justify-between py-3" style={{ borderColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}>
-                      <div className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.name}</div>
-                      <div className="text-xs" style={{ color: 'var(--color-text-light)' }}>Stock: {p.countInStock ?? p.stock ?? (p.variantCombinations?.[0]?.stock ?? '—')}</div>
-                    </li>
-                  ))}
-              </ul>
-            ) : (
-              <p style={{ color: 'var(--color-text-primary)' }}>No products available.</p>
-            )}
+        {/* System Status */}
+        <div className="rounded-lg shadow p-5" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+          <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Status</h2>
+          <div className="space-y-2">
+            {[
+              { label: 'Database', status: 'Online', icon: '🗄️' },
+              { label: 'API', status: 'Online', icon: '⚙️' },
+              { label: 'Backend', status: 'Running', icon: '🖥️' },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2 rounded text-xs" style={{ backgroundColor: 'var(--color-bg-section)' }}>
+                <span>{item.icon} {item.label}</span>
+                <span className="font-semibold" style={{ color: '#22c55e' }}>✓</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </AdminLayout>
   );
 };
-
 export default AdminDashboardPage;

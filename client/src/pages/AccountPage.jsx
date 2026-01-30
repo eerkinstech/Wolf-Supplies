@@ -1,23 +1,34 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserOrders } from '../redux/slices/orderSlice';
-import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
-import UserMessages from '../components/Account/UserMessages';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const AccountPageContent = () => {
     const dispatch = useDispatch();
+    const { user, token } = useAuth();
     const { orders, loading, error } = useSelector((state) => state.order);
 
     useEffect(() => {
-        dispatch(fetchUserOrders());
-    }, [dispatch]);
+        // Only fetch user orders if authenticated
+        if (token) {
+            dispatch(fetchUserOrders());
+        }
+    }, [dispatch, token]);
 
     return (
         <div className="min-h-screen bg-[var(--color-bg-primary)]">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-[var(--color-text-primary)]">My Account</h1>
-                <p className="text-[var(--color-text-light)] mb-8">Manage your orders and account settings</p>
+                <p className="text-[var(--color-text-light)] mb-8">View your orders</p>
+
+                {!token && (
+                    <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-8">
+                        <p className="text-blue-700 font-semibold mb-3">Guest Mode</p>
+                        <p className="text-blue-600 mb-4">You're browsing as a guest. You can view your order details by entering the order ID from your confirmation email.</p>
+                        <Link to="/order-lookup" className="inline-block text-blue-700 font-bold hover:underline">Find your order →</Link>
+                    </div>
+                )}
 
                 <section className="mb-12">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-[var(--color-text-primary)] border-b-2 border-[var(--color-accent-primary)] pb-3">Order History</h2>
@@ -96,18 +107,9 @@ const AccountPageContent = () => {
                     )}
                 </section>
 
-                {/* User Messages Section */}
-                <UserMessages />
-
             </div>
         </div>
     );
 };
 
-const AccountPage = () => (
-    <ProtectedRoute>
-        <AccountPageContent />
-    </ProtectedRoute>
-);
-
-export default AccountPage;
+export default AccountPageContent;

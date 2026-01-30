@@ -1,4 +1,6 @@
 import User from '../models/User.js';
+import Cart from '../models/Cart.js';
+import Wishlist from '../models/Wishlist.js';
 import generateToken from '../utils/generateToken.js';
 
 // @desc    Register a new user
@@ -7,6 +9,9 @@ import generateToken from '../utils/generateToken.js';
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
+    console.log('==== registerUser called ====');
+    console.log('Email:', email);
+    
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide name, email and password' });
     }
@@ -20,6 +25,10 @@ export const registerUser = async (req, res) => {
     const user = await User.create({ name, email, password, phone });
     
     console.log(`User registered successfully: ${email}`);
+    console.log(`User document after creation:`, {
+      _id: user._id,
+      email: user.email
+    });
     console.log(`Password hashed: ${user.password.startsWith('$2')}`);
 
     res.status(201).json({
@@ -47,7 +56,7 @@ export const authUser = async (req, res) => {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
-  console.log(`Login attempt for: ${email}`);
+  console.log(`==== Login attempt for: ${email} ====`);
   
   try {
     const user = await User.findOne({ email });

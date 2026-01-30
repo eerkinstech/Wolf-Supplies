@@ -6,6 +6,28 @@ import toast from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || '';
 
+// Helper to get absolute image URL - handles strings and objects
+const getImgSrc = (img) => {
+  if (!img) return '';
+
+  // Handle string URLs
+  if (typeof img === 'string') {
+    if (!img.trim()) return '';
+    return img.startsWith('http') ? img : `${API}${img}`;
+  }
+
+  // Handle image objects (from Cloudinary or similar)
+  if (typeof img === 'object') {
+    const url = img.url || img.secure_url || img.public_url || img.path || img.src || '';
+    if (!url) return '';
+    if (typeof url === 'string') {
+      return url.startsWith('http') ? url : `${API}${url}`;
+    }
+  }
+
+  return '';
+};
+
 const OrderManagement = () => {
   const dispatch = useDispatch();
   const { orders = [], loading } = useSelector((state) => state.order);
@@ -14,6 +36,15 @@ const OrderManagement = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [modalOrder, setModalOrder] = useState(null);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [remarksText, setRemarksText] = useState('');
+  const [editingRemarkId, setEditingRemarkId] = useState(null);
+  const [editingContact, setEditingContact] = useState(false);
+  const [editingShipping, setEditingShipping] = useState(false);
+  const [editingBilling, setEditingBilling] = useState(false);
+  const [contactForm, setContactForm] = useState({});
+  const [shippingForm, setShippingForm] = useState({});
+  const [billingForm, setBillingForm] = useState({});
+  const [filterTab, setFilterTab] = useState('all'); // all, fulfilled, unfulfilled, shipped, delivered
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -27,6 +58,18 @@ const OrderManagement = () => {
     // update selectAll flag based on current selections
     setSelectAll(prevSelected => list.length > 0 && prevSelected.length === list.length);
   }, [orders]);
+
+  // Filter orders based on selected tab
+  const getFilteredOrders = () => {
+    if (filterTab === 'all') return localOrders;
+    if (filterTab === 'fulfilled') return localOrders.filter(o => o.status === 'completed');
+    if (filterTab === 'unfulfilled') return localOrders.filter(o => o.status !== 'completed');
+    if (filterTab === 'shipped') return localOrders.filter(o => o.isShipped && !o.isDelivered);
+    if (filterTab === 'delivered') return localOrders.filter(o => o.isDelivered);
+    return localOrders;
+  };
+
+  const filteredOrders = getFilteredOrders();
 
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
@@ -90,60 +133,40 @@ const OrderManagement = () => {
     try {
       const token = localStorage.getItem('token');
       if (!deliveryKey) {
-        // Clear delivered flag and reset status to no-status
+        // Clear both shipped and delivered flags - NO status change
         const res1 = await fetch(`${API}/api/orders/${orderId}/delivery`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ isDelivered: false }),
+          body: JSON.stringify({ isShipped: false, isDelivered: false }),
         });
-        if (!res1.ok) throw new Error('Failed to clear delivery flag');
-        // also reset status to empty (no status)
-        const res2 = await fetch(`${API}/api/orders/${orderId}/status`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          // backend expects a valid status; use 'pending' to represent No Status
-          body: JSON.stringify({ status: 'pending' }),
-        });
-        if (!res2.ok) throw new Error('Failed to clear order status');
+        if (!res1.ok) throw new Error('Failed to clear delivery flags');
         toast.success('Delivery status cleared');
       } else if (deliveryKey === 'shipped') {
-        // set status to shipped
-        const res = await fetch(`${API}/api/orders/${orderId}/status`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: 'shipped' }),
-        });
-        if (!res.ok) throw new Error('Failed to mark shipped');
-        toast.success('Order marked as shipped');
-      } else if (deliveryKey === 'delivered') {
-        // mark delivered; keep status as completed/delivered if needed
+        // Only mark as shipped - keep fulfillment status unchanged
         const res = await fetch(`${API}/api/orders/${orderId}/delivery`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ isDelivered: true, deliveredAt: Date.now() }),
+          body: JSON.stringify({ isShipped: true, isDelivered: false }),
         });
-        if (!res.ok) throw new Error('Failed to mark delivered');
-        // Optionally set status to completed for delivered orders
-        await fetch(`${API}/api/orders/${orderId}/status`, {
+        if (!res.ok) throw new Error('Failed to update delivery status');
+        toast.success('Order marked as shipped');
+      } else if (deliveryKey === 'delivered') {
+        // Only mark delivered - keep fulfillment status unchanged
+        const res = await fetch(`${API}/api/orders/${orderId}/delivery`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: 'completed' }),
+          body: JSON.stringify({ isShipped: true, isDelivered: true, deliveredAt: Date.now() }),
         });
+        if (!res.ok) throw new Error('Failed to mark delivered');
         toast.success('Order marked as delivered');
       }
       dispatch(fetchOrders());
@@ -175,8 +198,62 @@ const OrderManagement = () => {
       {/* Orders Table */}
       {!loading && (
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Filter Tabs */}
+          <div className="px-6 py-4 bg-white border-b flex gap-2 overflow-x-auto">
+            <button
+              onClick={() => setFilterTab('all')}
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
+                filterTab === 'all'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              All Orders
+            </button>
+            <button
+              onClick={() => setFilterTab('fulfilled')}
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
+                filterTab === 'fulfilled'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              Fulfilled
+            </button>
+            <button
+              onClick={() => setFilterTab('unfulfilled')}
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
+                filterTab === 'unfulfilled'
+                  ? 'bg-yellow-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              Unfulfilled
+            </button>
+            <button
+              onClick={() => setFilterTab('shipped')}
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
+                filterTab === 'shipped'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              Shipped
+            </button>
+            <button
+              onClick={() => setFilterTab('delivered')}
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
+                filterTab === 'delivered'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              Delivered
+            </button>
+          </div>
+
           <div className="px-6 py-4 bg-gray-50 border-b flex justify-between items-center">
-            <h3 className="font-semibold text-gray-900">Orders ({localOrders.length})</h3>
+            <h3 className="font-semibold text-gray-900">Orders ({filteredOrders.length})</h3>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => dispatch(fetchOrders())}
@@ -226,11 +303,10 @@ const OrderManagement = () => {
                   <input type="checkbox" checked={selectAll} onChange={(e) => {
                     const checked = e.target.checked;
                     setSelectAll(checked);
-                    setSelectedIds(checked ? (localOrders || []).map(o => o._id) : []);
+                    setSelectedIds(checked ? (filteredOrders || []).map(o => o._id) : []);
                   }} />
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Order / Date</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Person</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Total Price</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Fulfilment</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Delivery Status</th>
@@ -238,18 +314,16 @@ const OrderManagement = () => {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {localOrders && localOrders.length > 0 ? (
-                localOrders.map((order) => {
+              {filteredOrders && filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => {
                   const displayId = order.orderId || `ORD-${new Date(order.createdAt).toISOString().slice(0, 10).replace(/-/g, '')}-${order._id?.slice(-6)}`;
                   const shortDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A';
                   const fullDate = order.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A';
-                  const personName = order.user?.name || order.customerName || 'Guest';
-                  const personEmail = order.user?.email || order.customerEmail || '';
+
                   const total = order.totalPrice ?? order.totalAmount ?? 0;
-                  const paymentStatus = order.isPaid ? 'Paid' : 'Pre Payment';
                   const fulfilled = order.status === 'completed';
-                  // normalize deliveryStatus values: '' = No Status, 'shipped', 'delivered'
-                  const deliveryStatus = order.isDelivered ? 'delivered' : (order.status === 'shipped' ? 'shipped' : '');
+                  // Delivery status: shows shipped or delivered based on flags
+                  const deliveryStatus = order.isDelivered ? 'delivered' : (order.isShipped ? 'shipped' : '');
 
                   return (
                     <tr key={order._id} className="hover:bg-gray-50 transition duration-300">
@@ -260,14 +334,8 @@ const OrderManagement = () => {
                           if (!checked) setSelectAll(false);
                         }} />
                       </td>
-
                       <td className="px-4 py-4 font-mono text-gray-900 text-sm">{displayId} <br />
                         {fullDate} </td>
-
-                      <td className="px-4 py-4 text-gray-600">
-                        <div className="text-sm font-semibold">{personName}</div>
-                        <div className="text-xs text-gray-900">{personEmail}</div>
-                      </td>
                       <td className="px-4 py-4 text-gray-700 font-bold">£{Number(total).toFixed(2)}</td>
                       <td className="px-4 py-4">
                         <button
@@ -313,159 +381,628 @@ const OrderManagement = () => {
       {/* Order detail modal */}
       {modalOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white max-w-4xl w-full rounded-lg shadow-2xl overflow-auto max-h-[90vh]" style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
-            {/* Modal Header */}
-            <div className="sticky top-0 z-10 flex justify-between items-center p-6 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
-              <div>
-                <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary, #000000)' }}>
-                  Order {modalOrder.orderId || modalOrder._id}
-                </h3>
-                <p className="text-sm mt-1" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
-                  {new Date(modalOrder.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-sm mt-2 px-3 py-1 rounded inline-block" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)', color: 'white' }}>
-                  Customer Orders: {localOrders.filter(o => o.user === modalOrder.user || o.user?._id === modalOrder.user?._id).length}
-                </p>
-              </div>
-              <button onClick={() => setModalOrder(null)} className="px-4 py-2 rounded font-semibold transition-all hover:opacity-75" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', color: 'var(--color-text-primary, #000000)' }}>
-                Close
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Contact Details Section */}
-              <div className="p-6 rounded-lg border-2" style={{
-                backgroundColor: 'var(--color-bg-section, #e5e5e5)',
-                borderColor: 'var(--color-border-light, #e5e5e5)'
-              }}>
-                <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary, #000000)' }}>Contact Details</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div>
-                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>First Name</p>
-                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.firstName || modalOrder.user?.name?.split(' ')[0] || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Last Name</p>
-                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.lastName || modalOrder.user?.name?.split(' ')[1] || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Email</p>
-                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.email || modalOrder.user?.email || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Phone</p>
-                    <p style={{ color: 'var(--color-text-primary, #000000)' }}>{modalOrder.contactDetails?.phone || 'N/A'}</p>
-                  </div>
+          <div className="bg-white max-w-6xl w-full rounded-lg shadow-2xl overflow-auto max-h-[90vh] grid grid-cols-1 md:grid-cols-3 gap-0" style={{ backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
+            {/* Main Content Block - 2 columns */}
+            <div className="md:col-span-2 flex flex-col overflow-auto">
+              {/* Modal Header */}
+              <div className="sticky top-0 z-10 flex justify-between items-center p-6 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'var(--color-bg-primary, #ffffff)' }}>
+                <div>
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                    Order {modalOrder.orderId || modalOrder._id}
+                  </h3>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
+                    {new Date(modalOrder.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
+                <button onClick={() => {
+                  setModalOrder(null);
+                  setRemarksText('');
+                  setEditingRemarkId(null);
+                  setEditingContact(false);
+                  setEditingShipping(false);
+                  setEditingBilling(false);
+                }} className="px-4 py-2 rounded font-semibold transition-all hover:opacity-75" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', color: 'var(--color-text-primary, #000000)' }}>
+                  Close
+                </button>
               </div>
 
-              {/* Shipping & Billing Addresses */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Shipping Address */}
-                <div className="p-4 rounded-lg border-2" style={{
+              <div className="p-6 space-y-6 overflow-auto flex-1">
+                {/* Contact Details Section */}
+                <div className="p-6 rounded-lg border-2" style={{
                   backgroundColor: 'var(--color-bg-section, #e5e5e5)',
                   borderColor: 'var(--color-border-light, #e5e5e5)'
                 }}>
-                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Shipping Address</h4>
-                  {modalOrder.shippingAddress ? (
-                    <div className="text-sm space-y-1" style={{ color: 'var(--color-text-primary, #000000)' }}>
-                      <div className="font-semibold">{modalOrder.shippingAddress.address}</div>
-                      <div>{modalOrder.shippingAddress.city} {modalOrder.shippingAddress.postalCode}</div>
-                      <div>{modalOrder.shippingAddress.country}</div>
-                    </div>
-                  ) : <div className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>No shipping address provided.</div>}
-                </div>
-
-                {/* Billing Address */}
-                <div className="p-4 rounded-lg border-2" style={{
-                  backgroundColor: 'var(--color-bg-section, #e5e5e5)',
-                  borderColor: 'var(--color-border-light, #e5e5e5)'
-                }}>
-                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Billing Address</h4>
-                  {modalOrder.billingAddress ? (
-                    <div className="text-sm space-y-1" style={{ color: 'var(--color-text-primary, #000000)' }}>
-                      <div className="font-semibold">{modalOrder.billingAddress.address}</div>
-                      <div>{modalOrder.billingAddress.city} {modalOrder.billingAddress.postalCode}</div>
-                      <div>{modalOrder.billingAddress.country}</div>
-                    </div>
-                  ) : <div className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Same as shipping</div>}
-                </div>
-              </div>
-
-              {/* Order Items */}
-              <div className="p-4 rounded-lg border-2" style={{
-                backgroundColor: 'white',
-                borderColor: 'var(--color-border-light, #e5e5e5)'
-              }}>
-                <h4 className="font-semibold mb-4" style={{ color: 'var(--color-text-primary, #000000)' }}>Order Items</h4>
-                <div className="space-y-3">
-                  {modalOrder.orderItems?.map(item => (
-                    <div key={item._id || item.product} className="flex items-center gap-3 pb-3 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)' }}>
-                      <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
-                      <div className="flex-1">
-                        <div className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>{item.name}</div>
-                        <div className="text-sm" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Qty: {item.qty} × £{Number(item.price).toFixed(2)}</div>
-                        {(item.selectedSize || item.selectedColor) && (
-                          <div className="text-xs" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
-                            {item.selectedSize && `Size: ${item.selectedSize} `}
-                            {item.selectedColor && `Color: ${item.selectedColor}`}
-                          </div>
-                        )}
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>Contact Details</h4>
+                    {!editingContact && (
+                      <button
+                        onClick={() => {
+                          setEditingContact(true);
+                          setContactForm({
+                            firstName: modalOrder.contactDetails?.firstName || modalOrder.user?.name?.split(' ')[0] || '',
+                            lastName: modalOrder.contactDetails?.lastName || modalOrder.user?.name?.split(' ')[1] || '',
+                            email: modalOrder.contactDetails?.email || modalOrder.user?.email || '',
+                            phone: modalOrder.contactDetails?.phone || '',
+                          });
+                        }}
+                        className="px-3 py-1 rounded text-xs font-semibold text-white"
+                        style={{ backgroundColor: '#4f46e5' }}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                  {editingContact ? (
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        placeholder="First Name"
+                        value={contactForm.firstName || ''}
+                        onChange={(e) => setContactForm({ ...contactForm, firstName: e.target.value })}
+                        className="w-full p-2 rounded border text-sm"
+                        style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Last Name"
+                        value={contactForm.lastName || ''}
+                        onChange={(e) => setContactForm({ ...contactForm, lastName: e.target.value })}
+                        className="w-full p-2 rounded border text-sm"
+                        style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                      />
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        value={contactForm.email || ''}
+                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                        className="w-full p-2 rounded border text-sm"
+                        style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                      />
+                      <input
+                        type="tel"
+                        placeholder="Phone"
+                        value={contactForm.phone || ''}
+                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                        className="w-full p-2 rounded border text-sm"
+                        style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const token = localStorage.getItem('token');
+                              const response = await fetch(`${API}/api/orders/${modalOrder._id}/contact`, {
+                                method: 'PUT',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({ contactDetails: contactForm }),
+                              });
+                              if (!response.ok) throw new Error('Failed to update contact details');
+                              toast.success('Contact details updated');
+                              setEditingContact(false);
+                              dispatch(fetchOrders());
+                            } catch (error) {
+                              toast.error(error.message);
+                            }
+                          }}
+                          className="flex-1 px-2 py-2 rounded text-xs font-semibold text-white"
+                          style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingContact(false)}
+                          className="flex-1 px-2 py-2 rounded text-xs font-semibold text-white"
+                          style={{ backgroundColor: '#6b7280' }}
+                        >
+                          Cancel
+                        </button>
                       </div>
-                      <div className="font-bold" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>£{(item.qty * item.price).toFixed(2)}</div>
                     </div>
-                  ))}
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>First Name</p>
+                        <p style={{ color: 'var(--color-text-primary, #000000)' }}>{contactForm.firstName || modalOrder.contactDetails?.firstName || modalOrder.user?.name?.split(' ')[0] || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Last Name</p>
+                        <p style={{ color: 'var(--color-text-primary, #000000)' }}>{contactForm.lastName || modalOrder.contactDetails?.lastName || modalOrder.user?.name?.split(' ')[1] || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Email</p>
+                        <p style={{ color: 'var(--color-text-primary, #000000)' }}>{contactForm.email || modalOrder.contactDetails?.email || modalOrder.user?.email || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs mb-1 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Phone</p>
+                        <p style={{ color: 'var(--color-text-primary, #000000)' }}>{contactForm.phone || modalOrder.contactDetails?.phone || 'N/A'}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {/* Summary & Payment Footer */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Order Summary */}
-                <div className="md:col-span-2 p-4 rounded-lg border-2" style={{
-                  backgroundColor: 'white',
-                  borderColor: 'var(--color-border-light, #e5e5e5)'
-                }}>
-                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Order Summary</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Items:</span>
-                      <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{((modalOrder.itemsPrice ?? modalOrder.orderItems?.reduce((s, it) => s + it.price * it.qty, 0)) || 0).toFixed(2)}</span>
+                {/* Shipping & Billing Addresses */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Shipping Address */}
+                  <div className="p-4 rounded-lg border-2" style={{
+                    backgroundColor: 'var(--color-bg-section, #e5e5e5)',
+                    borderColor: 'var(--color-border-light, #e5e5e5)'
+                  }}>
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>Shipping Address</h4>
+                      {!editingShipping && (
+                        <button
+                          onClick={() => {
+                            setEditingShipping(true);
+                            setShippingForm(modalOrder.shippingAddress || {});
+                          }}
+                          className="px-2 py-1 rounded text-xs font-semibold text-white"
+                          style={{ backgroundColor: '#4f46e5' }}
+                        >
+                          Edit
+                        </button>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Shipping:</span>
-                      <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.shippingPrice || 0).toFixed(2)}</span>
+                    {editingShipping ? (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          placeholder="Address"
+                          value={shippingForm.address || ''}
+                          onChange={(e) => setShippingForm({ ...shippingForm, address: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Apartment / Suite (Optional)"
+                          value={shippingForm.apartment || ''}
+                          onChange={(e) => setShippingForm({ ...shippingForm, apartment: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="City"
+                          value={shippingForm.city || ''}
+                          onChange={(e) => setShippingForm({ ...shippingForm, city: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="State / Region (Optional)"
+                          value={shippingForm.stateRegion || ''}
+                          onChange={(e) => setShippingForm({ ...shippingForm, stateRegion: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Postal Code"
+                          value={shippingForm.postalCode || ''}
+                          onChange={(e) => setShippingForm({ ...shippingForm, postalCode: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Country"
+                          value={shippingForm.country || ''}
+                          onChange={(e) => setShippingForm({ ...shippingForm, country: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem('token');
+                                const response = await fetch(`${API}/api/orders/${modalOrder._id}/shipping`, {
+                                  method: 'PUT',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                  body: JSON.stringify({ shippingAddress: shippingForm }),
+                                });
+                                if (!response.ok) throw new Error('Failed to update shipping address');
+                                toast.success('Shipping address updated');
+                                setEditingShipping(false);
+                                dispatch(fetchOrders());
+                              } catch (error) {
+                                toast.error(error.message);
+                              }
+                            }}
+                            className="flex-1 px-2 py-1 rounded text-xs font-semibold text-white"
+                            style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingShipping(false)}
+                            className="flex-1 px-2 py-1 rounded text-xs font-semibold text-white"
+                            style={{ backgroundColor: '#6b7280' }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {modalOrder.shippingAddress ? (
+                          <div className="text-sm space-y-1" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                            <div className="font-semibold">{shippingForm.address || modalOrder.shippingAddress.address}</div>
+                            {(shippingForm.apartment || modalOrder.shippingAddress.apartment) && <div>{shippingForm.apartment || modalOrder.shippingAddress.apartment}</div>}
+                            <div>{shippingForm.city || modalOrder.shippingAddress.city}{(shippingForm.stateRegion || modalOrder.shippingAddress.stateRegion) ? `, ${shippingForm.stateRegion || modalOrder.shippingAddress.stateRegion}` : ''} {shippingForm.postalCode || modalOrder.shippingAddress.postalCode}</div>
+                            <div>{shippingForm.country || modalOrder.shippingAddress.country}</div>
+                          </div>
+                        ) : <div className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>No shipping address provided.</div>}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Billing Address */}
+                  <div className="p-4 rounded-lg border-2" style={{
+                    backgroundColor: 'var(--color-bg-section, #e5e5e5)',
+                    borderColor: 'var(--color-border-light, #e5e5e5)'
+                  }}>
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>Billing Address</h4>
+                      {!editingBilling && (
+                        <button
+                          onClick={() => {
+                            setEditingBilling(true);
+                            setBillingForm(modalOrder.billingAddress || {});
+                          }}
+                          className="px-2 py-1 rounded text-xs font-semibold text-white"
+                          style={{ backgroundColor: '#4f46e5' }}
+                        >
+                          Edit
+                        </button>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Tax:</span>
-                      <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.taxPrice || 0).toFixed(2)}</span>
-                    </div>
-                    <div className="border-t pt-2 flex justify-between font-bold" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', color: 'var(--color-accent-primary, #a5632a)' }}>
-                      <span>Total:</span>
-                      <span>£{(modalOrder.totalPrice || modalOrder.totalAmount || 0).toFixed(2)}</span>
-                    </div>
+                    {editingBilling ? (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          placeholder="Address"
+                          value={billingForm.address || ''}
+                          onChange={(e) => setBillingForm({ ...billingForm, address: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Apartment / Suite (Optional)"
+                          value={billingForm.apartment || ''}
+                          onChange={(e) => setBillingForm({ ...billingForm, apartment: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="City"
+                          value={billingForm.city || ''}
+                          onChange={(e) => setBillingForm({ ...billingForm, city: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="State / Region (Optional)"
+                          value={billingForm.stateRegion || ''}
+                          onChange={(e) => setBillingForm({ ...billingForm, stateRegion: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Postal Code"
+                          value={billingForm.postalCode || ''}
+                          onChange={(e) => setBillingForm({ ...billingForm, postalCode: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Country"
+                          value={billingForm.country || ''}
+                          onChange={(e) => setBillingForm({ ...billingForm, country: e.target.value })}
+                          className="w-full p-2 rounded border text-sm"
+                          style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'white', color: 'var(--color-text-primary, #000000)' }}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem('token');
+                                const response = await fetch(`${API}/api/orders/${modalOrder._id}/billing`, {
+                                  method: 'PUT',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${token}`,
+                                  },
+                                  body: JSON.stringify({ billingAddress: billingForm }),
+                                });
+                                if (!response.ok) throw new Error('Failed to update billing address');
+                                toast.success('Billing address updated');
+                                setEditingBilling(false);
+                                dispatch(fetchOrders());
+                              } catch (error) {
+                                toast.error(error.message);
+                              }
+                            }}
+                            className="flex-1 px-2 py-1 rounded text-xs font-semibold text-white"
+                            style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingBilling(false)}
+                            className="flex-1 px-2 py-1 rounded text-xs font-semibold text-white"
+                            style={{ backgroundColor: '#6b7280' }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {modalOrder.billingAddress ? (
+                          <div className="text-sm space-y-1" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                            <div className="font-semibold">{billingForm.address || modalOrder.billingAddress.address}</div>
+                            {(billingForm.apartment || modalOrder.billingAddress.apartment) && <div>{billingForm.apartment || modalOrder.billingAddress.apartment}</div>}
+                            <div>{billingForm.city || modalOrder.billingAddress.city}{(billingForm.stateRegion || modalOrder.billingAddress.stateRegion) ? `, ${billingForm.stateRegion || modalOrder.billingAddress.stateRegion}` : ''} {billingForm.postalCode || modalOrder.billingAddress.postalCode}</div>
+                            <div>{billingForm.country || modalOrder.billingAddress.country}</div>
+                          </div>
+                        ) : <div className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Same as shipping</div>}
+                      </>
+                    )}
                   </div>
                 </div>
 
-                {/* Fulfillment & Delivery Status */}
+                {/* Order Items */}
                 <div className="p-4 rounded-lg border-2" style={{
                   backgroundColor: 'white',
                   borderColor: 'var(--color-border-light, #e5e5e5)'
                 }}>
-                  <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Status</h4>
-                  <div className="space-y-2">
+                  <h4 className="font-semibold mb-4" style={{ color: 'var(--color-text-primary, #000000)' }}>Order Items</h4>
+                  <div className="space-y-4">
+                    {modalOrder.orderItems?.map(item => {
+                      // Build variant string for display
+                      const variantParts = [];
+                      if (item.selectedVariants && typeof item.selectedVariants === 'object') {
+                        Object.entries(item.selectedVariants).forEach(([k, v]) => {
+                          if (v) variantParts.push(`${k}: ${v}`);
+                        });
+                      }
+                      if (item.selectedSize && !variantParts.some(p => p.toLowerCase().includes('size'))) {
+                        variantParts.push(`Size: ${item.selectedSize}`);
+                      }
+                      if (item.selectedColor && !variantParts.some(p => p.toLowerCase().includes('color'))) {
+                        variantParts.push(`Color: ${item.selectedColor}`);
+                      }
+                      const variantString = variantParts.join(' / ');
+
+                      return (
+                        <div key={item._id || item.product} className="flex gap-3 sm:gap-4 pb-4 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)' }}>
+                          {/* Product Image */}
+                          <div className="shrink-0">
+                            <img src={getImgSrc(item.image)} alt={item.name} className="w-full h-full sm:w-20 sm:h-20 object-contain rounded border" style={{ borderColor: 'var(--color-border-light, #e5e5e5)' }} />
+                          </div>
+
+                          {/* Product Info */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-sm sm:text-base mb-1" style={{ color: 'var(--color-text-primary, #000000)' }}>{item.name}</h3>
+                            {variantString && (
+                              <p className="text-xs sm:text-sm mb-1" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>{variantString}</p>
+                            )}
+                            {item.sku && (
+                              <p className="text-xs mb-1" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>SKU: {item.sku}</p>
+                            )}
+                            <p className="text-xs sm:text-sm" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Qty: {item.qty} × £{Number(item.price).toFixed(2)}</p>
+                          </div>
+
+                          {/* Price */}
+                          <div className="text-right flex-shrink-0">
+                            <p className="font-bold text-base sm:text-lg" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
+                              £{(item.qty * item.price).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Summary & Payment Footer */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Order Summary */}
+                  <div className="p-4 rounded-lg border-2" style={{
+                    backgroundColor: 'white',
+                    borderColor: 'var(--color-border-light, #e5e5e5)'
+                  }}>
+                    <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Order Summary</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Items:</span>
+                        <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{((modalOrder.itemsPrice ?? modalOrder.orderItems?.reduce((s, it) => s + it.price * it.qty, 0)) || 0).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Shipping:</span>
+                        <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.shippingPrice || 0).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Tax:</span>
+                        <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.taxPrice || 0).toFixed(2)}</span>
+                      </div>
+                      <div className="border-t pt-2 flex justify-between font-bold" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', color: 'var(--color-accent-primary, #a5632a)' }}>
+                        <span>Total:</span>
+                        <span>£{(modalOrder.totalPrice || modalOrder.totalAmount || 0).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fulfillment Status */}
+                  <div className="p-4 rounded-lg border-2" style={{
+                    backgroundColor: 'white',
+                    borderColor: 'var(--color-border-light, #e5e5e5)'
+                  }}>
+                    <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Fulfillment</h4>
                     <div className="px-3 py-2 rounded text-sm font-semibold" style={{
                       backgroundColor: modalOrder.status === 'completed' ? 'var(--color-accent-primary, #a5632a)' : 'var(--color-bg-section, #e5e5e5)',
                       color: modalOrder.status === 'completed' ? 'white' : 'var(--color-text-primary, #000000)'
                     }}>
-                      {modalOrder.status === 'completed' ? 'Fulfilled' : 'Unfulfilled'}
-                    </div>
-                    <div className="px-3 py-2 rounded text-sm font-semibold" style={{
-                      backgroundColor: modalOrder.isDelivered ? 'var(--color-accent-primary, #a5632a)' : (modalOrder.status === 'shipped' ? '#d4905e' : 'var(--color-bg-section, #e5e5e5)'),
-                      color: modalOrder.isDelivered || modalOrder.status === 'shipped' ? 'white' : 'var(--color-text-primary, #000000)'
-                    }}>
-                      {modalOrder.isDelivered ? 'Delivered' : (modalOrder.status === 'shipped' ? 'Shipped' : 'No Status')}
+                      {modalOrder.status === 'completed' ? '✓ Fulfilled' : '⏳ Unfulfilled'}
                     </div>
                   </div>
+
+                  {/* Delivery Status */}
+                  <div className="p-4 rounded-lg border-2" style={{
+                    backgroundColor: 'white',
+                    borderColor: 'var(--color-border-light, #e5e5e5)'
+                  }}>
+                    <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Delivery</h4>
+                    <div className="px-3 py-2 rounded text-sm font-semibold" style={{
+                      backgroundColor: modalOrder.isDelivered ? 'var(--color-accent-primary, #a5632a)' : (modalOrder.isShipped ? '#d4905e' : 'var(--color-bg-section, #e5e5e5)'),
+                      color: modalOrder.isDelivered || modalOrder.isShipped ? 'white' : 'var(--color-text-primary, #000000)'
+                    }}>
+                      {modalOrder.isDelivered ? '✓ Delivered' : (modalOrder.isShipped ? '📦 Shipped' : '⏳ Not Shipped')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Block */}
+            <div className="md:col-span-1 border-l flex flex-col overflow-auto" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+              {/* Sticky Header */}
+              <div className="sticky top-0 z-10 p-6 border-b" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+                <h4 className="text-sm font-bold uppercase tracking-wide" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Overview</h4>
+              </div>
+
+              <div className="p-6 space-y-6 flex-1 overflow-auto">
+                {/* Customer Total Orders */}
+                <div className="p-4 rounded-lg border-2" style={{
+                  backgroundColor: 'white',
+                  borderColor: 'var(--color-border-light, #e5e5e5)'
+                }}>
+                  <p className="text-xs mb-2 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>Total Orders From this Customer</p>
+                  <p className="text-3xl font-bold" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
+                    {localOrders.filter(o => o.user === modalOrder.user || o.user?._id === modalOrder.user?._id).length}
+                  </p>
+                </div>
+
+                {/* Remarks Block */}
+                <div className="p-4 rounded-lg border-2" style={{
+                  backgroundColor: 'white',
+                  borderColor: 'var(--color-border-light, #e5e5e5)'
+                }}>
+                  <p className="text-xs mb-3 font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>REMARKS</p>
+
+                  {/* Input Area */}
+                  <div className="border rounded mb-4" style={{ borderColor: 'var(--color-border-light, #e5e5e5)' }}>
+                    <textarea
+                      placeholder="Add notes or remarks about this order..."
+                      className="w-full p-3 text-sm resize-none focus:outline-none"
+                      style={{
+                        color: 'var(--color-text-primary, #000000)',
+                        backgroundColor: 'var(--color-bg-primary, #ffffff)',
+                        borderBottom: `1px solid var(--color-border-light, #e5e5e5)`
+                      }}
+                      rows="4"
+                      value={remarksText}
+                      onChange={(e) => setRemarksText(e.target.value)}
+                    />
+                    <button
+                      className="w-full px-3 py-2 font-semibold text-white text-sm transition-all hover:opacity-90"
+                      style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}
+                      onClick={async () => {
+                        if (!remarksText.trim()) {
+                          toast.error('Please enter a remark');
+                          return;
+                        }
+                        try {
+                          const token = localStorage.getItem('token');
+                          const response = await fetch(`${API}/api/orders/${modalOrder._id}/remarks`, {
+                            method: 'PUT',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({ remarks: remarksText }),
+                          });
+                          if (!response.ok) throw new Error('Failed to save remarks');
+                          toast.success('Remarks saved');
+                          setRemarksText('');
+                          dispatch(fetchOrders());
+                        } catch (error) {
+                          toast.error(error.message);
+                        }
+                      }}
+                    >
+                      Save Remarks
+                    </button>
+                  </div>
+
+                  {/* Saved Remarks Display */}
+                  {modalOrder.remarks && (
+                    <div className="p-3 rounded" style={{
+                      backgroundColor: 'var(--color-bg-section, #e5e5e5)',
+                      borderLeft: `4px solid var(--color-accent-primary, #a5632a)`
+                    }}>
+                      <div className="flex justify-between items-start mb-2">
+                        <p className="text-xs font-semibold" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>SAVED REMARK</p>
+                        <p className="text-xs" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
+                          {new Date(modalOrder.updatedAt).toLocaleDateString()} {new Date(modalOrder.updatedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
+                        {modalOrder.remarks}
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          className="flex-1 px-2 py-1 rounded text-xs font-semibold text-white transition-all hover:opacity-90"
+                          style={{ backgroundColor: '#4f46e5' }}
+                          onClick={() => {
+                            setRemarksText(modalOrder.remarks);
+                            setEditingRemarkId(modalOrder._id);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="flex-1 px-2 py-1 rounded text-xs font-semibold text-white transition-all hover:opacity-90"
+                          style={{ backgroundColor: '#dc2626' }}
+                          onClick={async () => {
+                            if (!confirm('Delete this remark?')) return;
+                            try {
+                              const token = localStorage.getItem('token');
+                              const response = await fetch(`${API}/api/orders/${modalOrder._id}/remarks`, {
+                                method: 'PUT',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({ remarks: '' }),
+                              });
+                              if (!response.ok) throw new Error('Failed to delete remarks');
+                              toast.success('Remarks deleted');
+                              setRemarksText('');
+                              dispatch(fetchOrders());
+                            } catch (error) {
+                              toast.error(error.message);
+                            }
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

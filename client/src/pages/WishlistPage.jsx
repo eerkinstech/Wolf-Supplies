@@ -21,6 +21,27 @@ const WishlistPage = () => {
     return img.startsWith('http') ? img : `${API}${img}`;
   };
 
+  const generateSlug = (str) => {
+    return String(str || '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-');
+  };
+
+  // Get SEO-friendly slug from item
+  const getProductSlug = (item) => {
+    if (!item) return '';
+    // Try to get slug from various properties
+    if (item.slug) return item.slug;
+    if (item.product && item.product.slug) return item.product.slug;
+    if (item.snapshot && item.snapshot.slug) return item.snapshot.slug;
+    // Fallback: generate slug from name
+    if (item.name) return generateSlug(item.name);
+    return '';
+  };
+
   const cartItemsState = useSelector((state) => state.cart.items);
 
   const toCartItem = (wishItem) => {
@@ -107,18 +128,43 @@ const WishlistPage = () => {
   };
 
   const handleRemoveFromWishlist = (itemOrId) => {
-    const token = localStorage.getItem('token');
+    console.log('=== handleRemoveFromWishlist ===');
+    console.log('itemOrId:', itemOrId);
+    
     // itemOrId can be string id or the item object
     if (typeof itemOrId === 'string') {
-      if (token) dispatch(removeItemFromServer(itemOrId));
-      else dispatch(removeFromWishlist(itemOrId));
+      console.log('Removing by string ID:', itemOrId);
+      dispatch(removeItemFromServer(itemOrId)).then(() => {
+        toast.success('Removed from wishlist');
+      }).catch((err) => {
+        console.error('Remove failed:', err);
+        toast.error('Failed to remove from wishlist');
+      });
     } else if (itemOrId && typeof itemOrId === 'object') {
-      const productId = itemOrId.productId || itemOrId._id || (itemOrId.product && (itemOrId.product._id || itemOrId.product));
+      // For snapshot items, productId is stored in _id field
+      // For regular product items, get from product._id or _id
+      let productId = null;
+      if (itemOrId.__isSnapshot) {
+        // Snapshot item: _id contains the product ID
+        productId = itemOrId._id;
+        console.log('Snapshot item detected, productId from _id:', productId);
+      } else {
+        // Regular product item
+        productId = itemOrId.productId || itemOrId._id || (itemOrId.product && (itemOrId.product._id || itemOrId.product));
+        console.log('Regular item, productId:', productId);
+      }
+      
       const variantId = itemOrId.variantId || (itemOrId.snapshot && itemOrId.snapshot.variantId) || null;
-      if (token) dispatch(removeItemFromServer({ productId, variantId }));
-      else dispatch(removeFromWishlist({ productId, variantId }));
+      console.log('variantId:', variantId);
+      console.log('Sending to backend:', { productId, variantId });
+      
+      dispatch(removeItemFromServer({ productId, variantId })).then(() => {
+        toast.success('Removed from wishlist');
+      }).catch((err) => {
+        console.error('Remove failed:', err);
+        toast.error('Failed to remove from wishlist');
+      });
     }
-    toast.success('Removed from wishlist');
   };
 
   const handleAddToCart = (item) => {
@@ -130,12 +176,9 @@ const WishlistPage = () => {
     const cartItem = toCartItem(item);
     if (!cartItem) return;
     dispatch(addToCart(cartItem));
-    const token = localStorage.getItem('token');
-    if (token) {
-      // persist updated cart to server
-      const newCart = [...(cartItemsState || []), cartItem];
-      dispatch(syncCart(newCart));
-    }
+    // Persist updated cart to server for both authenticated AND guest users
+    const newCart = [...(cartItemsState || []), cartItem];
+    dispatch(syncCart(newCart));
     toast.success('Added to cart');
   };
 
@@ -163,21 +206,17 @@ const WishlistPage = () => {
       }
     });
 
-    // After moving to cart clear only the moved items from wishlist
-    const token = localStorage.getItem('token');
-    if (token) {
-      // persist cart to server then remove moved items from server wishlist
-      const newCart = [...(cartItemsState || []), ...cartItemsToAdd];
-      dispatch(syncCart(newCart)).then(() => {
-        availableItems.forEach((it) => {
-          dispatch(removeItemFromServer({ productId: it.productId || it._id, variantId: it.variantId || null }));
-        });
-      });
-    } else {
-      // local: remove moved items and keep skipped
-      const kept = wishlistItems.filter((it) => skipped.includes(it));
-      dispatch({ type: 'wishlist/setWishlist', payload: kept });
-    }
+    // After moving to cart, remove from wishlist and sync to server
+    // Persist cart to server for both authenticated AND guest users
+    const newCart = [...(cartItemsState || []), ...cartItemsToAdd];
+    dispatch(syncCart(newCart));
+
+    // Remove moved items from wishlist by calling removeItemFromServer for each
+    availableItems.forEach((item) => {
+      const productId = item.productId || item._id || (item.product && (item.product._id || item.product));
+      const variantId = item.variantId || null;
+      dispatch(removeItemFromServer({ productId, variantId }));
+    });
 
     toast.success(`Moved ${availableItems.length} item(s) to cart${skipped.length ? ` — ${skipped.length} out-of-stock skipped` : ''}`);
   };
@@ -188,24 +227,40 @@ const WishlistPage = () => {
         'Are you sure you want to clear your entire wishlist?'
       );
       if (confirmClear) {
-        const token = localStorage.getItem('token');
-        if (token) {
-          dispatch(clearWishlistServer());
-        } else {
-          dispatch({ type: 'wishlist/clearWishlist' });
-        }
-        toast.success('Wishlist cleared');
+        dispatch(clearWishlistServer()).then(() => {
+          toast.success('Wishlist cleared');
+        }).catch((err) => {
+          console.error('Clear failed:', err);
+          toast.error('Failed to clear wishlist');
+        });
       }
     }
   };
 
-  // Load server wishlist when authenticated
+  // Load server wishlist when authenticated (ensures freshest data)
   React.useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
+      console.log('WishlistPage mounted: Fetching wishlist from server');
       dispatch(fetchWishlist());
     }
   }, [dispatch]);
+
+  // Log current wishlist items for debugging
+  React.useEffect(() => {
+    console.log('=== WishlistPage Items Update ===');
+    console.log('Total items:', wishlistItems.length);
+    wishlistItems.forEach((item, idx) => {
+      console.log(`Item ${idx}:`, {
+        _id: item._id,
+        name: item.name,
+        productId: item.productId,
+        variantId: item.variantId,
+        isSnapshot: item.__isSnapshot,
+        hasProduct: !!item.product
+      });
+    });
+  }, [wishlistItems]);
 
   const sortedItems = getSortedItems();
 
@@ -300,7 +355,7 @@ const WishlistPage = () => {
                       {/* If this is a variant snapshot (server or local), render a compact snapshot card */}
                       {item.__isSnapshot ? (
                         <div className="flex items-stretch md:items-start">
-                          <div className="w-36 flex-shrink-0 overflow-hidden" style={{ backgroundColor: 'var(--color-bg-section)' }}>
+                          <div className="w-36 shrink-0 overflow-hidden" style={{ backgroundColor: 'var(--color-bg-section)' }}>
                             <img
                               src={getImgSrc(item.image) || 'https://via.placeholder.com/300'}
                               alt={item.name}
@@ -311,7 +366,7 @@ const WishlistPage = () => {
                           <div className="p-4 flex-1 flex flex-col">
                             <div className="flex items-start gap-3">
                               <div className="flex-1">
-                                <Link to={`/product/${item.productId || item._id}`} className="hover:underline">
+                                <Link to={`/product/${getProductSlug(item)}`} className="hover:underline">
                                   <h3 className="text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>{item.name}</h3>
                                 </Link>
                                 <div className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{Object.entries(item.selectedVariants || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}</div>
@@ -361,13 +416,13 @@ const WishlistPage = () => {
                                 <FaTrash /> Remove
                               </button>
 
-                              <Link to={`/product/${item.productId || item._id}`} className="ml-auto inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2" style={{
+                              <Link to={`/product/${getProductSlug(item)}`} className="ml-auto inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2" style={{
                                 borderColor: 'var(--color-border-light)',
                                 borderWidth: '1px',
                                 color: 'var(--color-text-primary)',
                               }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
+                                onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
+                                onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
                               >
                                 View Product
                               </Link>
@@ -430,57 +485,20 @@ const WishlistPage = () => {
                 </div>
 
                 <div className="flex gap-3 mb-4">
-                  <Link to="/products" className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2" style={{
+                  <Link to="/products" className="flex-1 inline-flex items-center bg-white justify-center gap-2 rounded-lg px-3 py-2" style={{
                     borderColor: 'var(--color-border-light)',
                     borderWidth: '1px',
                     color: 'var(--color-text-primary)',
                   }}
-                  onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-secondary)')}
-                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-bg-secondary)')}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = 'white')}
                   >
                     Continue Shopping
                   </Link>
-                  <button
-                    onClick={handleClearWishlist}
-                    disabled={wishlistItems.length === 0}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg disabled:opacity-60"
-                    style={{
-                      backgroundColor: 'var(--color-bg-primary)',
-                      borderColor: 'var(--color-border-light)',
-                      borderWidth: '1px',
-                      color: 'var(--color-accent-primary)',
-                    }}
-                    onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-bg-section)')}
-                    onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-bg-primary)')}
-                  >
-                    Clear
-                  </button>
+                
                 </div>
 
-                <div className="mb-4">
-                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Quick Preview</p>
-                  <div className="mt-3 grid grid-cols-4 gap-2">
-                    {wishlistItems.slice(0, 8).map((p) => (
-                      <div key={(p.productId || p._id) + (p.variantId ? `-${p.variantId}` : '')} className="w-full h-16 rounded overflow-hidden" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
-                        <img
-                          src={getImgSrc((p.image) || (p.images && p.images[0]) || p.image) || 'https://via.placeholder.com/150'}
-                          alt={p.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => { e.target.src = 'https://via.placeholder.com/150'; }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-4 p-3 rounded" style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  borderColor: 'var(--color-border-light)',
-                  borderWidth: '1px',
-                  color: 'var(--color-text-secondary)'
-                }}>
-                  <p className="text-sm">💡 Tip: Items may go out of stock. Move favourites to cart to reserve them.</p>
-                </div>
+                
               </aside>
             </div>
           </div>

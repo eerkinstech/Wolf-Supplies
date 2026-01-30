@@ -9,8 +9,10 @@ const WishlistItemSchema = new Schema({
 });
 
 const WishlistSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User', sparse: true, index: true },
+  guestId: { type: String, sparse: true, index: true }, // UUID for guest tracking
   items: { type: [WishlistItemSchema], default: [] },
+  updatedAt: { type: Date, default: Date.now, index: true },
 }, { timestamps: true });
 
 export default model('Wishlist', WishlistSchema);

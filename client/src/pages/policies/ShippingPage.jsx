@@ -1,8 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useMetaTags from '../../hooks/useMetaTags';
 import { FaTruck, FaClock, FaGlobeEurope, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 const PoliciesShippingPage = () => {
+  // Set up meta tags for SEO
+  useMetaTags({
+    title: 'Shipping Policy | Fast & Reliable UK Delivery',
+    description: 'Wolf Supplies LTD Shipping Policy - Fast delivery, tracking information, and reliable service across the UK.',
+    keywords: 'shipping, delivery, policy, UK, fast delivery, tracking',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)]">
       {/* Header Section */}

@@ -72,7 +72,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/policies/returns-refund" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300">
-                  Returns & Refunds
+                  Return & Refunds
                 </Link>
               </li>
               <li>
@@ -174,7 +174,7 @@ const Footer = () => {
               </Link>
               <span className="text-[var(--color-text-muted)]">|</span>
               <Link to="/policies/returns-refund" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300 text-sm">
-                Returns & Refunds
+                Return & Refunds
               </Link>
               <span className="text-[var(--color-text-muted)]">|</span>
               <Link to="/policies/faq" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300 text-sm">

@@ -100,6 +100,15 @@ const contactSubmissionSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    movedToChat: {
+        type: Boolean,
+        default: false
+    },
+    movedToChatAt: Date,
+    fromContactForm: {
+        type: Boolean,
+        default: true
+    },
     ipAddress: String,
     userAgent: String,
 }, { timestamps: true });

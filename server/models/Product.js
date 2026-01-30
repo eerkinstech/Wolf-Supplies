@@ -52,9 +52,15 @@ const productSchema = new mongoose.Schema({
   numReviews: { type: Number, default: 0 },
   reviews: [reviewSchema],
   // Key selling points shown on PDP - now stored as HTML from rich text editor
+  benefitsHeading: { type: String, default: 'Why Buy This Product' },
   benefits: String,
 
-  // Metadata
+  // SEO Metadata
+  metaTitle: { type: String, default: '' },
+  metaDescription: { type: String, default: '' },
+  metaKeywords: { type: String, default: '' },
+  
+  // Admin Metadata
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   // Draft flag: true = not published yet
   isDraft: { type: Boolean, default: false },
