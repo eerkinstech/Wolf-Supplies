@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import useMetaTags from '../hooks/useMetaTags';
 import Layout from '../components/Layout/Layout';
 import FeaturedCategories from '../components/Categories/FeaturedCategories/FeaturedCategories';
@@ -20,9 +20,9 @@ const HomePage = () => {
 
   // Set up meta tags for SEO
   useMetaTags({
-    title: 'Wolf Supplies LTD | Premium Products & Quality Solutions',
-    description: 'Shop premium products at Wolf Supplies LTD. Find quality solutions, fast UK delivery, and exceptional customer service.',
-    keywords: 'products, supplies, shopping, UK delivery, quality, premium',
+    title: 'Wolf Supplies LTD | Premium Quality Products, Fast UK Delivery & 31-Day Returns',
+    description: 'Shop premium products at Wolf Supplies LTD (UK Company 16070029). Fast 2-4 day UK delivery, free shipping, 31-day money-back guarantee. PCI DSS compliant, GDPR protected. Exceptional customer service Monday-Friday 9AM-6PM GMT.',
+    keywords: 'wolf supplies, products, shop, UK delivery, quality, premium, shopping online, fast delivery, returns policy, customer service',
     url: typeof window !== 'undefined' ? window.location.href : '',
   });
 
@@ -48,8 +48,7 @@ const HomePage = () => {
           Array.isArray(data?.featuredProducts) ? data.featuredProducts : []
         );
       } catch (error) {
-        console.error('Error loading featured collections:', error);
-      }
+}
     };
 
     loadFeaturedCollections();
@@ -58,6 +57,8 @@ const HomePage = () => {
   return (
     <Layout showMenuSlider={true}>
       <div className="w-full bg-white">
+       
+
         {/* Features Section */}
         <FeaturesSection />
 
@@ -79,16 +80,19 @@ const HomePage = () => {
           </section>
         )}
 
+   
+
         {/* Newsletter */}
         <section className="py-4 px-4">
           <Newsletter />
         </section>
 
-
         {/* About */}
         <section>
           <AboutSection />
         </section>
+
+       
 
       </div>
     </Layout>

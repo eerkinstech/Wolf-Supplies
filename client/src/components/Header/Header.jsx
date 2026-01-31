@@ -88,8 +88,7 @@ const Header = ({ hideMenu = false }) => {
         }
 
         recognition.onstart = () => {
-            console.log('Voice search started...');
-        };
+};
 
         recognition.onresult = (event) => {
             let interimTranscript = '';
@@ -112,8 +111,7 @@ const Header = ({ hideMenu = false }) => {
         };
 
         recognition.onerror = (event) => {
-            console.error('Voice search error:', event.error);
-            if (event.error !== 'no-speech') {
+if (event.error !== 'no-speech') {
                 toast.error('Error in voice search. Please try again.');
             }
             if (isMobile) {
@@ -174,9 +172,7 @@ const Header = ({ hideMenu = false }) => {
             const itemPath = `${path}[${idx}]`;
             const hasLink = item.url || item.link;
             const linkValue = item.url || item.link;
-            console.log(`✓ ${itemPath}: "${item.label || item.name}" → ${hasLink ? `"${linkValue}"` : '❌ NO LINK'}`);
-
-            // Recursively check submenu items
+// Recursively check submenu items
             const submenuItems = item.submenu || item.sub || [];
             if (submenuItems.length > 0) {
                 validateMenuLinks(submenuItems, itemPath);
@@ -193,16 +189,11 @@ const Header = ({ hideMenu = false }) => {
                 if (!res.ok) return;
                 const data = await res.json();
                 if (data && Array.isArray(data.browseMenu)) {
-                    console.log('=== MENU LOADED FROM API ===');
-                    console.log('Menu data:', data.browseMenu);
-                    console.log('=== VALIDATING MENU LINKS ===');
-                    validateMenuLinks(data.browseMenu);
-                    console.log('=== VALIDATION COMPLETE ===');
-                    setBrowseMenu(data.browseMenu);
+validateMenuLinks(data.browseMenu);
+setBrowseMenu(data.browseMenu);
                 }
             } catch (err) {
-                console.warn('Could not load browse menu', err);
-            }
+}
         };
         loadMenu();
     }, []);
@@ -379,8 +370,6 @@ const Header = ({ hideMenu = false }) => {
                                     {mobileMenuOpen ? <FaTimes /> : <FaBars />}
                                 </button>
 
-
-
                                 {/* Logo */}
                                 <Link to="/" className="flex items-center gap-2 flex-shrink-0">
                                     <img src={wolfLogo} alt="Wolf Supplies LTD" className="h-24 w-auto object-contain" />
@@ -414,7 +403,6 @@ const Header = ({ hideMenu = false }) => {
                                     </button>
                                 </form>
                             </div>
-
 
                             {/* Right Actions */}
                             <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
@@ -675,8 +663,7 @@ const Header = ({ hideMenu = false }) => {
                     <div className="p-4">
                         <div className="flex items-center justify-between">
                             <Link to="/" className="flex items-center gap-2">
-                                <div className="text-3xl">🛍️</div>
-                                <span className="text-lg font-bold text-[var(--color-accent-primary)]">Wolf Supplies</span>
+                                <img src={wolfLogo} alt="Wolf Supplies" className="h-10 w-auto" />
                             </Link>
                             <button onClick={() => setMobileMenuOpen(false)} className="text-2xl p-2 rounded-md hover:bg-[var(--color-bg-section)]">
                                 <FaTimes />
@@ -831,7 +818,6 @@ const Header = ({ hideMenu = false }) => {
                     </div>
                 </div>
             </div>
-
 
         </header>
     );

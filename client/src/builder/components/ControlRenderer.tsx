@@ -896,13 +896,9 @@ const MediaPickerControl: React.FC<MediaPickerControlProps>=({
         // Extract URL from response - could be nested in asset object or direct
         const uploadedUrl=data.asset?.url||data.url||data.path||file.name;
         onChange(uploadedUrl);
-      } else {
-        console.error('Upload failed');
-        alert('Upload failed. Please try again.');
+      } else {alert('Upload failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert('Upload error. Please try again.');
+    } catch (error) {alert('Upload error. Please try again.');
     } finally {
       setIsUploading(false);
     }

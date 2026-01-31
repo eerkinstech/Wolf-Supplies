@@ -36,7 +36,7 @@ export const getCategories = async (req, res) => {
         const productCount = await Product.countDocuments({
           categories: category._id
         });
-        console.log(`Category: ${category.name} (${category._id}), Products: ${productCount}`);
+
         category.productCount = productCount;
 
         // Recursively add product count to subcategories
@@ -49,7 +49,7 @@ export const getCategories = async (req, res) => {
     await addProductCount(categories);
     res.json(categories);
   } catch (error) {
-    console.error('getCategories error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -84,7 +84,7 @@ export const createCategory = async (req, res) => {
 
     res.status(201).json(category);
   } catch (error) {
-    console.error('createCategory error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -124,7 +124,7 @@ export const getCategoryById = async (req, res) => {
     const result = category.toObject();
     res.json(result);
   } catch (error) {
-    console.error('getCategoryById error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -165,7 +165,7 @@ export const getCategoryBySlug = async (req, res) => {
     const result = category.toObject();
     res.json(result);
   } catch (error) {
-    console.error('getCategoryBySlug error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -217,7 +217,7 @@ export const updateCategory = async (req, res) => {
     const result = updated.toObject();
     res.json(result);
   } catch (error) {
-    console.error('updateCategory error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -239,7 +239,8 @@ export const deleteCategory = async (req, res) => {
     await deleteSubcategories(req.params.id);
     res.json({ message: 'Category and all subcategories removed' });
   } catch (error) {
-    console.error('deleteCategory error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
+

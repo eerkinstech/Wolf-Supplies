@@ -24,9 +24,7 @@ export const useCartSync = () => {
 
       // Debounce the sync to avoid too many requests
       // Sync both when items are added AND when items are removed (even if empty)
-      syncTimeoutRef.current = setTimeout(() => {
-        console.log('Auto-syncing cart items:', cartItems.length);
-        dispatch(syncCart(cartItems));
+      syncTimeoutRef.current = setTimeout(() => {dispatch(syncCart(cartItems));
       }, 500); // Wait 500ms after last change before syncing
 
       previousItemsRef.current = cartItems;

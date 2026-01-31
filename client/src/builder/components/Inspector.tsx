@@ -19,10 +19,7 @@ interface InspectorProps {
  * Inspector - 3-tab Elementor-like inspector (CONTENT / STYLE / ADVANCED)
  * Renders controls for any node: layout (section/container/column) or widget
  */
-export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) => {
-  console.warn(`🟡 [Inspector] RE-RENDERING - currentDevice=${useElementorBuilder().currentDevice}`);
-
-  const {
+export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) => {const {
     getSelectedNode,
     updateNodeProps,
     updateNodeStyle,
@@ -189,10 +186,7 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
             {schema.style.length===0? (
               <p className="text-xs text-gray-900 text-center py-4">No style controls</p>
             ):(
-              schema.style.map((control) => {
-                console.warn(`📌 [Inspector.style.map] Rendering control: ${control.name}, responsive=${control.responsive}, currentDevice=${currentDevice}`);
-                
-                // Get base desktop value
+              schema.style.map((control) => {// Get base desktop value
                 const desktopValue=selectedNode.style?.[control.name];
 
                 // Get device-specific override
@@ -218,22 +212,8 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
                         <ControlRenderer
                           control={control}
                           value={displayValue}
-                          onChange={(value) => {
-                            console.error(`🔴 CRITICAL onChange fired for ${control.name}`);
-                            console.error(`  displayValue before change:`, displayValue);
-                            console.error(`  new value:`, value);
-                            const device=currentDeviceRef.current;
-                            console.error(`  device from ref: ${device}`);
-                            console.error(`  value: ${value}`);
-                            console.error(`  device==='desktop': ${device==='desktop'}`);
-                            
-                            if (device==='desktop') {
-                              console.warn(`  ✅ Taking DESKTOP path`);
-                              console.warn(`  Calling updateNodeStyle('${selectedNodeId}', { '${control.name}': `, value, `}`);
-                              updateNodeStyle(selectedNodeId, { [control.name]: value });
-                            } else {
-                              console.warn(`  ✅ Taking RESPONSIVE path for ${device}`);
-                              updateNodeResponsiveStyle(selectedNodeId, device, control.name, value);
+                          onChange={(value) => {const device=currentDeviceRef.current;if (device==='desktop') {updateNodeStyle(selectedNodeId, { [control.name]: value });
+                            } else {updateNodeResponsiveStyle(selectedNodeId, device, control.name, value);
                             }
                           }}
                         />

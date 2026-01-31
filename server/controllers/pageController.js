@@ -71,3 +71,4 @@ export const deletePage = async (req, res) => {
         res.status(500).json({ message: 'Error deleting page', error: err.message });
     }
 };
+

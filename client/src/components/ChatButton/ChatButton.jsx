@@ -91,9 +91,7 @@ const ChatButton = () => {
                     localStorage.setItem('chatUnreadCount', unreadFromAdmin);
                 }
             }
-        } catch (error) {
-            console.error('Error fetching conversation:', error);
-        }
+        } catch (error) {}
     };
 
     // Check unread messages immediately
@@ -109,13 +107,9 @@ const ChatButton = () => {
                         msg => msg.sender === 'admin' && !msg.isRead
                     ).length;
                     setUnreadCount(unreadFromAdmin);
-                    localStorage.setItem('chatUnreadCount', unreadFromAdmin);
-                    console.log('Unread messages found:', unreadFromAdmin);
-                }
+                    localStorage.setItem('chatUnreadCount', unreadFromAdmin);}
             }
-        } catch (error) {
-            console.error('Error checking unread messages immediately:', error);
-        }
+        } catch (error) {}
     };
 
     // Check unread messages in background
@@ -133,14 +127,10 @@ const ChatButton = () => {
                     ).length;
                     setUnreadCount(unreadFromAdmin);
                     localStorage.setItem('chatUnreadCount', unreadFromAdmin);
-                    if (unreadFromAdmin > 0) {
-                        console.log('Badge updated with unread count:', unreadFromAdmin);
-                    }
+                    if (unreadFromAdmin > 0) {}
                 }
             }
-        } catch (error) {
-            console.error('Error checking unread messages:', error);
-        }
+        } catch (error) {}
     };
 
     const handleStartChat = (e) => {
@@ -198,11 +188,7 @@ const ChatButton = () => {
                 email: trimmedEmail,
                 message: trimmedMessage,
                 subject: 'Chat Support'
-            };
-
-            console.log('Sending message with payload:', payload);
-
-            const response = await fetch(`${API}/api/chat`, {
+            };const response = await fetch(`${API}/api/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -210,10 +196,7 @@ const ChatButton = () => {
                 body: JSON.stringify(payload)
             });
 
-            const responseData = await response.json();
-            console.log('Server response:', responseData);
-
-            if (!response.ok) {
+            const responseData = await response.json();if (!response.ok) {
                 throw new Error(responseData.message || `Server error: ${response.status}`);
             }
 
@@ -225,9 +208,7 @@ const ChatButton = () => {
             } else {
                 throw new Error('Invalid response from server');
             }
-        } catch (error) {
-            console.error('Send message error:', error);
-            toast.error(error.message || 'Failed to send message');
+        } catch (error) {toast.error(error.message || 'Failed to send message');
         } finally {
             setSending(false);
         }

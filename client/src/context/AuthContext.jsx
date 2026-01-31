@@ -31,12 +31,8 @@ export const AuthProvider = ({ children }) => {
           // hydrate cart from server via thunk
           try {
             dispatch(fetchCart());
-          } catch (err) {
-            console.error('Failed to dispatch fetchCart', err);
-          }
-        } catch (error) {
-          console.error('Token verification failed:', error);
-          localStorage.removeItem('token');
+          } catch (err) {}
+        } catch (error) {localStorage.removeItem('token');
           setToken(null);
           setUser(null);
           setIsAdmin(false);
@@ -60,9 +56,7 @@ export const AuthProvider = ({ children }) => {
       // hydrate cart after login
       try {
         dispatch(fetchCart());
-      } catch (err) {
-        console.error('Failed to dispatch fetchCart after login', err);
-      }
+      } catch (err) {}
       toast.success('Login successful!');
       return { success: true, user: data.user || data };
     } catch (error) {

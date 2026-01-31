@@ -22,7 +22,7 @@ export const protect = asyncHandler(async (req, res, next) => {
     }
     next();
   } catch (error) {
-    console.error('protect middleware token error:', error.message || error);
+
     return res.status(401).json({ message: 'Not authorized, token failed' });
   }
 });
@@ -33,3 +33,4 @@ export const admin = (req, res, next) => {
   }
   return res.status(403).json({ message: 'Not authorized as an admin' });
 };
+

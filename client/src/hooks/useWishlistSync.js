@@ -16,17 +16,13 @@ export const useWishlistSync = () => {
     // Skip the initial load (items should be loaded from fetchWishlist)
     if (!hasInitializedRef.current) {
       hasInitializedRef.current = true;
-      previousItemsRef.current = wishlistItems;
-      console.log('useWishlistSync: Initial load, baseline:', wishlistItems.length, 'items');
-      return;
+      previousItemsRef.current = wishlistItems;return;
     }
 
     // Check if wishlist items have changed after initial load
     const itemsChanged = JSON.stringify(previousItemsRef.current) !== JSON.stringify(wishlistItems);
 
-    if (itemsChanged) {
-      console.log('useWishlistSync: Wishlist changed from', previousItemsRef.current.length, 'to', wishlistItems.length, 'items');
-      previousItemsRef.current = wishlistItems;
+    if (itemsChanged) {previousItemsRef.current = wishlistItems;
     }
   }, [wishlistItems, dispatch]);
 };

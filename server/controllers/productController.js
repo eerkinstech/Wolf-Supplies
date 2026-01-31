@@ -70,38 +70,42 @@ export const getProductById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
-    console.log('Product found:', product._id);
-    console.log('Reviews before population:', JSON.stringify(product.reviews, null, 2));
-    
-    // Manually populate user data in reviews
-    if (product.reviews && product.reviews.length > 0) {
-      const reviewsWithUsers = await Promise.all(
-        product.reviews.map(async (review) => {
-          const reviewObj = review.toObject ? review.toObject() : review;
-          console.log('Processing review with user ID:', reviewObj.user);
-          
-          if (reviewObj.user) {
-            try {
-              const userData = await User.findById(reviewObj.user).select('email name').lean();
-              console.log('Fetched user data:', userData);
-              if (userData) {
-                reviewObj.user = userData;
-              }
-            } catch (err) {
-              console.error('Error fetching user:', err);
+
+    // Manually populate reviews with user data
+    if (product.reviews && Array.isArray(product.reviews) && product.reviews.length > 0) {
+      const User = mongoose.model('User');
+      const populatedReviews = [];
+      
+      for (const review of product.reviews) {
+        let reviewObj = review.toObject ? review.toObject() : { ...review };
+        
+        // Populate user data if user ID exists
+        if (reviewObj.user) {
+          try {
+            const userData = await User.findById(reviewObj.user).lean();
+            if (userData) {
+              reviewObj.user = {
+                _id: userData._id,
+                name: userData.name,
+                email: userData.email
+              };
             }
+          } catch (err) {
+            // If user fetch fails, keep the user ID
           }
-          return reviewObj;
-        })
-      );
-      product.reviews = reviewsWithUsers;
-      console.log('Reviews after population:', JSON.stringify(product.reviews, null, 2));
+        }
+        
+        populatedReviews.push(reviewObj);
+      }
+      
+      product.reviews = populatedReviews;
+    } else if (!product.reviews) {
+      product.reviews = [];
     }
     
     res.json(product);
   } catch (error) {
-    console.error('Error fetching product:', error);
+
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -143,7 +147,6 @@ export const createProduct = async (req, res) => {
 
     const safeVariants = parseMaybeArray(variants);
     const safeVariantCombinations = parseMaybeArray(variantCombinations);
-
 
     // Resolve categories: support both new categories array and legacy single category
     let categoryIds = [];
@@ -210,7 +213,7 @@ export const createProduct = async (req, res) => {
     const created = await product.save();
     res.status(201).json(created);
   } catch (error) {
-    console.error('createProduct error:', error);
+
     res.status(500).json({ message: error.message, stack: error.stack });
   }
 };
@@ -297,7 +300,7 @@ export const updateProduct = async (req, res) => {
     const updated = await product.save();
     res.json(updated);
   } catch (error) {
-    console.error('updateProduct error:', error);
+
     res.status(500).json({ message: error.message, stack: error.stack });
   }
 };
@@ -347,7 +350,7 @@ export const createProductReview = async (req, res) => {
     await product.save();
     res.status(201).json({ message: 'Review added' });
   } catch (error) {
-    console.error('createProductReview error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -365,11 +368,18 @@ export const updateReviewApprovalStatus = async (req, res) => {
     }
 
     product.reviews[reviewIndex].isApproved = Boolean(isApproved);
+    
+    // Recalculate rating based on all reviews (both approved and unapproved)
+    product.numReviews = product.reviews.length;
+    product.rating = product.reviews.length > 0
+      ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length
+      : 0;
+    
     await product.save();
 
     res.json({ message: 'Review approval status updated' });
   } catch (error) {
-    console.error('updateReviewApprovalStatus error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -394,7 +404,8 @@ export const deleteProductReview = async (req, res) => {
     await product.save();
     res.json({ message: 'Review deleted' });
   } catch (error) {
-    console.error('deleteProductReview error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
+

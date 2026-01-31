@@ -49,10 +49,11 @@ const orderSchema = new mongoose.Schema({
   taxPrice: Number,
   shippingPrice: Number,
   totalPrice: Number,
-  isPaid: { type: Boolean, default: false },
+  couponCode: { type: String, default: null }, // Applied coupon code
+  discountAmount: { type: Number, default: 0 }, // Discount amount applied
+
   paidAt: Date,
-  isShipped: { type: Boolean, default: false }, // Track shipped status separately
-  isDelivered: { type: Boolean, default: false },
+  deliveryStatus: { type: String, enum: ['', 'shipped', 'delivered', 'refunded'], default: '' }, // Single delivery status field
   deliveredAt: Date,
   status: { type: String, default: 'pending' },
   remarks: { type: String, default: '' },
@@ -60,3 +61,4 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;
+

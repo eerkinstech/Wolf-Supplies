@@ -14,7 +14,6 @@ const seedDB = async () => {
     // Connect to MongoDB
     const mongoUri = process.env.DATABASE_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
     await mongoose.connect(mongoUri);
-    console.log('MongoDB Connected for seeding...');
 
     // Clear existing data
     await User.deleteMany({});
@@ -22,7 +21,6 @@ const seedDB = async () => {
     await Product.deleteMany({});
     await Page.deleteMany({});
     await Policy.deleteMany({});
-    console.log('Cleared existing data');
 
     // Hash passwords
     const saltRounds = 10;
@@ -50,8 +48,6 @@ const seedDB = async () => {
     });
     await User.collection.insertOne(regularUser.toObject());
 
-    console.log('✓ Users created');
-
     // Create parent categories with images
     const parentCategories = await Category.create([
       { name: 'Gadgets & Electronics', slug: 'gadgets-electronics', description: 'Gadgets, electronics and accessories', image: 'https://images.unsplash.com/photo-1510557880182-3a935d4c205e?w=500&h=500&fit=crop' },
@@ -73,7 +69,6 @@ const seedDB = async () => {
 
     const categories = parentCategories.concat(subcategories);
     const catBySlug = (slug) => (categories.find((c) => c.slug === slug) || {})._id;
-    console.log(`✓ ${categories.length} categories created`);
 
     // Products with multiple images
     const products = await Product.create([
@@ -271,8 +266,6 @@ const seedDB = async () => {
       }
     ]);
 
-    console.log(`✓ ${products.length} products created`);
-
     // Create Pages
     const pages = await Page.insertMany([
       {
@@ -294,8 +287,6 @@ const seedDB = async () => {
         isPublished: true,
       }
     ]);
-
-    console.log(`✓ ${pages.length} pages created`);
 
     // Create Policies
     const policies = await Policy.insertMany([
@@ -337,19 +328,12 @@ const seedDB = async () => {
       }
     ]);
 
-    console.log(`✓ ${policies.length} policies created`);
-    console.log('✅ Database seeded successfully!');
-    console.log('📝 Test Credentials:');
-    console.log('   Admin: admin@ecommerce.com / Admin@123');
-    console.log('   User: john@example.com / User@123');
-    console.log('📄 Pages created: About (about), Contact (contact)');
-    console.log('⚖️  Policies created: Shipping, Returns & Refunds, Privacy Policy, Terms of Service');
-
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding database:', error.message);
+
     process.exit(1);
   }
 };
 
 seedDB();
+

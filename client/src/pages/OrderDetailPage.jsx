@@ -48,7 +48,6 @@ const OrderDetailPage = () => {
         const data = await response.json();
         setOrder(data);
       } catch (err) {
-        console.error('Order fetch failed', err);
       } finally {
         setLoading(false);
       }
@@ -445,6 +444,12 @@ const OrderDetailPage = () => {
                 <span>Tax:</span>
                 <span>£${(order.taxPrice || 0).toFixed(2)}</span>
               </div>
+              ${order.discountAmount > 0 && order.couponCode ? `
+              <div class="total-row" style="color: #10b981; font-weight: bold;">
+                <span>Discount (${order.couponCode}):</span>
+                <span>-£${(order.discountAmount || 0).toFixed(2)}</span>
+              </div>
+              ` : ''}
               <div class="total-row grand-total">
                 <span>Grand Total:</span>
                 <span>£${(order.totalPrice || order.totalAmount || 0).toFixed(2)}</span>
@@ -457,7 +462,7 @@ const OrderDetailPage = () => {
             <h2 class="section-title">Order Status</h2>
             <div class="badges">
               ${order.status === 'completed' ? '<div class="badge completed">✓ Completed</div>' : '<div class="badge processing">⏳ Processing</div>'}
-              ${order.isDelivered ? '<div class="badge delivered">✓ Delivered</div>' : (order.status === 'shipped' ? '<div class="badge shipped">📦 Shipped</div>' : '<div class="badge processing">⏳ In Transit</div>')}
+              ${order.deliveryStatus === 'refunded' ? '<div class="badge refunded" style="background-color: #dc2626; color: white;">⚠️ Refunded</div>' : (order.deliveryStatus === 'delivered' ? '<div class="badge delivered">✓ Delivered</div>' : (order.deliveryStatus === 'shipped' ? '<div class="badge shipped">📦 Shipped</div>' : '<div class="badge processing">⏳ No Status</div>'))}
             </div>
           </div>
 
@@ -703,6 +708,12 @@ const OrderDetailPage = () => {
                 <span className="text-[var(--color-text-secondary)]">Tax:</span>
                 <span className="font-bold text-[var(--color-text-primary)]">£{totals.tax.toFixed(2)}</span>
               </div>
+              {order.discountAmount > 0 && order.couponCode && (
+                <div className="flex justify-between">
+                  <span className="text-[var(--color-text-secondary)]">Discount ({order.couponCode}):</span>
+                  <span className="font-bold text-green-600">-£{Number(order.discountAmount).toFixed(2)}</span>
+                </div>
+              )}
               <div className="border-t pt-3 flex justify-between" style={{ borderColor: 'var(--color-border-light, #e5e5e5)' }}>
                 <span className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">Grand Total:</span>
                 <span className="text-base sm:text-lg font-bold text-[var(--color-accent-primary)]">£{totals.total.toFixed(2)}</span>
@@ -724,9 +735,9 @@ const OrderDetailPage = () => {
                 </p>
               </div>
               <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
-                <p className="text-xs sm:text-sm mb-1 font-semibold text-[var(--color-text-light)]">Delivery</p>
+                <p className="text-xs sm:text-sm mb-1 font-semibold text-[var(--color-text-light)]">Delivery Status</p>
                 <p className="font-bold text-sm sm:text-base text-[var(--color-text-primary)]">
-                  {order.isDelivered ? '✓ Delivered' : order.status === 'shipped' ? '📦 Shipped' : '⏳ Not Shipped'}
+                  {order.deliveryStatus === 'refunded' ? '⚠️ Refunded' : (order.deliveryStatus === 'delivered' ? '✓ Delivered' : (order.deliveryStatus === 'shipped' ? '📦 Shipped' : '⏳ No Status'))}
                 </p>
               </div>
             </div>

@@ -24,3 +24,4 @@ router.put('/:id', protect, admin, updateProduct);
 router.delete('/:id', protect, admin, deleteProduct);
 
 export default router;
+

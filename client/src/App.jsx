@@ -41,6 +41,7 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminMenuPage from './pages/admin/AdminMenuPage'
 import AdminChatPage from './pages/admin/AdminChatPage'
+import AdminCouponsPage from './pages/admin/AdminCouponsPage'
 import PaymentOptionsPage from './pages/PaymentOptionsPage'
 
 // Route Protection Components
@@ -66,15 +67,12 @@ const AppContent = () => {
 
       // Restore guestId from localStorage (will be synced with server cookie)
       const restoredId = restoreGuestId();
-      console.log('App.jsx - Restored guestId:', restoredId);
-
-      // Delay to ensure guestId cookie is established with first request
+// Delay to ensure guestId cookie is established with first request
       // This ensures server has time to set the httpOnly cookie before we fetch wishlist
       await new Promise(resolve => setTimeout(resolve, 300));
 
       // Fetch cart and wishlist
-      console.log('App.jsx - Fetching cart and wishlist');
-      dispatch(fetchCart());
+dispatch(fetchCart());
       dispatch(fetchWishlist());
     };
 
@@ -132,6 +130,7 @@ const AppContent = () => {
           <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
           <Route path="/admin/menu" element={<AdminRoute><AdminMenuPage /></AdminRoute>} />
           <Route path="/admin/chat" element={<AdminRoute><AdminChatPage /></AdminRoute>} />
+          <Route path="/admin/coupons" element={<AdminRoute><AdminCouponsPage /></AdminRoute>} />
           <Route path="/admin/products/add" element={<AdminRoute><AdminAddProductPage /></AdminRoute>} />
           <Route path="/admin/products/edit/:id" element={<AdminRoute><AdminAddProductPage /></AdminRoute>} />
         </Routes>

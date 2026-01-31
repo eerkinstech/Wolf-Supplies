@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup, FaHeadset } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { logout } from '../../../redux/slices/authSlice';
+import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup, FaHeadset, FaTicketAlt } from 'react-icons/fa';
+import { useAuth } from '../../../context/AuthContext';
 
 const AdminSidebar = ({ activeTab }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
 
   const menuItems = [
     { icon: FaHome, label: 'Dashboard', id: 'dashboard', path: '/admin/dashboard' },
@@ -19,10 +18,11 @@ const AdminSidebar = ({ activeTab }) => {
     { icon: FaChartBar, label: 'Menu', id: 'menu', path: '/admin/menu' },
     { icon: FaChartBar, label: 'Analytics', id: 'analytics', path: '/admin/analytics' },
     { icon: FaLayerGroup, label: 'Collections', id: 'collections', path: '/admin/collections' },
+    { icon: FaTicketAlt, label: 'Coupons', id: 'coupons', path: '/admin/coupons' },
   ];
 
   const handleLogout = () => {
-    dispatch(logout());
+    logout();
     navigate('/login');
   };
 
@@ -37,6 +37,7 @@ const AdminSidebar = ({ activeTab }) => {
     if (path.includes('/admin/menu')) return 'menu';
     if (path.includes('/admin/chat')) return 'chat';
     if (path.includes('/admin/collections')) return 'collections';
+    if (path.includes('/admin/coupons')) return 'coupons';
     if (path.includes('/admin/dashboard') || path === '/admin') return 'dashboard';
     return 'dashboard';
   };
@@ -48,7 +49,7 @@ const AdminSidebar = ({ activeTab }) => {
       {/* Header */}
       <div className="p-6 border-b border-opacity-30" style={{ borderColor: 'white' }}>
         <Link to="/admin" className="flex justify-center items-center gap-3">
-         
+
           <div>
             <h1 className="text-xl font-bold">Admin Panel</h1>
             <p className="text-xs opacity-75">Management</p>

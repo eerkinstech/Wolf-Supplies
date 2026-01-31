@@ -127,18 +127,10 @@ const WishlistPage = () => {
     return sorted;
   };
 
-  const handleRemoveFromWishlist = (itemOrId) => {
-    console.log('=== handleRemoveFromWishlist ===');
-    console.log('itemOrId:', itemOrId);
-    
-    // itemOrId can be string id or the item object
-    if (typeof itemOrId === 'string') {
-      console.log('Removing by string ID:', itemOrId);
-      dispatch(removeItemFromServer(itemOrId)).then(() => {
+  const handleRemoveFromWishlist = (itemOrId) => {// itemOrId can be string id or the item object
+    if (typeof itemOrId === 'string') {dispatch(removeItemFromServer(itemOrId)).then(() => {
         toast.success('Removed from wishlist');
-      }).catch((err) => {
-        console.error('Remove failed:', err);
-        toast.error('Failed to remove from wishlist');
+      }).catch((err) => {toast.error('Failed to remove from wishlist');
       });
     } else if (itemOrId && typeof itemOrId === 'object') {
       // For snapshot items, productId is stored in _id field
@@ -146,23 +138,13 @@ const WishlistPage = () => {
       let productId = null;
       if (itemOrId.__isSnapshot) {
         // Snapshot item: _id contains the product ID
-        productId = itemOrId._id;
-        console.log('Snapshot item detected, productId from _id:', productId);
-      } else {
+        productId = itemOrId._id;} else {
         // Regular product item
-        productId = itemOrId.productId || itemOrId._id || (itemOrId.product && (itemOrId.product._id || itemOrId.product));
-        console.log('Regular item, productId:', productId);
-      }
+        productId = itemOrId.productId || itemOrId._id || (itemOrId.product && (itemOrId.product._id || itemOrId.product));}
       
-      const variantId = itemOrId.variantId || (itemOrId.snapshot && itemOrId.snapshot.variantId) || null;
-      console.log('variantId:', variantId);
-      console.log('Sending to backend:', { productId, variantId });
-      
-      dispatch(removeItemFromServer({ productId, variantId })).then(() => {
+      const variantId = itemOrId.variantId || (itemOrId.snapshot && itemOrId.snapshot.variantId) || null;dispatch(removeItemFromServer({ productId, variantId })).then(() => {
         toast.success('Removed from wishlist');
-      }).catch((err) => {
-        console.error('Remove failed:', err);
-        toast.error('Failed to remove from wishlist');
+      }).catch((err) => {toast.error('Failed to remove from wishlist');
       });
     }
   };
@@ -229,9 +211,7 @@ const WishlistPage = () => {
       if (confirmClear) {
         dispatch(clearWishlistServer()).then(() => {
           toast.success('Wishlist cleared');
-        }).catch((err) => {
-          console.error('Clear failed:', err);
-          toast.error('Failed to clear wishlist');
+        }).catch((err) => {toast.error('Failed to clear wishlist');
         });
       }
     }
@@ -240,26 +220,12 @@ const WishlistPage = () => {
   // Load server wishlist when authenticated (ensures freshest data)
   React.useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      console.log('WishlistPage mounted: Fetching wishlist from server');
-      dispatch(fetchWishlist());
+    if (token) {dispatch(fetchWishlist());
     }
   }, [dispatch]);
 
   // Log current wishlist items for debugging
-  React.useEffect(() => {
-    console.log('=== WishlistPage Items Update ===');
-    console.log('Total items:', wishlistItems.length);
-    wishlistItems.forEach((item, idx) => {
-      console.log(`Item ${idx}:`, {
-        _id: item._id,
-        name: item.name,
-        productId: item.productId,
-        variantId: item.variantId,
-        isSnapshot: item.__isSnapshot,
-        hasProduct: !!item.product
-      });
-    });
+  React.useEffect(() => {wishlistItems.forEach((item, idx) => {});
   }, [wishlistItems]);
 
   const sortedItems = getSortedItems();
@@ -498,7 +464,6 @@ const WishlistPage = () => {
                 
                 </div>
 
-                
               </aside>
             </div>
           </div>

@@ -12,7 +12,7 @@ const Newsletter = ({ content = {} }) => {
   const title = content.title || 'Get the best deals in your inbox';
   const subtitle = content.subtitle || '';
   const description = content.description || 'Sign up for exclusive offers, new arrivals, and seasonal sales.';
-  const inputPlaceholder = content.inputPlaceholder || 'you@domain.com';
+  const inputPlaceholder = content.inputPlaceholder || 'Enter Your Email Address';
   const buttonText = content.buttonText || 'Subscribe';
   const successTitle = content.successTitle || "You're subscribed!";
   const successMessage = content.successMessage || 'Thanks — check your email for the welcome offer.';
@@ -69,8 +69,7 @@ const Newsletter = ({ content = {} }) => {
         setIsSubscribed(false);
       }, 3000);
     } catch (error) {
-      console.error('Error subscribing to newsletter:', error);
-      setIsLoading(false);
+setIsLoading(false);
       toast.error('Failed to subscribe. Please try again.');
     }
   };
@@ -261,9 +260,7 @@ const Newsletter = ({ content = {} }) => {
                       width: '100%'
                     }}
                     onError={(e) => {
-                      console.error('❌ Image load error for URL:', e.target.src);
-                      console.error('Error event:', e);
-                    }}
+}}
                     onLoad={() => { }}
                   />
                 </>

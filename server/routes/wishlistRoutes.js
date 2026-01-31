@@ -9,3 +9,4 @@ router.route('/').get(getWishlist).post(addToWishlist).delete(clearWishlist);
 router.route('/:productId').delete(removeFromWishlist);
 
 export default router;
+

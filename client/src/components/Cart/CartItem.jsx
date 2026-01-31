@@ -135,9 +135,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
             onClick={() => {
               try {
                 if (typeof onRemove === 'function') onRemove(item._id);
-              } catch (err) {
-                console.error('CartItem remove handler error', err);
-              }
+              } catch (err) {}
             }}
             className="w-16 sm:w-auto px-4 py-2 font-semibold flex items-center justify-center gap-2 transition duration-300 rounded-lg"
             style={{

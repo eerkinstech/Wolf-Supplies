@@ -184,8 +184,6 @@ const NodeRenderer = ({
       ...node.advanced
     };
 
-
-
   // Build className for selection outline in edit mode
   let className = '';
   if (isEditing) {
@@ -428,10 +426,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
     },
     role: isEditing ? 'button' : undefined,
     tabIndex: isEditing ? 0 : undefined
-  };
-
-  console.log('renderBasicWidget switch - widgetType:', widgetType);
-  switch (widgetType) {
+  };switch (widgetType) {
     case 'heading': {
       const level = props.level || 'h1';
       const [isHovering, setIsHovering] = React.useState(false);
@@ -871,11 +866,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
 
       // Dotted divider props
       const dotSize = style.dotSize || 6;
-      const dotSpacing = style.dotSpacing || 8;
-
-      console.log('DIVIDER:', { dividerType, lineStyle, thickness, color, width, alignment, gap, text });
-
-      const alignmentMap = {
+      const dotSpacing = style.dotSpacing || 8;const alignmentMap = {
         'left': 'flex-start',
         'center': 'center',
         'right': 'flex-end'
@@ -898,9 +889,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
       };
 
       // ===== SIMPLE DIVIDER =====
-      if (dividerType === 'simple') {
-        console.log('RENDERING SIMPLE DIVIDER');
-        const dividerStyle = {
+      if (dividerType === 'simple') {const dividerStyle = {
           width: width,
           height: lineStyle === 'solid' ? `${thickness}px` : '0px',
           backgroundColor: lineStyle === 'solid' ? color : 'transparent',
@@ -912,9 +901,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
             height: '0px',
           }),
           flexShrink: 0,
-        };
-        console.log('SIMPLE DIVIDER STYLE:', dividerStyle);
-        return (
+        };return (
           <div style={containerStyle} {...baseProps}>
             <div style={dividerStyle} />
           </div>
@@ -922,10 +909,7 @@ function renderBasicWidget(node, className, inlineStyles, isSelected, isEditing,
       }
 
       // ===== DOTTED DIVIDER =====
-      if (dividerType === 'dotted') {
-        console.log('RENDERING DOTTED DIVIDER');
-
-        const dotDividerStyle = {
+      if (dividerType === 'dotted') {const dotDividerStyle = {
           width: width === '100%' ? '100%' : width,
           display: 'flex',
           gap: `${dotSpacing}px`,

@@ -7,9 +7,9 @@ import toast from 'react-hot-toast';
 const ContactUsPage = () => {
   // Set up meta tags for SEO
   useMetaTags({
-    title: 'Contact Wolf Supplies LTD | Get In Touch',
-    description: 'Contact Wolf Supplies LTD for customer support, inquiries, and assistance. Available 24/7 for your convenience.',
-    keywords: 'contact, support, customer service, inquiries, help',
+    title: 'Contact Wolf Supplies LTD | UK Customer Support - 9AM-6PM GMT',
+    description: 'Contact Wolf Supplies LTD (Company 16070029). Customer support Monday-Friday 9AM-6PM GMT. Email: support@wolfsuppliesltd.co.uk | Phone: +44 7398 998101. UK based, GDPR compliant.',
+    keywords: 'contact, customer service, support, UK, wolf supplies, phone, email, help',
     url: typeof window !== 'undefined' ? window.location.href : '',
   });
 
@@ -54,8 +54,7 @@ const ContactUsPage = () => {
       toast.success('Message sent successfully! We will get back to you soon.');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
-      console.error('Error submitting contact form:', error);
-      toast.error('Failed to send message. Please try again.');
+toast.error('Failed to send message. Please try again.');
     }
   };
 
@@ -258,6 +257,90 @@ const ContactUsPage = () => {
                   ❓ FAQ
                 </Link>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Business Information Section - Google Merchant Center Compliance */}
+        <div className="mt-12 bg-blue-50 rounded-lg p-8 border border-blue-200">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">About Wolf Supplies LTD</h2>
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Business Details */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="font-bold text-xl text-gray-900 mb-4">Company Information</h3>
+              <ul className="text-gray-700 space-y-3 text-sm">
+                <li><strong>Business Name:</strong> Wolf Supplies Limited</li>
+                <li><strong>Company Number:</strong> <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">16070029</a> (UK Companies House)</li>
+                <li><strong>Trading Address:</strong> Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</li>
+                <li><strong>Website:</strong> <a href="https://wolfsuppliesltd.co.uk" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">wolfsuppliesltd.co.uk</a></li>
+                <li><strong>Email:</strong> <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-blue-600 hover:underline">support@wolfsuppliesltd.co.uk</a></li>
+                <li><strong>Phone:</strong> <a href="tel:+447398998101" className="text-blue-600 hover:underline">+44 7398 998101</a></li>
+              </ul>
+            </div>
+
+            {/* Compliance & Trust */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="font-bold text-xl text-gray-900 mb-4">Compliance & Trust</h3>
+              <ul className="text-gray-700 space-y-3 text-sm">
+                <li>✓ <strong>UK GDPR Compliant:</strong> Full data protection compliance</li>
+                <li>✓ <strong>Consumer Rights Act 2015:</strong> 31-day money-back guarantee</li>
+                <li>✓ <strong>SSL/TLS Encrypted:</strong> Secure communications</li>
+                <li>✓ <strong>PCI DSS Level 1:</strong> Payment card industry compliant</li>
+                <li>✓ <strong>Verified Merchant:</strong> Listed with Companies House</li>
+                <li>✓ <strong>Free UK Shipping:</strong> All orders, no minimum</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Policies Section */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="font-bold text-xl text-gray-900 mb-6">Our Policies</h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Link 
+                to="/policies/shipping" 
+                className="p-4 border-2 border-blue-600 rounded-lg hover:bg-blue-50 transition text-center"
+              >
+                <div className="font-bold text-blue-600 mb-2">📦 Shipping Policy</div>
+                <p className="text-sm text-gray-600">2-4 business day delivery, free UK shipping</p>
+              </Link>
+              <Link 
+                to="/policies/returns-refund" 
+                className="p-4 border-2 border-green-600 rounded-lg hover:bg-green-50 transition text-center"
+              >
+                <div className="font-bold text-green-600 mb-2">🔄 Returns & Refunds</div>
+                <p className="text-sm text-gray-600">31-day returns, full refund guarantee</p>
+              </Link>
+              <Link 
+                to="/payment-options" 
+                className="p-4 border-2 border-purple-600 rounded-lg hover:bg-purple-50 transition text-center"
+              >
+                <div className="font-bold text-purple-600 mb-2">💳 Payment Options</div>
+                <p className="text-sm text-gray-600">Secure checkout, multiple payment methods</p>
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4 mt-4">
+              <Link 
+                to="/policies/privacy" 
+                className="p-4 border-2 border-red-600 rounded-lg hover:bg-red-50 transition text-center"
+              >
+                <div className="font-bold text-red-600 mb-2">🔒 Privacy Policy</div>
+                <p className="text-sm text-gray-600">GDPR compliant, data protection assured</p>
+              </Link>
+              <Link 
+                to="/policies/terms" 
+                className="p-4 border-2 border-orange-600 rounded-lg hover:bg-orange-50 transition text-center"
+              >
+                <div className="font-bold text-orange-600 mb-2">📋 Terms of Service</div>
+                <p className="text-sm text-gray-600">Legal terms and conditions</p>
+              </Link>
+              <Link 
+                to="/policies/faq" 
+                className="p-4 border-2 border-cyan-600 rounded-lg hover:bg-cyan-50 transition text-center"
+              >
+                <div className="font-bold text-cyan-600 mb-2">❓ FAQ</div>
+                <p className="text-sm text-gray-600">Answers to common questions</p>
+              </Link>
             </div>
           </div>
         </div>

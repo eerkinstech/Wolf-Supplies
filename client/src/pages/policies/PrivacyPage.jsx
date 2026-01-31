@@ -54,16 +54,27 @@ const PoliciesPrivacyPage = () => {
                 <li>Full name and contact information</li>
                 <li>Email address and phone number</li>
                 <li>Delivery and billing address</li>
-                <li>Payment information (processed securely)</li>
+                <li>Payment information (processed securely via PCI-DSS Level 1 compliant providers)</li>
+                <li>Order history and purchase preferences</li>
               </ul>
             </div>
 
             <div className="pl-6" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)' }}>
               <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>Account Information</h3>
               <ul className="list-disc list-inside space-y-1" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-                <li>Username and password</li>
-                <li>Account preferences and wishlist</li>
-                <li>Order history</li>
+                <li>Username and securely hashed password</li>
+                <li>Account preferences, wishlist, and saved items</li>
+                <li>Order history and tracking information</li>
+                <li>Customer reviews and ratings</li>
+              </ul>
+            </div>
+
+            <div className="pl-6" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)' }}>
+              <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>Technical Information</h3>
+              <ul className="list-disc list-inside space-y-1" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
+                <li>Device information and browser type</li>
+                <li>IP address and approximate location (for fraud prevention)</li>
+                <li>Cookies and website usage analytics (with your consent)</li>
               </ul>
             </div>
           </div>
@@ -71,18 +82,23 @@ const PoliciesPrivacyPage = () => {
 
         {/* Data Security */}
         <div className="rounded-lg shadow-md p-8 mb-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
-          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary, #000000)' }}>Data Security</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary, #000000)' }}>Data Security & Protection</h2>
 
           <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
             <p>
-              We implement industry-standard security measures to protect your data:
+              We implement industry-leading security measures to protect your personal data:
             </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>SSL/TLS encryption for data transmission</li>
-              <li>PCI-DSS Level 1 compliance for payment processing</li>
-              <li>Secure password hashing and storage</li>
-              <li>Regular security audits and penetration testing</li>
+            <ul className="list-disc list-inside space-y-2 mb-4">
+              <li><strong>SSL/TLS Encryption:</strong> All data transmissions encrypted (HTTPS)</li>
+              <li><strong>PCI-DSS Level 1 Compliance:</strong> Highest payment card security standards</li>
+              <li><strong>Secure Authentication:</strong> Password hashing with bcrypt or equivalent</li>
+              <li><strong>Regular Security Audits:</strong> Annual penetration testing and vulnerability assessments</li>
+              <li><strong>Access Controls:</strong> Limited employee access to sensitive data</li>
+              <li><strong>Data Retention:</strong> Personal data deleted after order fulfillment and refund period (where not legally required)</li>
             </ul>
+            <p className="font-semibold">
+              <strong>Breach Notification:</strong> In the unlikely event of a data breach, we will notify affected customers within 72 hours as required by UK GDPR.
+            </p>
           </div>
         </div>
 
@@ -90,12 +106,14 @@ const PoliciesPrivacyPage = () => {
         <div className="rounded-lg shadow-md p-8 mb-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
           <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary, #000000)' }}>Your Data Rights (UK GDPR)</h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
             {[
-              { title: 'Right to Access', desc: 'Request a copy of your personal data' },
-              { title: 'Right to Rectification', desc: 'Correct inaccurate information' },
-              { title: 'Right to Erasure', desc: 'Request deletion of your data' },
-              { title: 'Right to Portability', desc: 'Export your data to another provider' }
+              { title: 'Right to Access', desc: 'Request a copy of your personal data we hold' },
+              { title: 'Right to Rectification', desc: 'Correct inaccurate or incomplete information' },
+              { title: 'Right to Erasure', desc: 'Request deletion of your data ("right to be forgotten")' },
+              { title: 'Right to Portability', desc: 'Export your data to another provider' },
+              { title: 'Right to Restrict', desc: 'Limit how we process your data' },
+              { title: 'Right to Object', desc: 'Opt-out of certain data processing activities' }
             ].map((right, idx) => (
               <div key={idx} className="pl-4" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)' }}>
                 <h4 className="font-bold mb-1" style={{ color: 'var(--color-text-primary, #000000)' }}>{right.title}</h4>
@@ -103,6 +121,10 @@ const PoliciesPrivacyPage = () => {
               </div>
             ))}
           </div>
+          
+          <p style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
+            To exercise any of these rights, please contact us at <a href="mailto:privacy@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>privacy@wolfsuppliesltd.co.uk</a> with proof of identity. We will respond within 30 days.
+          </p>
         </div>
 
         {/* Contact */}

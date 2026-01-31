@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import Order from '../models/Order.js';
+import Coupon from '../models/Coupon.js';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 
@@ -11,7 +12,7 @@ let stripe = null;
 if (STRIPE_KEY) {
     stripe = new Stripe(STRIPE_KEY);
 } else {
-    console.warn('Stripe secret key not set. Stripe payment endpoints will return errors until STRIPE_SECRET_KEY is configured.');
+
 }
 // Base URL for building absolute image paths. Prefer server API URL if available.
 const SERVER_BASE = process.env.SERVER_URL || process.env.VITE_API_URL || process.env.CLIENT_URL;
@@ -31,6 +32,8 @@ export const createCheckoutSession = async (req, res, next) => {
             taxPrice,
             shippingPrice,
             totalAmount,
+            couponCode,
+            discountAmount,
         } = req.body;
 
         if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
@@ -41,8 +44,6 @@ export const createCheckoutSession = async (req, res, next) => {
         const orderId = `ORD-${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}`;
 
         // DEBUG: Log incoming request data
-        console.log('DEBUG - Incoming shippingAddress:', JSON.stringify(shippingAddress, null, 2));
-        console.log('DEBUG - Incoming billingAddress:', JSON.stringify(billingAddress, null, 2));
 
         const order = new Order({
             orderId,
@@ -92,17 +93,53 @@ export const createCheckoutSession = async (req, res, next) => {
             taxPrice: taxPrice || 0,
             shippingPrice: shippingPrice || 0,
             totalPrice: totalAmount || itemsPrice || 0,
+            couponCode: couponCode || null,
+            discountAmount: discountAmount || 0,
             status: 'pending',
         });
 
-        console.log('DEBUG - Order object before save:', JSON.stringify(order, null, 2));
-
         try {
             await order.save();
-            console.log('Order saved successfully:', order._id, order.orderId);
-            console.log('DEBUG - Order after save:', JSON.stringify(order, null, 2));
+            console.log('[Payment:Checkout] ✓ Order created:', {
+                orderId: order.orderId,
+                couponCode: order.couponCode,
+                discountAmount: order.discountAmount,
+                itemsPrice: order.itemsPrice,
+                totalPrice: order.totalPrice
+            });
+
+            // Increment coupon usage immediately when order is created
+            if (order.couponCode) {
+                try {
+                    console.log('[Payment:Checkout] Incrementing coupon usage for:', order.couponCode);
+                    const updatedCoupon = await Coupon.findOneAndUpdate(
+                        { code: order.couponCode.toUpperCase() },
+                        { $inc: { currentUses: 1 } },
+                        { new: true }
+                    );
+
+                    if (updatedCoupon) {
+                        console.log('[Payment:Checkout] ✓ Coupon usage incremented:', {
+                            code: updatedCoupon.code,
+                            currentUses: updatedCoupon.currentUses,
+                            maxUses: updatedCoupon.maxUses
+                        });
+
+                        // Mark order as having coupon usage incremented
+                        await Order.updateOne(
+                            { _id: order._id },
+                            { couponUsageIncremented: true }
+                        );
+                    } else {
+                        console.log('[Payment:Checkout] ⚠️  Coupon not found:', order.couponCode);
+                    }
+                } catch (couponErr) {
+                    console.error('[Payment:Checkout] ⚠️  Failed to increment coupon:', couponErr.message);
+                    // Don't fail order creation if coupon update fails
+                }
+            }
         } catch (saveErr) {
-            console.error('Error saving order:', saveErr.message);
+            console.error('[Payment:Checkout] ✗ Failed to save order:', saveErr.message);
             return res.status(400).json({ message: 'Failed to create order', error: saveErr.message });
         }
 
@@ -177,9 +214,7 @@ export const createCheckoutSession = async (req, res, next) => {
             };
         });
 
-
         // log line items for debugging (server console)
-        console.log('Stripe line_items:', JSON.stringify(line_items, null, 2));
 
         let session;
         try {
@@ -193,7 +228,7 @@ export const createCheckoutSession = async (req, res, next) => {
             });
         } catch (stripeErr) {
             // Return Stripe error details to client for debugging
-            console.error('Stripe error creating session:', stripeErr.message || stripeErr);
+
             return res.status(400).json({ error: stripeErr.message || 'Stripe error' });
         }
 
@@ -209,7 +244,7 @@ export const createPaymentIntent = async (req, res, next) => {
         if (!stripe) return res.status(500).json({ message: 'Stripe is not configured on the server.' });
         const user = req.user; // Optional - can be null for guest users
 
-        const { orderItems, shippingAddress, billingAddress, paymentMethod, itemsPrice, shippingPrice, totalAmount } = req.body;
+        const { orderItems, shippingAddress, billingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalAmount, couponCode, discountAmount } = req.body;
         if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) return res.status(400).json({ message: 'No order items' });
 
         // create order in DB (pending)
@@ -259,16 +294,56 @@ export const createPaymentIntent = async (req, res, next) => {
             },
             paymentMethod: paymentMethod || 'card',
             itemsPrice: itemsPrice || 0,
+            taxPrice: taxPrice || 0,
             shippingPrice: shippingPrice || 0,
             totalPrice: totalAmount || itemsPrice || 0,
+            couponCode: couponCode || null,
+            discountAmount: discountAmount || 0,
             status: 'pending',
         });
 
         try {
             await order.save();
-            console.log('Order saved successfully:', order._id, order.orderId);
+            console.log('[Payment:Intent] ✓ Order created:', {
+                orderId: order.orderId,
+                couponCode: order.couponCode,
+                discountAmount: order.discountAmount,
+                itemsPrice: order.itemsPrice,
+                totalPrice: order.totalPrice
+            });
+
+            // Increment coupon usage immediately when order is created
+            if (order.couponCode) {
+                try {
+                    console.log('[Payment:Intent] Incrementing coupon usage for:', order.couponCode);
+                    const updatedCoupon = await Coupon.findOneAndUpdate(
+                        { code: order.couponCode.toUpperCase() },
+                        { $inc: { currentUses: 1 } },
+                        { new: true }
+                    );
+
+                    if (updatedCoupon) {
+                        console.log('[Payment:Intent] ✓ Coupon usage incremented:', {
+                            code: updatedCoupon.code,
+                            currentUses: updatedCoupon.currentUses,
+                            maxUses: updatedCoupon.maxUses
+                        });
+
+                        // Mark order as having coupon usage incremented
+                        await Order.updateOne(
+                            { _id: order._id },
+                            { couponUsageIncremented: true }
+                        );
+                    } else {
+                        console.log('[Payment:Intent] ⚠️  Coupon not found:', order.couponCode);
+                    }
+                } catch (couponErr) {
+                    console.error('[Payment:Intent] ⚠️  Failed to increment coupon:', couponErr.message);
+                    // Don't fail order creation if coupon update fails
+                }
+            }
         } catch (saveErr) {
-            console.error('Error saving order:', saveErr.message);
+            console.error('[Payment:Intent] ✗ Failed to save order:', saveErr.message);
             return res.status(400).json({ message: 'Failed to create order', error: saveErr.message });
         }
 
@@ -283,8 +358,57 @@ export const createPaymentIntent = async (req, res, next) => {
 
         return res.json({ clientSecret: intent.client_secret, orderId: order._id });
     } catch (err) {
-        console.error('createPaymentIntent error', err.message || err);
+
         return res.status(500).json({ error: err.message || 'PaymentIntent creation failed' });
+    }
+};
+
+// Helper function to increment coupon usage when payment is completed
+const incrementCouponUsage = async (orderId) => {
+    if (!orderId) {
+        console.log('[Coupon] No orderId provided');
+        return;
+    }
+
+    try {
+        console.log('[Coupon] Attempting to increment usage for orderId:', orderId);
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            console.log('[Coupon] Order not found:', orderId);
+            return;
+        }
+
+        console.log('[Coupon] Order found. Coupon code:', order.couponCode);
+
+        if (order.couponCode) {
+            const couponCode = order.couponCode.toUpperCase();
+            console.log('[Coupon] Looking up coupon with code:', couponCode);
+
+            try {
+                const updatedCoupon = await Coupon.findOneAndUpdate(
+                    { code: couponCode },
+                    { $inc: { currentUses: 1 } },
+                    { new: true }
+                );
+
+                if (updatedCoupon) {
+                    console.log('[Coupon] ✓ Coupon usage updated:', {
+                        code: updatedCoupon.code,
+                        currentUses: updatedCoupon.currentUses,
+                        maxUses: updatedCoupon.maxUses
+                    });
+                } else {
+                    console.log('[Coupon] ✗ Coupon not found with code:', couponCode);
+                }
+            } catch (couponErr) {
+                console.error('[Coupon] ✗ Failed to increment coupon usage:', couponErr.message);
+            }
+        } else {
+            console.log('[Coupon] No coupon code on order');
+        }
+    } catch (err) {
+        console.error('[Coupon] ✗ Error incrementing coupon usage:', err.message);
     }
 };
 
@@ -295,39 +419,64 @@ export const webhookHandler = async (req, res) => {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event;
 
+    console.log('[Webhook] ===== WEBHOOK RECEIVED =====');
+    console.log('[Webhook] Signature:', sig ? 'Present' : 'Missing');
+    console.log('[Webhook] Secret configured:', !!webhookSecret);
+
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        console.log('[Webhook] ✓ Event verified and constructed');
     } catch (err) {
-        console.error('Webhook signature verification failed.', err.message);
+        console.error('[Webhook] ✗ Webhook signature verification failed:', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
-    // Handle the checkout.session.completed event
+    console.log('[Webhook] ✓ Event type:', event.type);
+    console.log('[Webhook] Event ID:', event.id);
+
+    // Handle checkout.session.completed (Hosted Checkout flow)
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
         const orderId = session.metadata && session.metadata.orderId;
-        try {
-            if (orderId) {
-                const order = await Order.findById(orderId);
-                if (order) {
-                    order.isPaid = true;
-                    order.paidAt = new Date();
-                    order.paymentResult = {
-                        id: session.payment_intent || session.id,
-                        status: 'paid',
-                        update_time: new Date(),
-                        email_address: session.customer_details ? session.customer_details.email : undefined,
-                    };
-                    order.status = 'paid';
-                    await order.save();
-                    console.log(`Order ${orderId} marked as paid via Stripe webhook.`);
-                }
-            }
-        } catch (err) {
-            console.error('Error updating order from webhook:', err);
+        console.log('[Webhook] checkout.session.completed - orderId:', orderId);
+        console.log('[Webhook] Session payment status:', session.payment_status);
+        // Increment coupon usage when payment is completed
+        if (orderId) {
+            await incrementCouponUsage(orderId);
+        } else {
+            console.log('[Webhook] ⚠️  No orderId in metadata');
         }
     }
 
+    // Handle payment_intent.succeeded (Elements/PaymentIntent flow)
+    if (event.type === 'payment_intent.succeeded') {
+        const intent = event.data.object;
+        const orderId = intent.metadata && intent.metadata.orderId;
+        console.log('[Webhook] payment_intent.succeeded - orderId:', orderId);
+        console.log('[Webhook] Intent status:', intent.status);
+        // Increment coupon usage when payment is completed
+        if (orderId) {
+            await incrementCouponUsage(orderId);
+        } else {
+            console.log('[Webhook] ⚠️  No orderId in metadata');
+        }
+    }
+
+    // Handle charge.succeeded (fallback for card payments)
+    if (event.type === 'charge.succeeded') {
+        const charge = event.data.object;
+        const orderId = charge.metadata && charge.metadata.orderId;
+        console.log('[Webhook] charge.succeeded - orderId:', orderId);
+        console.log('[Webhook] Charge paid:', charge.paid);
+        // Increment coupon usage when payment is completed
+        if (orderId) {
+            await incrementCouponUsage(orderId);
+        } else {
+            console.log('[Webhook] ⚠️  No orderId in metadata');
+        }
+    }
+
+    console.log('[Webhook] ===== WEBHOOK PROCESSED =====\n');
     res.json({ received: true });
 };
 
@@ -339,3 +488,4 @@ export const getStripeStatus = (req, res) => {
 };
 
 export default { createCheckoutSession, webhookHandler, getStripeStatus };
+

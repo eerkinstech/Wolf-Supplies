@@ -56,7 +56,7 @@ export const getPageConfig = async (req, res) => {
       updatedAt: pageConfig.updatedAt
     });
   } catch (error) {
-    console.error('Error fetching page config:', error);
+
     res.status(500).json({ message: 'Error fetching page configuration' });
   }
 };
@@ -70,11 +70,9 @@ export const savePageConfig = async (req, res) => {
 
     // Validate request body
     if (!sections || !Array.isArray(sections)) {
-      console.error('❌ Invalid request: sections not an array', typeof sections, sections?.length);
+
       return res.status(400).json({ message: 'Invalid request: sections must be an array' });
     }
-
-    console.log(`💾 [PageConfig] Received save request for page "${pageName}" with ${sections.length} sections`);
 
     // Recursively find and log widgets to verify responsive data
     const findWidgets = (nodes, depth = 0) => {
@@ -102,18 +100,15 @@ export const savePageConfig = async (req, res) => {
 
     const widgets = findWidgets(sections);
     if (widgets.length > 0) {
-      console.log(`📝 [PageConfig] Found ${widgets.length} widgets in sections:`);
+
       widgets.forEach((w, i) => {
-        console.log(`  Widget ${i + 1}: ${w.id} (${w.widgetType})`);
-        console.log(`    - Has style: ${w.hasStyle}`);
-        console.log(`    - Has responsive: ${w.hasResponsive}`);
+
         if (w.hasResponsive) {
-          console.log(`    - Responsive keys: ${w.responsiveKeys.join(', ')}`);
-          console.log(`    - Responsive data:`, JSON.stringify(w.responsive, null, 2));
+
         }
       });
     } else {
-      console.log(`⚠️  [PageConfig] No widgets found in sections`);
+
     }
 
     // Validate page name
@@ -147,8 +142,6 @@ export const savePageConfig = async (req, res) => {
       })
       .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    console.log(`✅ [PageConfig] Prepared ${sortedSections.length} sections for ${pageName}`);
-
     let pageConfig = await PageConfig.findOne({ pageName });
 
     if (pageConfig) {
@@ -159,7 +152,7 @@ export const savePageConfig = async (req, res) => {
       }
       pageConfig.updatedBy = userId;
       pageConfig.updatedAt = Date.now();
-      console.log(`🔄 [PageConfig] Updating existing config for ${pageName}`);
+
     } else {
       // Create new
       pageConfig = new PageConfig({
@@ -174,11 +167,10 @@ export const savePageConfig = async (req, res) => {
         updatedBy: userId,
         isPublished: true
       });
-      console.log(`✨ [PageConfig] Creating new config for ${pageName}`);
+
     }
 
     await pageConfig.save();
-    console.log(`✅ [PageConfig] Saved successfully for ${pageName}`);
 
     // Verify what was actually saved
     const checkResponsive = (nodes) => {
@@ -191,21 +183,13 @@ export const savePageConfig = async (req, res) => {
     };
 
     const hasResponsive = checkResponsive(pageConfig.sections);
-    console.log(`📊 [PageConfig] Saved data includes responsive: ${hasResponsive}`);
 
     res.json({
       success: true,
       message: 'Page configuration saved successfully',
       data: pageConfig
     });
-  } catch (error) {
-    console.error('Error saving page config:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
-    res.status(500).json({
+  } catch (error) {res.status(500).json({
       success: false,
       message: 'Error saving page configuration',
       error: error.message
@@ -219,7 +203,7 @@ export const getAllPageConfigs = async (req, res) => {
     const configs = await PageConfig.find().select('pageName isPublished updatedAt');
     res.json(configs);
   } catch (error) {
-    console.error('Error fetching page configs:', error);
+
     res.status(500).json({ message: 'Error fetching page configurations' });
   }
 };
@@ -255,7 +239,7 @@ export const updatePageSection = async (req, res) => {
       data: section
     });
   } catch (error) {
-    console.error('Error updating section:', error);
+
     res.status(500).json({ message: 'Error updating section' });
   }
 };
@@ -278,7 +262,7 @@ export const deletePageSection = async (req, res) => {
       data: pageConfig
     });
   } catch (error) {
-    console.error('Error deleting section:', error);
+
     res.status(500).json({ message: 'Error deleting section' });
   }
 };
@@ -302,7 +286,8 @@ export const togglePagePublish = async (req, res) => {
       data: pageConfig
     });
   } catch (error) {
-    console.error('Error toggling publish status:', error);
+
     res.status(500).json({ message: 'Error toggling publish status' });
   }
 };
+

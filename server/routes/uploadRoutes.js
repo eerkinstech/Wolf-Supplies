@@ -40,7 +40,6 @@ const storage = multer.diskStorage({
     if (!name) name = 'file';
 
     const filename = `${name}-${timestamp}-${random}${ext}`;
-    console.log(`Generated filename: ${filename} (types: ${typeof filename})`);
     cb(null, filename);
   },
 });
@@ -79,26 +78,17 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    console.log('=== FILE UPLOAD DEBUG ===');
-    console.log('Original filename:', req.file.originalname);
-    console.log('Saved filename:', req.file.filename);
-    console.log('File size:', req.file.size);
-    console.log('File path:', path.join(uploadsDir, req.file.filename));
-
     // Verify file exists
     const filePath = path.join(uploadsDir, req.file.filename);
     const fileExists = fs.existsSync(filePath);
-    console.log('File exists:', fileExists);
 
     if (!fileExists) {
-      console.error(`File not found after upload: ${filePath}`);
+
       return res.status(500).json({ message: 'File was not saved properly' });
     }
 
     // Return the relative URL path for the uploaded file
     const fileUrl = `/uploads/${req.file.filename}`;
-    console.log('Returning URL:', fileUrl);
-    console.log('======================');
 
     res.json({
       url: fileUrl,
@@ -106,7 +96,7 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
       success: true
     });
   } catch (error) {
-    console.error('Upload error:', error);
+
     res.status(500).json({ message: 'Upload failed', error: error.message });
   }
 });
@@ -118,26 +108,17 @@ router.post('/public', upload.single('image'), async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    console.log('=== PUBLIC FILE UPLOAD DEBUG ===');
-    console.log('Original filename:', req.file.originalname);
-    console.log('Saved filename:', req.file.filename);
-    console.log('File size:', req.file.size);
-    console.log('File path:', path.join(uploadsDir, req.file.filename));
-
     // Verify file exists
     const filePath = path.join(uploadsDir, req.file.filename);
     const fileExists = fs.existsSync(filePath);
-    console.log('File exists:', fileExists);
 
     if (!fileExists) {
-      console.error(`File not found after upload: ${filePath}`);
+
       return res.status(500).json({ message: 'File was not saved properly' });
     }
 
     // Return the relative URL path for the uploaded file
     const fileUrl = `/uploads/${req.file.filename}`;
-    console.log('Returning URL:', fileUrl);
-    console.log('======================');
 
     res.json({
       url: fileUrl,
@@ -145,7 +126,7 @@ router.post('/public', upload.single('image'), async (req, res) => {
       success: true
     });
   } catch (error) {
-    console.error('Upload error:', error);
+
     res.status(500).json({ message: 'Upload failed', error: error.message });
   }
 });

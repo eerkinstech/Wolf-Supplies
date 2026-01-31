@@ -9,9 +9,7 @@ import generateToken from '../utils/generateToken.js';
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
-    console.log('==== registerUser called ====');
-    console.log('Email:', email);
-    
+
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide name, email and password' });
     }
@@ -22,16 +20,7 @@ export const registerUser = async (req, res) => {
     }
 
     // Create user - pre-save hook will automatically hash password
-    const user = await User.create({ name, email, password, phone });
-    
-    console.log(`User registered successfully: ${email}`);
-    console.log(`User document after creation:`, {
-      _id: user._id,
-      email: user.email
-    });
-    console.log(`Password hashed: ${user.password.startsWith('$2')}`);
-
-    res.status(201).json({
+    const user = await User.create({ name, email, password, phone });res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -40,7 +29,7 @@ export const registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    console.error('Registration error:', error);
+
     res.status(400).json({ message: error.message || 'Registration failed' });
   }
 };
@@ -56,12 +45,10 @@ export const authUser = async (req, res) => {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
-  console.log(`==== Login attempt for: ${email} ====`);
-  
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      console.log(`Login failed: user not found for ${email}`);
+
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -69,12 +56,10 @@ export const authUser = async (req, res) => {
     const isMatch = await user.matchPassword(password);
     
     if (!isMatch) {
-      console.log(`Login failed: password mismatch for ${email}`);
+
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    console.log(`Login successful for ${email}`);
-    
     res.json({
       _id: user._id,
       name: user.name,
@@ -83,7 +68,7 @@ export const authUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    console.error('Login error:', error);
+
     res.status(500).json({ message: 'Server error during login' });
   }
 };
@@ -121,3 +106,4 @@ export const updateUserProfile = async (req, res) => {
     res.status(404).json({ message: 'User not found' });
   }
 };
+

@@ -14,3 +14,4 @@ module.exports = {
   settingsController: require('./settingsController'),
   wishlistController: require('./wishlistController'),
 };
+

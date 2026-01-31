@@ -19,7 +19,7 @@ export const getImageDimensions = async (filePath) => {
     // return { width: metadata.width, height: metadata.height };
     return null;
   } catch (error) {
-    console.error('Error getting image dimensions:', error);
+
     return null;
   }
 };
@@ -52,3 +52,4 @@ export const generateFilename = (originalname) => {
   const random = Math.random().toString(36).substr(2, 9);
   return `media-${timestamp}-${random}${ext}`;
 };
+

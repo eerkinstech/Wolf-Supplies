@@ -80,7 +80,7 @@ export const submitContactForm = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Contact submission error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error sending message'
@@ -166,7 +166,7 @@ export const submitChatMessage = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Chat message error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error sending message'
@@ -202,7 +202,7 @@ export const moveContactToChat = async (req, res) => {
       data: contact
     });
   } catch (error) {
-    console.error('Move contact to chat error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error moving contact to chat'
@@ -284,7 +284,7 @@ export const sendAdminMessage = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Admin message error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -336,7 +336,7 @@ export const getConversations = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get conversations error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -391,7 +391,7 @@ export const getConversationById = async (req, res) => {
       data: updatedConversation
     });
   } catch (error) {
-    console.error('Get conversation error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -439,7 +439,7 @@ export const getUserConversations = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Get user conversations error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -481,7 +481,7 @@ export const assignConversation = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Assign conversation error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -515,7 +515,7 @@ export const closeConversation = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Close conversation error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -537,7 +537,7 @@ export const deleteConversation = async (req, res) => {
       message: 'Conversation deleted successfully'
     });
   } catch (error) {
-    console.error('Delete conversation error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -581,7 +581,7 @@ export const deleteMessage = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    console.error('Delete message error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -605,3 +605,4 @@ export const deleteContactSubmission = async (req, res) => {
   req.params.conversationId = req.params.id;
   return deleteConversation(req, res);
 };
+

@@ -206,16 +206,8 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
     };
 
     const handleStyleChange=(styleProp: string, value: any) => {
-        if (!selectedNodeId) return;
-
-        console.error(`🔴 [LeftPanel] handleStyleChange: ${styleProp}=${value}, device=${currentDevice}`);
-
-        if (currentDevice==='desktop') {
-            console.warn(`  → DESKTOP path`);
-            updateNodeStyle?.(selectedNodeId, { [styleProp]: value });
-        } else {
-            console.warn(`  → RESPONSIVE path for ${currentDevice}`);
-            updateNodeResponsiveStyle?.(selectedNodeId, currentDevice, styleProp, value);
+        if (!selectedNodeId) return;if (currentDevice==='desktop') {updateNodeStyle?.(selectedNodeId, { [styleProp]: value });
+        } else {updateNodeResponsiveStyle?.(selectedNodeId, currentDevice, styleProp, value);
         }
     };
 

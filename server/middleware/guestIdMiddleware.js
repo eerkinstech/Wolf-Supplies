@@ -25,7 +25,7 @@ export const guestIdMiddleware = (req, res, next) => {
     // If no guestId exists, generate new one
     if (!guestId) {
       guestId = uuidv4();
-      console.log(`Generated new guestId: ${guestId}`);
+
     } else {
     }
 
@@ -43,7 +43,7 @@ export const guestIdMiddleware = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('GuestId middleware error:', error);
+
     res.status(500).json({ message: 'Server error processing guest ID' });
   }
 };
@@ -73,13 +73,10 @@ export const extractGuestId = (req) => {
 
   // If provided, validate it matches
   if (providedGuestId) {
-    if (providedGuestId !== req.guestId) {
-      console.warn(
-        `GuestId mismatch: provided ${providedGuestId}, cookie has ${req.guestId}`
-      );
-      // Security: use the cookie guestId (server of truth)
+    if (providedGuestId !== req.guestId) {// Security: use the cookie guestId (server of truth)
     }
   }
 
   return req.guestId;
 };
+

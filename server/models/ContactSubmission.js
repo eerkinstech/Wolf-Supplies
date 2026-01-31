@@ -121,3 +121,4 @@ contactSubmissionSchema.index({ createdAt: -1 });
 
 const ContactSubmission = mongoose.model('ContactSubmission', contactSubmissionSchema);
 export default ContactSubmission;
+

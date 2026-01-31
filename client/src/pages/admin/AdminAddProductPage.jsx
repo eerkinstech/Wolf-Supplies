@@ -69,8 +69,6 @@ const AdminAddProductPage = () => {
   const [showUndoStack, setShowUndoStack] = useState([]);
   const undoTimersRef = React.useRef({}); // Track timeouts by variant ID
 
-
-
   // If editing, fetch product and populate form
   React.useEffect(() => {
     if (!id) return;
@@ -115,9 +113,7 @@ const AdminAddProductPage = () => {
           metaDescription: prod.metaDescription || '',
           metaKeywords: prod.metaKeywords || '',
         }));
-      } catch (err) {
-        console.error('Failed to load product for editing', err);
-      }
+      } catch (err) {}
     };
     fetchProduct();
   }, [id]);
@@ -141,9 +137,7 @@ const AdminAddProductPage = () => {
     try {
       const response = await axios.get(`${API}/api/categories`);
       setCategories(response.data);
-    } catch (err) {
-      console.error('Error fetching categories:', err);
-    }
+    } catch (err) {}
   };
 
   // Build payload used by submit and autosave
@@ -598,9 +592,7 @@ const AdminAddProductPage = () => {
           setTimeout(() => navigate(`/admin/products/edit/${created._id}`), 800);
         }
       }
-    } catch (err) {
-      console.error('Error response:', err.response?.data || err.message);
-      const errorMsg = err.response?.data?.message || err.message || 'Error creating/updating product';
+    } catch (err) {const errorMsg = err.response?.data?.message || err.message || 'Error creating/updating product';
       toast.error(errorMsg);
       setError(errorMsg);
       setSaveStatus(null);
@@ -731,9 +723,7 @@ const AdminAddProductPage = () => {
       });
 
       return res.data.url; // Returns /uploads/filename
-    } catch (err) {
-      console.error('Image upload failed:', err);
-      setError('Failed to upload image. Please try again.');
+    } catch (err) {setError('Failed to upload image. Please try again.');
       return null;
     }
   };
@@ -775,8 +765,6 @@ const AdminAddProductPage = () => {
       return '';
     }
   };
-
-
 
   // Category Modal Component
   const CategoryModal = ({ show, onClose }) => {

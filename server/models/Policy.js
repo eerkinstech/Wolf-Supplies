@@ -40,3 +40,4 @@ const policySchema = new mongoose.Schema(
 );
 
 export default mongoose.model('Policy', policySchema);
+

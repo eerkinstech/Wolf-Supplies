@@ -184,9 +184,7 @@ const AdminMenuPage = () => {
                 const data = await res.json();
                 setPoliciesList(data.policies || data || []);
             }
-        } catch (err) {
-            console.error(`Error loading ${type}:`, err);
-            toast.error(`Failed to load ${type}`);
+        } catch (err) {toast.error(`Failed to load ${type}`);
         } finally {
             setLoadingSelector(false);
         }
@@ -308,9 +306,7 @@ const AdminMenuPage = () => {
         setExpanded((e) => ({ ...e, [id]: true }));
     };
 
-    const handleMainDragStart = (e, index, level = 0, parentPath = []) => {
-        console.log('🟦 DRAG START:', { index, level, parentPath });
-        e.stopPropagation();
+    const handleMainDragStart = (e, index, level = 0, parentPath = []) => {e.stopPropagation();
         setDraggedItem({ index, level, parentPath });
         e.dataTransfer.effectAllowed = 'move';
     };
@@ -328,59 +324,28 @@ const AdminMenuPage = () => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!draggedItem) {
-            console.log('❌ No draggedItem');
-            setDraggedItem(null);
+        if (!draggedItem) {setDraggedItem(null);
             setDragOverId(null);
             return;
         }
 
         const draggedLevel = draggedItem.level;
-        const draggedPath = draggedItem.parentPath;
-
-        console.log('🟦 DROP:', {
-            targetIndex,
-            level,
-            parentPath,
-            draggedLevel,
-            draggedPath,
-            isSameLevel: draggedLevel === level,
-            isSamePath: JSON.stringify(draggedPath) === JSON.stringify(parentPath)
-        });
-
-        if (draggedLevel === level && JSON.stringify(draggedPath) === JSON.stringify(parentPath)) {
-            if (draggedItem.index === targetIndex) {
-                console.log('⏭️ Same index, skipping');
-                setDraggedItem(null);
+        const draggedPath = draggedItem.parentPath;if (draggedLevel === level && JSON.stringify(draggedPath) === JSON.stringify(parentPath)) {
+            if (draggedItem.index === targetIndex) {setDraggedItem(null);
                 setDragOverId(null);
                 return;
-            }
-
-            console.log('✅ REORDERING:', {
-                level,
-                parentPath,
-                fromIndex: draggedItem.index,
-                toIndex: targetIndex
-            });
-
-            if (level === 0) {
+            }if (level === 0) {
                 setMenuItems((prev) => {
                     const newItems = [...prev];
                     const item = newItems[draggedItem.index];
                     newItems.splice(draggedItem.index, 1);
-                    newItems.splice(targetIndex, 0, item);
-                    console.log('✅ Root reordered');
-                    return newItems;
+                    newItems.splice(targetIndex, 0, item);return newItems;
                 });
             } else {
-                setMenuItems((prev) => {
-                    console.log('✅ Calling reorderAtPath for nested items');
-                    return reorderAtPath(prev, parentPath, draggedItem.index, targetIndex);
+                setMenuItems((prev) => {return reorderAtPath(prev, parentPath, draggedItem.index, targetIndex);
                 });
             }
-        } else {
-            console.log('❌ Different level or path, ignoring drop');
-        }
+        } else {}
 
         setDraggedItem(null);
         setDragOverId(null);

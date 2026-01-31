@@ -35,9 +35,7 @@ const ReviewManagement = () => {
                 if (!response.ok) throw new Error('Failed to fetch settings');
                 const data = await response.json();
                 setRequireApproval(data.requireReviewApproval !== false);
-            } catch (error) {
-                console.error('Failed to fetch settings:', error);
-            }
+            } catch (error) {}
         };
         fetchSettings();
     }, []);
@@ -50,9 +48,7 @@ const ReviewManagement = () => {
                 if (!response.ok) throw new Error('Failed to fetch products');
                 const data = await response.json();
                 setProducts(data.products || []);
-            } catch (error) {
-                console.error(error);
-            }
+            } catch (error) {}
         };
         fetchProducts();
     }, []);
@@ -104,9 +100,7 @@ const ReviewManagement = () => {
                                     r.user = uData.user || uData;
                                 }
                             }
-                        } catch (err) {
-                            console.error('Failed to enrich user for review:', err);
-                        }
+                        } catch (err) {}
                         return r;
                     })
                 );
@@ -119,9 +113,7 @@ const ReviewManagement = () => {
                 setApprovedCount(approvedCountCalc);
                 setPendingCount(pendingCountCalc);
                 setTotalCount(enriched.length);
-            } catch (error) {
-                console.error('Failed to fetch reviews:', error);
-                toast.error('Failed to fetch reviews');
+            } catch (error) {toast.error('Failed to fetch reviews');
             } finally {
                 setLoading(false);
             }
@@ -171,9 +163,7 @@ const ReviewManagement = () => {
                                         r.user = uData.user || uData;
                                     }
                                 }
-                            } catch (err) {
-                                console.error('Failed to enrich user for review:', err);
-                            }
+                            } catch (err) {}
                             return r;
                         })
                     );

@@ -7,9 +7,9 @@ import { FaLock, FaShieldAlt, FaCheckCircle } from 'react-icons/fa';
 const PaymentOptionsPage = () => {
     // Set up meta tags for SEO
     useMetaTags({
-        title: 'Payment Options | Secure & Flexible Payment Methods',
-        description: 'Wolf Supplies LTD accepts multiple payment methods including credit cards, digital wallets, and bank transfers. Secure checkout guaranteed.',
-        keywords: 'payment, checkout, credit card, secure, payment options, digital wallets',
+        title: 'Secure Payment Options | Wolf Supplies LTD - PCI DSS Compliant',
+        description: 'Wolf Supplies LTD offers secure payment methods: Credit Cards, Apple Pay, and Google Pay. All transactions are PCI DSS Level 1 compliant and SSL encrypted. UK company registered 16070029.',
+        keywords: 'payment, secure checkout, credit card, digital wallet, apple pay, google pay, PCI compliance, UK merchant, SSL encrypted',
         url: typeof window !== 'undefined' ? window.location.href : '',
     });
 
@@ -265,7 +265,6 @@ const PaymentOptionsPage = () => {
             </div>
           </div>
 
-     
         </div>
 
         {/* Trust & Security Badges */}

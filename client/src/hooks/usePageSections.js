@@ -49,9 +49,7 @@ export const usePageSections = (pageName = 'home') => {
         setSectionsState(newSections);
         try {
             localStorage.setItem(`page-${pageName}`, JSON.stringify(newSections));
-        } catch (e) {
-            console.error('Failed to save to localStorage:', e);
-        }
+        } catch (e) {}
     }, [pageName]);
 
     const saveSections = useCallback(async (customSections = null) => {
@@ -60,9 +58,7 @@ export const usePageSections = (pageName = 'home') => {
         // Always save to localStorage first
         try {
             localStorage.setItem(`page-${pageName}`, JSON.stringify(toSave));
-        } catch (e) {
-            console.error('Failed to save to localStorage:', e);
-        }
+        } catch (e) {}
 
         // Try to save to API (but don't fail if it doesn't work)
         try {

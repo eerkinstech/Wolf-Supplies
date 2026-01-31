@@ -44,7 +44,8 @@ const OrderManagement = () => {
   const [contactForm, setContactForm] = useState({});
   const [shippingForm, setShippingForm] = useState({});
   const [billingForm, setBillingForm] = useState({});
-  const [filterTab, setFilterTab] = useState('all'); // all, fulfilled, unfulfilled, shipped, delivered
+  const [filterTab, setFilterTab] = useState('all'); // all, fulfilled, unfulfilled, shipped, delivered, refunded
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -61,12 +62,39 @@ const OrderManagement = () => {
 
   // Filter orders based on selected tab
   const getFilteredOrders = () => {
-    if (filterTab === 'all') return localOrders;
-    if (filterTab === 'fulfilled') return localOrders.filter(o => o.status === 'completed');
-    if (filterTab === 'unfulfilled') return localOrders.filter(o => o.status !== 'completed');
-    if (filterTab === 'shipped') return localOrders.filter(o => o.isShipped && !o.isDelivered);
-    if (filterTab === 'delivered') return localOrders.filter(o => o.isDelivered);
-    return localOrders;
+    let filtered = localOrders;
+
+    // Apply tab filter
+    if (filterTab === 'all') {
+      filtered = filtered;
+    } else if (filterTab === 'fulfilled') {
+      filtered = filtered.filter(o => o.status === 'completed');
+    } else if (filterTab === 'unfulfilled') {
+      filtered = filtered.filter(o => o.status !== 'completed');
+    } else if (filterTab === 'shipped') {
+      filtered = filtered.filter(o => o.deliveryStatus === 'shipped');
+    } else if (filterTab === 'delivered') {
+      filtered = filtered.filter(o => o.deliveryStatus === 'delivered');
+    } else if (filterTab === 'refunded') {
+      filtered = filtered.filter(o => o.deliveryStatus === 'refunded');
+    }
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const query = searchTerm.trim().toLowerCase();
+      filtered = filtered.filter(o => {
+        const displayId = o.orderId || `ORD-${new Date(o.createdAt).toISOString().slice(0, 10).replace(/-/g, '')}-${o._id?.slice(-6)}`;
+        const totalPrice = (o.totalPrice ?? o.totalAmount ?? 0).toString();
+
+        return (
+          displayId.toLowerCase().includes(query) ||
+          totalPrice.includes(query) ||
+          o._id.toLowerCase().includes(query)
+        );
+      });
+    }
+
+    return filtered;
   };
 
   const filteredOrders = getFilteredOrders();
@@ -129,46 +157,29 @@ const OrderManagement = () => {
     }
   };
 
-  const handleDeliveryUpdate = async (orderId, deliveryKey) => {
+  const handleDeliveryUpdate = async (orderId, deliveryStatus) => {
     try {
       const token = localStorage.getItem('token');
-      if (!deliveryKey) {
-        // Clear both shipped and delivered flags - NO status change
-        const res1 = await fetch(`${API}/api/orders/${orderId}/delivery`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ isShipped: false, isDelivered: false }),
-        });
-        if (!res1.ok) throw new Error('Failed to clear delivery flags');
-        toast.success('Delivery status cleared');
-      } else if (deliveryKey === 'shipped') {
-        // Only mark as shipped - keep fulfillment status unchanged
-        const res = await fetch(`${API}/api/orders/${orderId}/delivery`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ isShipped: true, isDelivered: false }),
-        });
-        if (!res.ok) throw new Error('Failed to update delivery status');
-        toast.success('Order marked as shipped');
-      } else if (deliveryKey === 'delivered') {
-        // Only mark delivered - keep fulfillment status unchanged
-        const res = await fetch(`${API}/api/orders/${orderId}/delivery`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ isShipped: true, isDelivered: true, deliveredAt: Date.now() }),
-        });
-        if (!res.ok) throw new Error('Failed to mark delivered');
-        toast.success('Order marked as delivered');
-      }
+      
+      const res = await fetch(`${API}/api/orders/${orderId}/delivery`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ deliveryStatus }),
+      });
+
+      if (!res.ok) throw new Error('Failed to update delivery status');
+      
+      const statusMessage = {
+        '': 'Status cleared',
+        'shipped': 'Order marked as shipped',
+        'delivered': 'Order marked as delivered',
+        'refunded': 'Order marked as refunded'
+      };
+      
+      toast.success(statusMessage[deliveryStatus] || 'Status updated');
       dispatch(fetchOrders());
     } catch (error) {
       toast.error(error.message);
@@ -202,59 +213,71 @@ const OrderManagement = () => {
           <div className="px-6 py-4 bg-white border-b flex gap-2 overflow-x-auto">
             <button
               onClick={() => setFilterTab('all')}
-              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
-                filterTab === 'all'
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'all'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
+                }`}
             >
               All Orders
             </button>
             <button
               onClick={() => setFilterTab('fulfilled')}
-              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
-                filterTab === 'fulfilled'
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'fulfilled'
                   ? 'bg-green-600 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
+                }`}
             >
               Fulfilled
             </button>
             <button
               onClick={() => setFilterTab('unfulfilled')}
-              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
-                filterTab === 'unfulfilled'
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'unfulfilled'
                   ? 'bg-yellow-600 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
+                }`}
             >
               Unfulfilled
             </button>
             <button
               onClick={() => setFilterTab('shipped')}
-              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
-                filterTab === 'shipped'
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'shipped'
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
+                }`}
             >
               Shipped
             </button>
             <button
               onClick={() => setFilterTab('delivered')}
-              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${
-                filterTab === 'delivered'
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'delivered'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
+                }`}
             >
               Delivered
             </button>
+            <button
+              onClick={() => setFilterTab('refunded')}
+              className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'refunded'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                }`}
+            >
+              Refunded
+            </button>
           </div>
 
-          <div className="px-6 py-4 bg-gray-50 border-b flex justify-between items-center">
+          <div className="px-6 py-4 bg-gray-50 border-b flex justify-between items-center gap-4 flex-wrap">
             <h3 className="font-semibold text-gray-900">Orders ({filteredOrders.length})</h3>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <input
+                type="text"
+                placeholder="Search by Order ID or Price..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                style={{ minWidth: '250px' }}
+              />
               <button
                 onClick={() => dispatch(fetchOrders())}
                 className="text-gray-700 hover:text-indigo-800 flex items-center gap-2"
@@ -307,6 +330,7 @@ const OrderManagement = () => {
                   }} />
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Order / Date</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Coupon</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Total Price</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Fulfilment</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Delivery Status</th>
@@ -322,8 +346,8 @@ const OrderManagement = () => {
 
                   const total = order.totalPrice ?? order.totalAmount ?? 0;
                   const fulfilled = order.status === 'completed';
-                  // Delivery status: shows shipped or delivered based on flags
-                  const deliveryStatus = order.isDelivered ? 'delivered' : (order.isShipped ? 'shipped' : '');
+                  // Delivery status: single status field
+                  const deliveryStatus = order.deliveryStatus || '';
 
                   return (
                     <tr key={order._id} className="hover:bg-gray-50 transition duration-300">
@@ -336,6 +360,17 @@ const OrderManagement = () => {
                       </td>
                       <td className="px-4 py-4 font-mono text-gray-900 text-sm">{displayId} <br />
                         {fullDate} </td>
+                      <td className="px-4 py-4 text-gray-700 text-sm">
+                        {order.couponCode ? (
+                          <div>
+                            <span className="font-semibold">{order.couponCode}</span>
+                            <br />
+                            <span className="text-green-600">-£{(order.discountAmount || 0).toFixed(2)}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-4 text-gray-700 font-bold">£{Number(total).toFixed(2)}</td>
                       <td className="px-4 py-4">
                         <button
@@ -355,6 +390,7 @@ const OrderManagement = () => {
                           <option value="">No Status</option>
                           <option value="shipped">shipped</option>
                           <option value="delivered">Delivered</option>
+                          <option value="refunded">Refunded</option>
                         </select>
                       </td>
                       <td className="px-4 py-4">
@@ -369,7 +405,7 @@ const OrderManagement = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="7" className="px-6 py-8 text-center text-gray-600">
+                  <td colSpan="8" className="px-6 py-8 text-center text-gray-600">
                     No orders found
                   </td>
                 </tr>
@@ -839,6 +875,12 @@ const OrderManagement = () => {
                         <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Tax:</span>
                         <span className="font-semibold" style={{ color: 'var(--color-text-primary, #000000)' }}>£{(modalOrder.taxPrice || 0).toFixed(2)}</span>
                       </div>
+                      {modalOrder.discountAmount > 0 && modalOrder.couponCode && (
+                        <div className="flex justify-between">
+                          <span style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Discount ({modalOrder.couponCode}):</span>
+                          <span className="font-semibold" style={{ color: '#10b981' }}>-£{(modalOrder.discountAmount || 0).toFixed(2)}</span>
+                        </div>
+                      )}
                       <div className="border-t pt-2 flex justify-between font-bold" style={{ borderColor: 'var(--color-border-light, #e5e5e5)', color: 'var(--color-accent-primary, #a5632a)' }}>
                         <span>Total:</span>
                         <span>£{(modalOrder.totalPrice || modalOrder.totalAmount || 0).toFixed(2)}</span>
@@ -867,10 +909,10 @@ const OrderManagement = () => {
                   }}>
                     <h4 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Delivery</h4>
                     <div className="px-3 py-2 rounded text-sm font-semibold" style={{
-                      backgroundColor: modalOrder.isDelivered ? 'var(--color-accent-primary, #a5632a)' : (modalOrder.isShipped ? '#d4905e' : 'var(--color-bg-section, #e5e5e5)'),
-                      color: modalOrder.isDelivered || modalOrder.isShipped ? 'white' : 'var(--color-text-primary, #000000)'
+                      backgroundColor: modalOrder.deliveryStatus === 'refunded' ? '#dc2626' : (modalOrder.deliveryStatus === 'delivered' ? 'var(--color-accent-primary, #a5632a)' : (modalOrder.deliveryStatus === 'shipped' ? '#d4905e' : 'var(--color-bg-section, #e5e5e5)')),
+                      color: modalOrder.deliveryStatus ? 'white' : 'var(--color-text-primary, #000000)'
                     }}>
-                      {modalOrder.isDelivered ? '✓ Delivered' : (modalOrder.isShipped ? '📦 Shipped' : '⏳ Not Shipped')}
+                      {modalOrder.deliveryStatus === 'refunded' ? '⚠️ Refunded' : (modalOrder.deliveryStatus === 'delivered' ? '✓ Delivered' : (modalOrder.deliveryStatus === 'shipped' ? '📦 Shipped' : '⏳ No Status'))}
                     </div>
                   </div>
                 </div>

@@ -8,6 +8,7 @@ import {
   updateOrderStatus,
   updateOrderPayment,
   updateOrderDelivery,
+  updateOrderRefund,
   deleteOrder,
   updateOrderRemarks,
   updateOrderContact,
@@ -32,6 +33,7 @@ router.get('/:id', getOrderById); // Get single order (public access)
 router.put('/:id/status', protect, admin, updateOrderStatus); // Update order status
 router.put('/:id/payment', protect, admin, updateOrderPayment); // Update payment status
 router.put('/:id/delivery', protect, admin, updateOrderDelivery); // Update delivery status
+router.put('/:id/refund', protect, admin, updateOrderRefund); // Update refund status
 router.put('/:id/remarks', protect, admin, updateOrderRemarks); // Update remarks
 router.put('/:id/contact', protect, admin, updateOrderContact); // Update contact details
 router.put('/:id/shipping', protect, admin, updateOrderShipping); // Update shipping address
@@ -39,3 +41,4 @@ router.put('/:id/billing', protect, admin, updateOrderBilling); // Update billin
 router.put('/:id', protect, admin, updateOrderStatus); // Generic update for status
 
 export default router;
+

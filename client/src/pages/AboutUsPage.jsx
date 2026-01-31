@@ -57,13 +57,13 @@ const AboutUsPage = () => {
             <div>
               <h2 className="text-4xl font-bold text-[var(--color-text-primary)] mb-6">Our Story</h2>
               <p className="text-[var(--color-text-light)] text-lg leading-relaxed mb-4">
-                Wolf Supplies LTD was founded with a simple mission: to revolutionize online shopping in the United Kingdom. We believe everyone deserves access to quality products at competitive prices, delivered with exceptional customer service.
+                Wolf Supplies LTD is a trusted UK-based online retailer operating with full compliance to UK consumer protection laws, GDPR data protection regulations, and Google Merchant Center standards. We are registered with Companies House (Company Number: 16070029) and operate from our Birmingham warehouse.
               </p>
               <p className="text-[var(--color-text-light)] text-lg leading-relaxed mb-4">
-                What started as a small venture has grown into a trusted marketplace serving thousands of satisfied customers across the UK. We pride ourselves on our commitment to excellence, innovation, and customer satisfaction.
+                Our mission is to provide customers across the United Kingdom with a carefully curated selection of quality products at competitive prices, backed by transparent policies, secure payments, and responsive customer service. Every product undergoes quality verification before dispatch, and we stand behind our products with a 31-day money-back guarantee.
               </p>
               <p className="text-[var(--color-text-light)] text-lg leading-relaxed">
-                Today, Wolf Supplies LTD continues to expand its product range and improve its services, always keeping our customers at the heart of everything we do.
+                We're committed to building trust through transparency, compliance, and customer-first service. Your satisfaction is guaranteed with our hassle-free returns policy, free UK shipping, and dedicated support team available Monday-Friday, 9 AM - 6 PM GMT.
               </p>
             </div>
             <div className="bg-[var(--color-bg-section)] rounded-lg p-8 border-2 border-[var(--color-border-light)]">

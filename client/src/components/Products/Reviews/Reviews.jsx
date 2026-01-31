@@ -53,9 +53,7 @@ const Reviews = ({
       setReviewComment('');
       setShowThanks(true);
       setTimeout(() => setShowThanks(false), 3500);
-    } catch (err) {
-      console.error('submitReview error', err);
-      toast.error(err.message || 'Failed to submit review');
+    } catch (err) {toast.error(err.message || 'Failed to submit review');
     }
   };
 

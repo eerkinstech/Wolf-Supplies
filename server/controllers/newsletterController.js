@@ -55,7 +55,7 @@ export const subscribeNewsletter = async (req, res) => {
       data: subscription
     });
   } catch (error) {
-    console.error('Newsletter subscription error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error subscribing to newsletter'
@@ -89,7 +89,7 @@ export const getNewsletterSubscriptions = async (req, res) => {
       count: subscriptions.length
     });
   } catch (error) {
-    console.error('Get newsletter subscriptions error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error fetching newsletter subscriptions'
@@ -118,7 +118,7 @@ export const getNewsletterSubscription = async (req, res) => {
       data: subscription
     });
   } catch (error) {
-    console.error('Get newsletter subscription error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error fetching subscription'
@@ -162,7 +162,7 @@ export const unsubscribeNewsletter = async (req, res) => {
       data: subscription
     });
   } catch (error) {
-    console.error('Unsubscribe newsletter error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error unsubscribing from newsletter'
@@ -207,7 +207,7 @@ export const updateNewsletterStatus = async (req, res) => {
       data: subscription
     });
   } catch (error) {
-    console.error('Update newsletter status error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error updating subscription'
@@ -236,7 +236,7 @@ export const deleteNewsletterSubscription = async (req, res) => {
       message: 'Subscription deleted'
     });
   } catch (error) {
-    console.error('Delete newsletter subscription error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error deleting subscription'
@@ -265,10 +265,11 @@ export const getNewsletterStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get newsletter stats error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Error fetching statistics'
     });
   }
 };
+

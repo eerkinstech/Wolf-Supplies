@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateCartItem, clearCart, syncCart, clearServerCart } from '../redux/slices/cartSlice';
 import { useAuth } from '../context/AuthContext';
@@ -15,6 +15,8 @@ const CartPage = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
   const { items, totalPrice, totalQuantity } = useSelector((state) => state.cart);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const handleRemove = (id) => {
     (async () => {
@@ -26,13 +28,11 @@ const CartPage = () => {
           try {
             await dispatch(syncCart(newItems)).unwrap();
           } catch (err) {
-            console.error('syncCart failed on remove:', err);
             // fallback to manual persist
             await persistCart(newItems);
           }
         }
       } catch (err) {
-        console.error('handleRemove error', err);
       }
     })();
   };
@@ -51,7 +51,6 @@ const CartPage = () => {
         body: JSON.stringify({ items: newItems }),
       });
     } catch (err) {
-      console.error('Failed to persist cart', err);
     }
   };
 
@@ -68,14 +67,82 @@ const CartPage = () => {
       toast.error('Your cart is empty');
       return;
     }
-    // Navigate to checkout page
-    navigate('/checkout');
+    // Navigate to checkout page with coupon info
+    navigate('/checkout', { state: { appliedCoupon, discountAmount } });
+  };
+
+  const handleApplyCoupon = async (couponCode) => {
+    if (!couponCode.trim()) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
+
+    try {
+      const API = import.meta.env.VITE_API_URL || '';
+      
+      // Extract product IDs from cart items
+      const productIds = items.map(item => item.product);
+      
+      const response = await fetch(`${API}/api/coupons/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponCode,
+          orderTotal: totalPrice,
+          cartItems: items,
+          productIds: productIds // Send all product IDs in cart
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid or expired coupon');
+      }
+
+      const coupon = await response.json();
+
+      // The API returns either:
+      // 1. Full coupon object with discountValue property, OR
+      // 2. Response object with coupon property containing both discountValue and discount
+      const couponData = coupon.coupon || coupon;
+
+      // Use the pre-calculated discount from server if available, otherwise calculate
+      let finalDiscount = couponData.discount || 0;
+
+      if (!finalDiscount) {
+        // Fallback: calculate discount if not provided by server
+        const discountValue = parseFloat(couponData.discountValue) || 0;
+        let calculatedDiscount = 0;
+
+        if (couponData.discountType === 'percentage') {
+          calculatedDiscount = (totalPrice * discountValue) / 100;
+        } else {
+          calculatedDiscount = discountValue;
+        }
+
+        finalDiscount = Math.min(Math.max(0, calculatedDiscount), totalPrice);
+      }
+
+      setAppliedCoupon(couponData);
+      setDiscountAmount(finalDiscount);
+      toast.success(`Coupon applied! You saved £${finalDiscount.toFixed(2)}`);
+    } catch (error) {
+      toast.error(error.message);
+      setAppliedCoupon(null);
+      setDiscountAmount(0);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    toast.success('Coupon removed');
   };
 
   // Shipping is free for every order and there is no tax
   const shippingCost = 0;
   const taxCost = 0;
-  const finalTotal = totalPrice;
+  // Calculate final total: subtotal - discount
+  const finalTotal = Math.max(0, (totalPrice || 0) - (discountAmount || 0));
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] py-16 px-4 sm:px-6 lg:px-8">
@@ -129,6 +196,8 @@ const CartPage = () => {
                 onCheckout={handleCheckout}
                 onClearCart={async () => {
                   dispatch(clearCart());
+                  setAppliedCoupon(null);
+                  setDiscountAmount(0);
                   toast.success('Cart cleared');
                   if (token) {
                     dispatch(clearServerCart());
@@ -136,7 +205,11 @@ const CartPage = () => {
                 }}
                 shippingCost={shippingCost}
                 taxCost={taxCost}
-                finalTotal={finalTotal}
+                finalTotal={totalPrice - discountAmount}
+                appliedCoupon={appliedCoupon}
+                discountAmount={discountAmount}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={handleRemoveCoupon}
               />
             </div>
           </div>

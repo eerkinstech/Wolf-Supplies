@@ -27,10 +27,9 @@ const newsletterSubscriptionSchema = new mongoose.Schema({
     userAgent: String,
 }, { timestamps: true });
 
-// Index for search
-newsletterSubscriptionSchema.index({ email: 1 });
+// Index for search (email has unique constraint, createdAt indexed via timestamps option)
 newsletterSubscriptionSchema.index({ status: 1 });
-newsletterSubscriptionSchema.index({ createdAt: -1 });
 
 const NewsletterSubscription = mongoose.model('NewsletterSubscription', newsletterSubscriptionSchema);
 export default NewsletterSubscription;
+

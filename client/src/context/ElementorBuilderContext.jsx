@@ -652,9 +652,7 @@ export const ElementorBuilderProvider = ({ children }) => {
                     historyIndexRef.current = 0;
                     return newRoot;
                 }
-            } catch (error) {
-                console.error('loadPage error:', error);
-                setSaveStatus('error');
+            } catch (error) {setSaveStatus('error');
             }
         },
         [fixCorruptedChildren]

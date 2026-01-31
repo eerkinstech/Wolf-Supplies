@@ -10,7 +10,7 @@ export const getSettings = async (req, res) => {
     }
     res.json(settings);
   } catch (error) {
-    console.error('getSettings error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -32,7 +32,7 @@ export const updateSettings = async (req, res) => {
     await settings.save();
     res.json(settings);
   } catch (error) {
-    console.error('updateSettings error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -50,7 +50,7 @@ export const getFeaturedCollections = async (req, res) => {
       featuredProducts: settings.featuredProducts || [],
     });
   } catch (error) {
-    console.error('getFeaturedCollections error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -76,7 +76,7 @@ export const saveFeaturedCollections = async (req, res) => {
       featuredProducts: settings.featuredProducts,
     });
   } catch (error) {
-    console.error('saveFeaturedCollections error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -91,7 +91,7 @@ export const getMenu = async (req, res) => {
     }
     res.json({ browseMenu: settings.browseMenu || [] });
   } catch (error) {
-    console.error('getMenu error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -109,7 +109,8 @@ export const saveMenu = async (req, res) => {
     await settings.save();
     res.json({ browseMenu: settings.browseMenu });
   } catch (error) {
-    console.error('saveMenu error:', error);
+
     res.status(500).json({ message: error.message });
   }
 };
+

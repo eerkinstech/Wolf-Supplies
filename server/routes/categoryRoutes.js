@@ -19,3 +19,4 @@ router.put('/:id', protect, admin, updateCategory);
 router.delete('/:id', protect, admin, deleteCategory);
 
 export default router;
+

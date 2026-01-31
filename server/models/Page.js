@@ -44,3 +44,4 @@ const pageSchema = new mongoose.Schema(
 );
 
 export default mongoose.model('Page', pageSchema);
+

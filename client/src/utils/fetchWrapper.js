@@ -18,14 +18,10 @@ export const createEnhancedFetch = () => {
     return originalFetch(url, enhancedOptions).then(response => {
       // Capture X-Guest-ID header from response
       const guestId = response.headers.get('X-Guest-ID');
-      if (guestId) {
-        console.log('Captured guestId from X-Guest-ID header:', guestId);
-        saveGuestId(guestId);
+      if (guestId) {saveGuestId(guestId);
       }
       return response;
-    }).catch(err => {
-      console.error('Fetch error:', err);
-      throw err;
+    }).catch(err => {throw err;
     });
   };
 };
@@ -34,6 +30,4 @@ export const createEnhancedFetch = () => {
  * Install the enhanced fetch globally
  */
 export const installEnhancedFetch = () => {
-  window.fetch = createEnhancedFetch();
-  console.log('Enhanced fetch installed');
-};
+  window.fetch = createEnhancedFetch();};

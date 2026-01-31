@@ -38,9 +38,7 @@ const UserMessages = () => {
                     setError(data.message || 'Failed to load conversation');
                     setConversation(null);
                 }
-            } catch (err) {
-                console.error('Error fetching conversation:', err);
-                setError('Failed to load conversation');
+            } catch (err) {setError('Failed to load conversation');
                 setConversation(null);
             } finally {
                 setLoading(false);
@@ -102,9 +100,7 @@ const UserMessages = () => {
                     setConversation(refreshData.data || null);
                 }
             }, 500);
-        } catch (error) {
-            console.error('Error sending message:', error);
-            toast.error('Failed to send message');
+        } catch (error) {toast.error('Failed to send message');
         } finally {
             setSendingMessage(false);
         }

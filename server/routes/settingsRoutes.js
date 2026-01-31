@@ -18,3 +18,4 @@ router.get('/featured-collections', getFeaturedCollections);
 router.post('/featured-collections', protect, admin, saveFeaturedCollections);
 
 export default router;
+

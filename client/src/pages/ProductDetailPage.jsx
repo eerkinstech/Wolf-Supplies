@@ -15,7 +15,6 @@ import './ProductDetailPage.css';
 import { Link } from 'react-router-dom';
 import stripLogos from '../assets/Strip Logos.png';
 
-
 const ProductDetailPage = () => {
   const { id, slug } = useParams();
   const navigate = useNavigate();
@@ -89,9 +88,7 @@ const ProductDetailPage = () => {
         if (!response.ok) throw new Error('Failed to fetch settings');
         const data = await response.json();
         setRequireReviewApproval(data.requireReviewApproval !== false);
-      } catch (error) {
-        console.error('Failed to fetch settings:', error);
-      }
+      } catch (error) {}
     };
     fetchSettings();
   }, [API]);
@@ -333,8 +330,6 @@ const ProductDetailPage = () => {
     return normalizedProductImages;
   };
 
-
-
   // Helper to render star icons for fractional ratings
   const renderStars = (rating = 0, sizeClass = 'text-lg') => {
     const stars = [];
@@ -503,9 +498,7 @@ const ProductDetailPage = () => {
       try {
         const resultAction = await dispatch(syncCart(newItems));
         // resultAction.payload contains normalized returned items when fulfilled
-      } catch (err) {
-        console.error('ProductDetail: syncCart failed', err);
-        toast.error('Failed to save cart to server');
+      } catch (err) {toast.error('Failed to save cart to server');
       }
 
       const variantText = Object.entries(selectedVariants)
@@ -637,8 +630,6 @@ const ProductDetailPage = () => {
     return !!product.inStock;
   })();
 
-
-
   // Helper: Extract unique variant option names and their available values from variantCombinations
   const getVariantOptions = () => {
     if (!product.variantCombinations || product.variantCombinations.length === 0) return {};
@@ -694,9 +685,7 @@ const ProductDetailPage = () => {
       // Refresh using the product _id when available
       if (product && product._id) dispatch(fetchProductById(product._id));
       else dispatch(fetchProductById(prodId));
-    } catch (err) {
-      console.error('submitReview error', err);
-      scrollPositionRef.current = 0; // Reset on error
+    } catch (err) {scrollPositionRef.current = 0; // Reset on error
       throw err;
     }
   };
@@ -756,9 +745,7 @@ const ProductDetailPage = () => {
                                 src={getImgSrc(img)}
                                 alt={`Thumbnail ${idx + 1}`}
                                 className="w-full h-full object-contain"
-                                onError={(e) => {
-                                  console.warn(`Thumbnail ${idx} failed to load:`, getImgSrc(img));
-                                  e.target.style.opacity = '0';
+                                onError={(e) => {e.target.style.opacity = '0';
                                 }}
                               />
                             </button>
@@ -792,9 +779,7 @@ const ProductDetailPage = () => {
                         src={getImgSrc(currentDisplayImage)}
                         alt={product.name}
                         className="w-full h-full object-contain group-hover:scale-105 transition duration-500"
-                        onError={(e) => {
-                          console.warn('Image failed to load:', getImgSrc(currentDisplayImage));
-                          e.target.style.opacity = '0';
+                        onError={(e) => {e.target.style.opacity = '0';
                         }}
                       />
                     ) : (
@@ -1212,9 +1197,7 @@ const ProductDetailPage = () => {
                     src={getImgSrc(displayImages[zoomImageIndex])}
                     alt={`${product.name} zoom`}
                     className="w-full h-full object-contain"
-                    onError={(e) => {
-                      console.warn('Zoom image failed to load:', getImgSrc(displayImages[zoomImageIndex]));
-                      e.target.style.opacity = '0';
+                    onError={(e) => {e.target.style.opacity = '0';
                     }}
                   />
 
@@ -1258,7 +1241,6 @@ const ProductDetailPage = () => {
                 )}
               </div>
 
-
               {/* Right Side: Magnified View */}
               <div className="flex-1 flex flex-col justify-center items-center gap-4">
                 <div
@@ -1275,9 +1257,7 @@ const ProductDetailPage = () => {
                       transformOrigin: `${(zoomMousePos.x / (zoomImageRef.current?.offsetWidth || 1)) * 100}% ${(zoomMousePos.y / (zoomImageRef.current?.offsetHeight || 1)) * 100}%`,
                       transition: 'transform 0.1s ease-out'
                     }}
-                    onError={(e) => {
-                      console.warn('Zoom magnified image failed to load:', getImgSrc(displayImages[zoomImageIndex]));
-                      e.target.style.opacity = '0';
+                    onError={(e) => {e.target.style.opacity = '0';
                     }}
                   />
 

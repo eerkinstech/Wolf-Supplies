@@ -58,11 +58,7 @@ const AdminChatPage = () => {
 
             if (!response.ok) throw new Error('Failed to fetch conversations');
 
-            const data = await response.json();
-
-            console.log('📥 Raw conversations from API:', data.data);
-
-            // Smart filtering: Check if conversation has both contact form and chat messages
+            const data = await response.json();// Smart filtering: Check if conversation has both contact form and chat messages
             const chatConversationsOnly = (data.data || []).filter(conv => {
                 const messages = conv.messages || [];
 
@@ -87,31 +83,18 @@ const AdminChatPage = () => {
 
                 // 4. Otherwise (only contact form or no messages) → Don't show in Chat Tab
                 return false;
-            });
-
-            console.log('🟢 Chat conversations filtered:', chatConversationsOnly);
-            setConversations(chatConversationsOnly);
+            });setConversations(chatConversationsOnly);
             setLoading(false);
 
             // Calculate unread count for each conversation
             const newUnreadCount = {};
-            chatConversationsOnly.forEach(conv => {
-                console.log(`Processing conversation: ${conv.userName}`, conv.messages);
-                const unreadMessages = (conv.messages || []).filter(
-                    msg => {
-                        console.log(`Message from ${msg.sender}:`, msg);
-                        return msg.sender === 'user' && !msg.isRead;
+            chatConversationsOnly.forEach(conv => {const unreadMessages = (conv.messages || []).filter(
+                    msg => {return msg.sender === 'user' && !msg.isRead;
                     }
                 ).length;
                 if (unreadMessages > 0) {
-                    newUnreadCount[conv._id] = unreadMessages;
-                    console.log(`Conversation ${conv.userName}: ${unreadMessages} unread`);
-                } else {
-                    console.log(`Conversation ${conv.userName}: 0 unread messages`);
-                }
-            });
-            console.log('📊 Final Unread counts:', newUnreadCount);
-            setUnreadCount(newUnreadCount);
+                    newUnreadCount[conv._id] = unreadMessages;} else {}
+            });setUnreadCount(newUnreadCount);
 
             // Only auto-select first conversation on initial load
             if (isInitialLoadRef.current && !selectedConversation && chatConversationsOnly && chatConversationsOnly.length > 0) {
@@ -119,9 +102,7 @@ const AdminChatPage = () => {
                 fetchConversationById(chatConversationsOnly[0]);
                 isInitialLoadRef.current = false;
             }
-        } catch (error) {
-            console.error('Fetch conversations error:', error);
-            toast.error('Failed to load conversations');
+        } catch (error) {toast.error('Failed to load conversations');
             setLoading(false);
         }
     };
@@ -154,9 +135,7 @@ const AdminChatPage = () => {
                 }
                 return updated;
             });
-        } catch (error) {
-            console.error('Fetch conversation error:', error);
-            toast.error('Failed to load conversation');
+        } catch (error) {toast.error('Failed to load conversation');
         }
     };
 
@@ -206,9 +185,7 @@ const AdminChatPage = () => {
             toast.success('Message sent');
             setMessage('');
             fetchConversationById(selectedConversation.conversationId);
-        } catch (error) {
-            console.error('Send message error:', error);
-            toast.error(error.message || 'Failed to send message');
+        } catch (error) {toast.error(error.message || 'Failed to send message');
         } finally {
             setSendingMessage(false);
         }
@@ -223,11 +200,7 @@ const AdminChatPage = () => {
 
             if (!response.ok) throw new Error('Failed to fetch contact submissions');
 
-            const data = await response.json();
-
-            console.log('📥 Raw submissions for Contact Tab:', data.data);
-
-            // Contact Tab: Shows ALL contact form submissions as SAVED RECORDS
+            const data = await response.json();// Contact Tab: Shows ALL contact form submissions as SAVED RECORDS
             // Even if user later sends chat messages, the original contact record stays here
             // This serves as an archive/reference of the initial inquiry
             const contactFormOnly = (data.data || []).filter(submission => {
@@ -246,13 +219,8 @@ const AdminChatPage = () => {
                 if (submission.fromContactForm === false) return false;
 
                 return false;
-            });
-
-            console.log('🔵 Contact submissions filtered:', contactFormOnly);
-            setContacts(contactFormOnly);
-        } catch (error) {
-            console.error('Fetch contacts error:', error);
-            toast.error('Failed to load contact submissions');
+            });setContacts(contactFormOnly);
+        } catch (error) {toast.error('Failed to load contact submissions');
         }
     };
 
@@ -267,9 +235,7 @@ const AdminChatPage = () => {
 
             const data = await response.json();
             setNewsletters(data.data || []);
-        } catch (error) {
-            console.error('Fetch newsletters error:', error);
-            toast.error('Failed to load newsletter subscriptions');
+        } catch (error) {toast.error('Failed to load newsletter subscriptions');
         }
     };
 
@@ -301,9 +267,7 @@ const AdminChatPage = () => {
             fetchConversations();
 
             toast.success('Contact moved to chat successfully');
-        } catch (error) {
-            console.error('Move to chat error:', error);
-            toast.error('Failed to move contact to chat');
+        } catch (error) {toast.error('Failed to move contact to chat');
         }
     };
 
@@ -634,7 +598,6 @@ const AdminChatPage = () => {
                                                         {contact.messages?.[0]?.message || 'No content'}
                                                     </p>
                                                 </div>
-
 
                                             </div>
                                         ))}

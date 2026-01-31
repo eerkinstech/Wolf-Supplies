@@ -72,3 +72,4 @@ querySubmissionSchema.index({ createdAt: -1 });
 
 const QuerySubmission = mongoose.model('QuerySubmission', querySubmissionSchema);
 export default QuerySubmission;
+

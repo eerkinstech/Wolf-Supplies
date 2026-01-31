@@ -20,18 +20,14 @@ export const getGuestId = () => {
  */
 export const saveGuestId = (guestId) => {
   if (!guestId) return;
-  localStorage.setItem(GUEST_ID_KEY, guestId);
-  console.log('Saved guestId to localStorage:', guestId);
-};
+  localStorage.setItem(GUEST_ID_KEY, guestId);};
 
 /**
  * Clear the guestId from localStorage
  * (Note: httpOnly cookie will still exist on server until expiry or cleared)
  */
 export const clearGuestId = () => {
-  localStorage.removeItem(GUEST_ID_KEY);
-  console.log('Cleared guestId from localStorage');
-};
+  localStorage.removeItem(GUEST_ID_KEY);};
 
 /**
  * Restore guestId - called on app init
@@ -39,9 +35,7 @@ export const clearGuestId = () => {
  */
 export const restoreGuestId = () => {
   const guestId = getGuestId();
-  if (guestId) {
-    console.log('Restored guestId from localStorage:', guestId);
-  }
+  if (guestId) {}
   return guestId;
 };
 

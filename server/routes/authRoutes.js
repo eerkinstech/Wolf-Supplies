@@ -10,3 +10,4 @@ router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 
 export default router;
+

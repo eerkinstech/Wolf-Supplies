@@ -59,7 +59,7 @@ const productSchema = new mongoose.Schema({
   metaTitle: { type: String, default: '' },
   metaDescription: { type: String, default: '' },
   metaKeywords: { type: String, default: '' },
-  
+
   // Admin Metadata
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   // Draft flag: true = not published yet
@@ -80,3 +80,4 @@ productSchema.pre('save', function () {
 
 const Product = mongoose.model('Product', productSchema);
 export default Product;
+

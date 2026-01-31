@@ -29,10 +29,7 @@ const HomePage = () => {
         }
         return list;
       };
-      const widgets = findAllWidgets(rootNode);
-      console.log('HOME PAGE PREVIEW - Widgets found:', widgets);
-      console.log('Divider count:', widgets.filter(w => w.type === 'divider').length);
-    }
+      const widgets = findAllWidgets(rootNode);}
   }, [rootNode]);
 
   if (isEditing) {

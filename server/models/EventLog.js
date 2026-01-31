@@ -17,7 +17,7 @@ const eventLogSchema = new mongoose.Schema({
     userAgent: String,
   },
   ipAddress: String,
-  createdAt: { type: Date, default: Date.now, index: true },
+  createdAt: { type: Date, default: Date.now }
 });
 
 // TTL index to automatically delete old events after 90 days (for privacy)
@@ -29,3 +29,4 @@ eventLogSchema.index({ guestId: 1, eventType: 1, createdAt: -1 });
 const EventLog = mongoose.model('EventLog', eventLogSchema);
 
 export default EventLog;
+

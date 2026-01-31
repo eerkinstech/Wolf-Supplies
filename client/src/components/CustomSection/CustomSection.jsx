@@ -245,9 +245,7 @@ const CustomSection = ({
                     <img
                         src={imageSrc}
                         alt={item.alt || 'Image'}
-                        onError={(e) => {
-                            console.error('❌ Image failed to load:', imageSrc);
-                            e.target.style.display = 'none';
+                        onError={(e) => {e.target.style.display = 'none';
                             e.target.parentElement.style.backgroundColor = 'var(--color-bg-section)';
                             const errorDiv = document.createElement('div');
                             errorDiv.textContent = 'Image failed to load';

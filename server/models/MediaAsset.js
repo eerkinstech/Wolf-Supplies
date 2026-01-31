@@ -101,3 +101,4 @@ mediaAssetSchema.query.active = function () {
 };
 
 export default mongoose.model('MediaAsset', mediaAssetSchema);
+

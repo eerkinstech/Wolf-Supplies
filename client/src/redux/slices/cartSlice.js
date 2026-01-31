@@ -3,18 +3,10 @@ import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || '';
 
-export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
-  console.log('==== fetchCart thunk called ====');
-  const token = localStorage.getItem('token');
-  console.log('Token in fetchCart:', !!token);
-
-  try {
+export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {const token = localStorage.getItem('token');try {
     // Fetch from server with or without token (server handles both via guestId or userId)
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await axios.get(`${API}/api/cart`, { headers });
-    console.log('fetchCart response:', res.data);
-
-    const data = res.data;
+    const res = await axios.get(`${API}/api/cart`, { headers });const data = res.data;
     const items = (data.items || []).map((it) => {
       const product = it.product || null;
       return {
@@ -34,9 +26,7 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) 
       };
     });
     return items;
-  } catch (err) {
-    console.error('fetchCart error:', err);
-    return [];
+  } catch (err) {return [];
   }
 });
 
@@ -113,9 +103,7 @@ export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI
       };
     });
     return returned;
-  } catch (err) {
-    console.error('syncCart error', err);
-    return items;
+  } catch (err) {return items;
   }
 });
 
@@ -129,9 +117,7 @@ export const clearServerCart = createAsyncThunk('cart/clearServerCart', async (_
     });
     const data = res.data;
     return data.items || [];
-  } catch (err) {
-    console.error('clearServerCart error', err);
-    return [];
+  } catch (err) {return [];
   }
 });
 

@@ -70,3 +70,4 @@ export const deletePolicy = async (req, res) => {
         res.status(500).json({ message: 'Error deleting policy', error: err.message });
     }
 };
+

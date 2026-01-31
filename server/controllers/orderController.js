@@ -31,8 +31,6 @@ export const getOrdersByGuestId = async (req, res) => {
   try {
     const guestId = req.guestId;
 
-    console.log('Fetching orders for guestId:', guestId);
-
     const orders = await Order.find({ guestId })
       .populate('orderItems.product', 'name price image')
       .sort({ createdAt: -1 });
@@ -75,13 +73,11 @@ export const getOrderById = async (req, res) => {
 
 // Create new order (guest or authenticated users)
 export const createOrder = async (req, res) => {
-  const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalAmount, billingAddress } = req.body;
+  const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalAmount, billingAddress, couponCode, discountAmount } = req.body;
 
   try {
     const guestId = req.guestId;
     const userId = req.user?._id;
-
-    console.log('Creating order for guestId:', guestId, 'userId:', userId);
 
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'No order items' });
@@ -120,7 +116,7 @@ export const createOrder = async (req, res) => {
             itemData.variant = null;
           }
         } catch (err) {
-          console.error('Error checking product variants:', err);
+
           // On error, be conservative and keep the data as-is
         }
       }
@@ -160,6 +156,8 @@ export const createOrder = async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice: totalAmount,
+      couponCode: couponCode || null,
+      discountAmount: discountAmount || 0,
       status: 'pending',
     });
 
@@ -177,7 +175,7 @@ export const createOrder = async (req, res) => {
         },
       });
     } catch (eventErr) {
-      console.warn('Failed to log purchase event:', eventErr.message);
+
     }
 
     res.status(201).json(createdOrder);
@@ -185,7 +183,6 @@ export const createOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Update order status (admin only)
 export const updateOrderStatus = async (req, res) => {
@@ -236,15 +233,41 @@ export const updateOrderPayment = async (req, res) => {
 // Update order delivery status (admin only)
 export const updateOrderDelivery = async (req, res) => {
   try {
-    const { isShipped, isDelivered, deliveredAt } = req.body;
+    const { deliveryStatus } = req.body;
+
+    const updateData = { deliveryStatus };
+
+    // Set deliveredAt timestamp when marking as delivered
+    if (deliveryStatus === 'delivered') {
+      updateData.deliveredAt = Date.now();
+    }
 
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      {
-        isShipped: isShipped !== undefined ? isShipped : undefined,
-        isDelivered,
-        deliveredAt: isDelivered ? deliveredAt || Date.now() : null
-      },
+      updateData,
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update order refund status (admin only)
+export const updateOrderRefund = async (req, res) => {
+  try {
+    const { deliveryStatus } = req.body;
+
+    const updateData = { deliveryStatus };
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      updateData,
       { new: true }
     );
 
@@ -356,3 +379,4 @@ export const updateOrderBilling = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

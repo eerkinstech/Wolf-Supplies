@@ -78,3 +78,4 @@ pageConfigSchema.pre('save', function () {
 });
 
 export default mongoose.model('PageConfig', pageConfigSchema);
+

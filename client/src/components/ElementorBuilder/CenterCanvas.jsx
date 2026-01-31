@@ -32,9 +32,7 @@ const CenterCanvas = () => {
       try {
         const { type, props } = JSON.parse(widgetData);
         insertNewNode(parentId, type, props, {});
-      } catch (error) {
-        console.error('Failed to parse widget data:', error);
-      }
+      } catch (error) {}
     }
   };
 

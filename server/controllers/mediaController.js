@@ -14,16 +14,7 @@ import { getImageDimensions } from '../utils/mediaUtils.js';
 export const uploadMedia = async (req, res) => {
   try {
     // Multer middleware should have processed the file
-    const file = req.file;
-    console.log('Upload request received:', {
-      hasFile: !!file,
-      fileName: file?.originalname,
-      mimeType: file?.mimetype,
-      size: file?.size,
-      path: file?.path,
-    });
-
-    if (!file) {
+    const file = req.file;if (!file) {
       return res.status(400).json({ error: 'No file provided' });
     }
 
@@ -62,15 +53,7 @@ export const uploadMedia = async (req, res) => {
 
     // Update URL with actual asset ID
     asset.url = `/api/media/serve/${asset._id}`;
-    await asset.save();
-
-    console.log('File uploaded successfully:', {
-      assetId: asset._id,
-      url: asset.url,
-      filePath: file.path,
-    });
-
-    res.json({
+    await asset.save();res.json({
       success: true,
       asset: {
         _id: asset._id,
@@ -86,7 +69,7 @@ export const uploadMedia = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Upload error:', error);
+
     if (req.file) fs.unlinkSync(req.file.path);
     res.status(500).json({ error: 'Upload failed' });
   }
@@ -151,7 +134,7 @@ export const getMediaAssets = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('List error:', error);
+
     res.status(500).json({ error: 'Failed to fetch assets' });
   }
 };
@@ -187,7 +170,7 @@ export const getMediaAsset = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Get error:', error);
+
     res.status(500).json({ error: 'Failed to fetch asset' });
   }
 };
@@ -201,21 +184,18 @@ export const serveMedia = async (req, res) => {
     const { id } = req.params;
     const { thumbnail } = req.query;
 
-    console.log('Serve request:', { id, thumbnail });
-
     const asset = await MediaAsset.findById(id).active();
 
     if (!asset) {
-      console.error('Asset not found:', id);
+
       return res.status(404).json({ error: 'Asset not found' });
     }
 
     // Check if file exists
     const filePath = asset.storageKeyOrPath;
-    console.log('Serving file:', { filePath, exists: fs.existsSync(filePath) });
 
     if (!fs.existsSync(filePath)) {
-      console.error('File not found at path:', filePath);
+
       return res.status(404).json({ error: 'File not found' });
     }
 
@@ -228,11 +208,11 @@ export const serveMedia = async (req, res) => {
     fileStream.pipe(res);
 
     fileStream.on('error', (err) => {
-      console.error('Stream error:', err);
+
       res.status(500).json({ error: 'Failed to serve file' });
     });
   } catch (error) {
-    console.error('Serve error:', error);
+
     res.status(500).json({ error: 'Failed to serve asset' });
   }
 };
@@ -262,7 +242,7 @@ export const deleteMedia = async (req, res) => {
 
     res.json({ success: true, message: 'Asset deleted' });
   } catch (error) {
-    console.error('Delete error:', error);
+
     res.status(500).json({ error: 'Failed to delete asset' });
   }
 };
@@ -274,3 +254,4 @@ export const deleteMedia = async (req, res) => {
 function generateAssetId() {
   return `asset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
+

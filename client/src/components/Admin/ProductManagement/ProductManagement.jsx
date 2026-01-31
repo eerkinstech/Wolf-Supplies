@@ -126,6 +126,137 @@ const ProductManagement = () => {
     }
   };
 
+  const handleExportSelected = () => {
+    const selectedProducts = visibleProducts.filter(p => p.selected);
+    if (selectedProducts.length === 0) {
+      toast.error('No products selected to export');
+      return;
+    }
+
+    try {
+      // Define CSV headers
+      const headers = [
+        'Product ID',
+        'Name',
+        'Slug',
+        'Description',
+        'Base Price',
+        'Original Price',
+        'Discount (%)',
+        'Base Stock',
+        'Category',
+        'Status',
+        'Rating',
+        'Number of Reviews',
+        'Images',
+        'Meta Title',
+        'Meta Description',
+        'Meta Keywords',
+        'Benefits Heading',
+        'Benefits',
+        'Variant Type',
+        'Variant Values',
+        'SKU',
+        'Variant Price',
+        'Variant Stock',
+        'Variant Image',
+        'Created Date',
+        'Updated Date'
+      ];
+
+      // Create CSV rows - one row per variant combination
+      const rows = [];
+      
+      selectedProducts.forEach(product => {
+        const imagesStr = product.images && product.images.length > 0 
+          ? product.images.join(' | ') 
+          : '';
+
+        const variantTypesStr = product.variants && product.variants.length > 0
+          ? product.variants.map(v => v.name).join(' | ')
+          : '';
+
+        const baseRow = [
+          product._id || '',
+          `"${(product.name || '').replace(/"/g, '""')}"`,
+          product.slug || '',
+          `"${(product.description || '').replace(/"/g, '""')}"`,
+          product.price || '0',
+          product.originalPrice || '',
+          product.discount || '0',
+          product.stock || '0',
+          product.category || '',
+          product.isDraft ? 'Draft' : 'Active',
+          product.rating || '0',
+          product.numReviews || '0',
+          `"${imagesStr}"`,
+          `"${(product.metaTitle || '').replace(/"/g, '""')}"`,
+          `"${(product.metaDescription || '').replace(/"/g, '""')}"`,
+          `"${(product.metaKeywords || '').replace(/"/g, '""')}"`,
+          `"${(product.benefitsHeading || 'Why Buy This Product').replace(/"/g, '""')}"`,
+          `"${(product.benefits || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+          variantTypesStr
+        ];
+
+        // If product has variants, create one row per variant combination
+        if (product.variantCombinations && product.variantCombinations.length > 0) {
+          product.variantCombinations.forEach(vc => {
+            const variantValues = vc.variantValues 
+              ? Object.entries(vc.variantValues).map(([key, val]) => `${key}: ${val}`).join(' | ')
+              : '';
+
+            const variantRow = [
+              ...baseRow,
+              variantValues,
+              vc.sku || '',
+              vc.price || product.price || '0',
+              vc.stock || '0',
+              vc.image || '',
+              product.createdAt ? new Date(product.createdAt).toLocaleString() : '',
+              product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''
+            ];
+            rows.push(variantRow);
+          });
+        } else {
+          // If no variants, create single row for the product
+          const singleRow = [
+            ...baseRow,
+            '', // Variant Type (empty for no variants)
+            '', // Variant Values
+            product.sku || '', // SKU
+            product.price || '0', // Use base price
+            product.stock || '0', // Use base stock
+            product.images && product.images.length > 0 ? product.images[0] : '', // First image
+            product.createdAt ? new Date(product.createdAt).toLocaleString() : '',
+            product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''
+          ];
+          rows.push(singleRow);
+        }
+      });
+
+      // Combine headers and rows
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `products_export_${new Date().getTime()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported ${selectedProducts.length} product(s) to CSV successfully`);
+    } catch (error) {
+      toast.error('Failed to export products');
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
@@ -192,6 +323,13 @@ const ProductManagement = () => {
             {visibleProducts.filter(p => p.selected).length} product(s) selected
           </span>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleExportSelected()}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition"
+              title="Export selected products as JSON"
+            >
+              📥 Export
+            </button>
             <button
               onClick={() => {
                 const selectedIds = visibleProducts.filter(p => p.selected).map(p => p._id);

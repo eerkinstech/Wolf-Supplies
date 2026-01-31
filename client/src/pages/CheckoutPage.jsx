@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { clearCart } from '../redux/slices/cartSlice';
 import getStripe from '../utils/stripeClient';
@@ -9,10 +9,14 @@ import { useRef } from 'react';
 const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { items, totalPrice, totalQuantity } = useSelector((state) => state.cart);
 
+  // Get coupon info from location state (passed from CartPage)
+  const { appliedCoupon, discountAmount } = location.state || {};
+
   const shippingCost = 0; // Free shipping
-  const finalTotal = totalPrice;
+  const finalTotal = Math.max(0, (totalPrice || 0) - (discountAmount || 0));
 
   const API = import.meta.env.VITE_API_URL || '';
   const getImgSrc = (img) => {
@@ -105,7 +109,6 @@ const CheckoutPage = () => {
         setSaveDetails(true);
       }
     } catch (err) {
-      console.error('load saved checkout error', err);
     }
   }, []);
 
@@ -114,8 +117,7 @@ const CheckoutPage = () => {
     const setupStripe = async () => {
       try {
         const pk = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-        if (!pk) return console.warn('VITE_STRIPE_PUBLISHABLE_KEY not set; Stripe Elements disabled');
-        // use singleton getStripe to avoid creating multiple instances
+        if (!pk) return // use singleton getStripe to avoid creating multiple instances
         const stripe = await getStripe();
         stripeRef.current = stripe;
         // create elements from the existing stripe instance
@@ -133,7 +135,6 @@ const CheckoutPage = () => {
           });
         }
       } catch (err) {
-        console.error('Stripe init error', err);
       }
     };
     setupStripe();
@@ -168,7 +169,6 @@ const CheckoutPage = () => {
       }
       return true;
     } catch (err) {
-      console.error('Stripe re-init error', err);
       return false;
     }
   };
@@ -208,6 +208,8 @@ const CheckoutPage = () => {
       taxPrice: 0,
       shippingPrice: Number(shippingCost.toFixed(2)),
       totalAmount: Number(finalTotal.toFixed(2)),
+      couponCode: appliedCoupon?.code || null,
+      discountAmount: discountAmount || 0,
     };
 
     try {
@@ -264,6 +266,8 @@ const CheckoutPage = () => {
         taxPrice: 0,
         shippingPrice: Number(shippingCost.toFixed(2)),
         totalAmount: Number(finalTotal.toFixed(2)),
+        couponCode: appliedCoupon?.code || null,
+        discountAmount: discountAmount || 0,
       };
 
       // Try to ensure Stripe Elements are ready; if not available, fall back to hosted Stripe Checkout
@@ -312,7 +316,6 @@ const CheckoutPage = () => {
       // verify singleton stripe instance before confirming
       const singletonStripe = await getStripe();
       if (!stripeRef.current || stripeRef.current !== singletonStripe) {
-        console.warn('Stripe instance mismatch detected; reinitializing Elements with singleton instance');
         // unmount existing card if present
         try { if (cardRef.current) { cardRef.current.unmount(); cardRef.current = null; cardMountedRef.current = false; } } catch (e) { }
         stripeRef.current = singletonStripe;
@@ -361,7 +364,6 @@ const CheckoutPage = () => {
         throw new Error('Payment not completed');
       }
     } catch (err) {
-      console.error(err);
       toast.error(err.message || 'Error creating Stripe session');
     } finally {
       setLoading(false);
@@ -459,6 +461,12 @@ const CheckoutPage = () => {
               <div className="flex justify-between text-sm text-gray-600"><span>Items</span><span>£{totalPrice.toFixed(2)}</span></div>
               <div className="flex justify-between text-sm text-gray-600"><span>Shipping</span><span>£0.00</span></div>
               <div className="flex justify-between text-sm text-gray-600"><span>VAT</span><span>£0.00</span></div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-sm text-green-600 font-semibold">
+                  <span>Discount {appliedCoupon?.code ? `(${appliedCoupon.code})` : ''}</span>
+                  <span>-£{discountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg text-[var(--color-text-primary)]"><span>Total</span><span>£{finalTotal.toFixed(2)}</span></div>
             </div>
 

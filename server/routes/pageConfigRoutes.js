@@ -30,3 +30,4 @@ router.delete('/:pageName/section/:sectionId', protect, admin, deletePageSection
 router.patch('/:pageName/publish', protect, admin, togglePagePublish);
 
 export default router;
+

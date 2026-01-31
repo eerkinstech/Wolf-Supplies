@@ -606,8 +606,6 @@ const AdminAnalyticsPage = () => {
                           </span>
                         </td>
 
-
-
                         <td className="py-2 px-3 text-right font-bold" style={{ color: '#10b981' }}>
                           £{product.totalSale.toFixed(2)}
                         </td>

@@ -53,3 +53,4 @@ router.post('/contact/:id/user-reply', addUserReply);
 router.delete('/contact/:id', protect, admin, deleteContactSubmission);
 
 export default router;
+

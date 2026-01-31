@@ -21,17 +21,17 @@ userSchema.pre('save', async function () {
     const isHashed = this.password && this.password.startsWith('$2');
     
     if (isHashed) {
-      console.log('Password already hashed, skipping');
+
       return;
     }
 
     // Hash the password
-    console.log('Hashing password for user:', this.email);
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    console.log('Password hashed successfully for:', this.email);
+
   } catch (error) {
-    console.error('Password hashing error:', error);
+
     throw error;
   }
 });
@@ -42,3 +42,4 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 
 const User = mongoose.model('User', userSchema);
 export default User;
+

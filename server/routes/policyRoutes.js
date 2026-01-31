@@ -26,3 +26,4 @@ router.patch('/:id', protect, admin, updatePolicy);
 router.delete('/:id', protect, admin, deletePolicy);
 
 export default router;
+

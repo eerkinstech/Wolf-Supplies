@@ -72,13 +72,19 @@ const PoliciesTermsPage = () => {
           
           <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
             <p>
-              <strong>Order Confirmation:</strong> Placement of an order represents an offer to purchase. We reserve the right to accept or reject any order.
+              <strong>Order Confirmation:</strong> Placement of an order represents an offer to purchase. We reserve the right to accept or reject any order in accordance with our policies.
             </p>
             <p>
-              <strong>Payment:</strong> Payment must be received before items are dispatched. We accept various payment methods and process payments securely.
+              <strong>Payment:</strong> Payment must be received and verified before items are dispatched. We accept all major credit cards, debit cards, and secure payment methods.
             </p>
             <p>
-              <strong>Right of Withdrawal:</strong> Under UK Consumer Rights Act 2015, you have 14 days to cancel your order from the date of delivery (30 days for returns).
+              <strong>Price Accuracy:</strong> We aim to keep prices accurate. In the rare event of a pricing error, we may cancel your order and refund your payment in full.
+            </p>
+            <p>
+              <strong>Right of Withdrawal:</strong> Under UK Consumer Rights Act 2015, you have 14 calendar days to cancel your order from the date of delivery for a full refund. For returns on unwanted items (not defective), we accept returns within 31 days of delivery for a full refund.
+            </p>
+            <p>
+              <strong>Stock Availability:</strong> Products are subject to availability. If an item becomes unavailable, we will notify you immediately and offer a full refund or alternative product.
             </p>
           </div>
         </div>
@@ -103,10 +109,34 @@ const PoliciesTermsPage = () => {
           
           <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
             <p>
-              <strong>Governing Law:</strong> These Terms shall be governed by the laws of England and Wales.
+              <strong>Governing Law:</strong> These Terms shall be governed by the laws of England and Wales and UK Consumer Rights Act 2015.
             </p>
             <p>
-              <strong>Jurisdiction:</strong> You agree to submit to the exclusive jurisdiction of the courts of England and Wales.
+              <strong>Jurisdiction:</strong> You agree to submit to the exclusive jurisdiction of the courts of England and Wales for any disputes.
+            </p>
+            <p>
+              <strong>Alternative Dispute Resolution:</strong> In the event of a dispute, we encourage you to contact our customer service team first. If you're not satisfied, you may use the UK Alternative Dispute Resolution procedure or refer the matter to your local Trading Standards office.
+            </p>
+          </div>
+        </div>
+
+        {/* Consumer Rights & Protections */}
+        <div className="rounded-lg shadow-md p-8 mb-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary, #000000)' }}>Consumer Rights & Protections</h2>
+          
+          <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
+            <p>
+              As a UK-based consumer, you are protected under the <strong>Consumer Rights Act 2015</strong> and related UK laws. These rights include:
+            </p>
+            <ul className="list-disc list-inside space-y-2">
+              <li><strong>Right to Quality:</strong> All products must be of satisfactory quality and fit for purpose</li>
+              <li><strong>Right to Information:</strong> Clear pricing, accurate product descriptions, and transparent shipping information</li>
+              <li><strong>Right to a Cooling-Off Period:</strong> 14 days to cancel purchases (with some exceptions)</li>
+              <li><strong>Right to Remedies:</strong> Repair, replacement, or refund for defective products</li>
+              <li><strong>Right to Safe Products:</strong> All products meet UK safety standards</li>
+            </ul>
+            <p className="mt-4">
+              These consumer rights are in addition to our Return & Refund Policy and cannot be waived by our Terms.
             </p>
           </div>
         </div>

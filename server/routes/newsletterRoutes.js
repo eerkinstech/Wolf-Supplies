@@ -24,3 +24,4 @@ router.patch('/:id/status', protect, admin, updateNewsletterStatus);
 router.delete('/:id', protect, admin, deleteNewsletterSubscription);
 
 export default router;
+

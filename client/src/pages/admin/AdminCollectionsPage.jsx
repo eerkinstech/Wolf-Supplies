@@ -69,9 +69,7 @@ const AdminCollectionsPage = () => {
                 if (data.featuredProducts && Array.isArray(data.featuredProducts) && data.featuredProducts.length > 0) {
                     setFeaturedProductsSections(data.featuredProducts);
                 }
-            } catch (e) {
-                console.error('Error loading featured collections from database', e);
-            }
+            } catch (e) {}
         };
         loadFeaturedCollections();
     }, []);
@@ -101,9 +99,7 @@ const AdminCollectionsPage = () => {
             });
             if (!response.ok) throw new Error('Failed to save');
             toast.success('✅ Featured categories saved to database!');
-        } catch (error) {
-            console.error('Error saving featured categories:', error);
-            toast.error('❌ Failed to save featured categories');
+        } catch (error) {toast.error('❌ Failed to save featured categories');
         }
     };
 
@@ -137,9 +133,7 @@ const AdminCollectionsPage = () => {
             });
             if (!response.ok) throw new Error('Failed to save');
             toast.success('✅ Featured products saved to database!');
-        } catch (error) {
-            console.error('Error saving featured products:', error);
-            toast.error('❌ Failed to save featured products');
+        } catch (error) {toast.error('❌ Failed to save featured products');
         }
     };
 

@@ -22,6 +22,7 @@ import policyRoutes from './routes/policyRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
 import formRoutes from './routes/formRoutes.js';
 import newsletterRoutes from './routes/newsletterRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
 import { submitChatMessage } from './controllers/formController.js';
 import paymentController from './controllers/paymentController.js';
 import { guestIdMiddleware } from './middleware/guestIdMiddleware.js';
@@ -32,6 +33,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Global error handlers
+process.on('uncaughtException', (err) => {
+  console.error('[Uncaught Exception]', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Unhandled Rejection]', reason);
+});
 
 // Middleware - CORS with credentials support
 // When credentials are enabled, wildcard origin is not allowed
@@ -63,36 +73,31 @@ const connectDB = async () => {
   try {
     const mongoUri = process.env.DATABASE_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
     const conn = await mongoose.connect(mongoUri);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    
-    // Drop problematic indexes and recreate
-    try {
-      const cartCollection = mongoose.connection.collection('carts');
-      const indexes = await cartCollection.getIndexes();
-      console.log('Existing cart indexes:', indexes);
-      
-      // Drop user_1 index if it exists (unique index causing problems)
-      if (indexes.user_1) {
-        try {
-          console.log('Dropping user_1 index...');
-          await cartCollection.dropIndex('user_1');
-          console.log('user_1 index dropped');
-        } catch (dropErr) {
-          console.log('Could not drop user_1 index:', dropErr.message);
-        }
-      }
-    } catch (indexErr) {
-      console.log('Index cleanup note:', indexErr.message);
-    }
+    console.log('[Database] Connected successfully');
+
+    // Add error handlers to mongoose connection
+    mongoose.connection.on('error', (err) => {
+      console.error('[Mongoose Connection Error]', err.message);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.log('[Mongoose] Connection disconnected');
+    });
+
+    return conn;
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error('[Database Connection Error]', error.message);
     // Don't exit - let server continue for debugging
-    console.log('Continuing despite database error...');
+
   }
 };
 
 // Connect to database
-connectDB();
+connectDB().catch(err => {
+  console.error('[Database Connection Unhandled Error]', err.message);
+}).finally(() => {
+  console.log('[Server] Database initialization complete, proceeding with route setup');
+});
 
 // Routes
 app.get('/', (req, res) => {
@@ -100,24 +105,48 @@ app.get('/', (req, res) => {
 });
 
 // API routes
-app.use('/api/users', authRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/wishlist', wishlistRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/page-config', pageConfigRoutes);
-app.use('/api/pages', pageRoutes);
-app.use('/api/policies', policyRoutes);
-app.use('/api/media', mediaRoutes);
-app.use('/api/forms', formRoutes);
-app.use('/api/newsletter', newsletterRoutes);
+try {
+  console.log('[Server] Setting up routes...');
+  app.use('/api/users', authRoutes);
+  console.log('[Server] Users route mounted');
+  app.use('/api/categories', categoryRoutes);
+  console.log('[Server] Categories route mounted');
+  app.use('/api/products', productRoutes);
+  console.log('[Server] Products route mounted');
+  app.use('/api/upload', uploadRoutes);
+  console.log('[Server] Upload route mounted');
+  app.use('/api/orders', orderRoutes);
+  console.log('[Server] Orders route mounted');
+  app.use('/api/settings', settingsRoutes);
+  console.log('[Server] Settings route mounted');
+  app.use('/api/cart', cartRoutes);
+  console.log('[Server] Cart route mounted');
+  app.use('/api/wishlist', wishlistRoutes);
+  console.log('[Server] Wishlist route mounted');
+  app.use('/api/payments', paymentRoutes);
+  console.log('[Server] Payments route mounted');
+  app.use('/api/page-config', pageConfigRoutes);
+  console.log('[Server] Page config route mounted');
+  app.use('/api/pages', pageRoutes);
+  console.log('[Server] Pages route mounted');
+  app.use('/api/policies', policyRoutes);
+  console.log('[Server] Policies route mounted');
+  app.use('/api/media', mediaRoutes);
+  console.log('[Server] Media route mounted');
+  app.use('/api/forms', formRoutes);
+  console.log('[Server] Forms route mounted');
+  app.use('/api/newsletter', newsletterRoutes);
+  console.log('[Server] Newsletter route mounted');
+  app.use('/api/coupons', couponRoutes);
+  console.log('[Server] Coupons route mounted');
 
-// Chat button endpoint (separate from forms)
-app.post('/api/chat', submitChatMessage);
+  // Chat button endpoint (separate from forms)
+  app.post('/api/chat', submitChatMessage);
+  console.log('[Server] Chat route mounted');
+  console.log('[Server] All routes mounted successfully');
+} catch (routeErr) {
+  console.error('[Routes Setup Error]', routeErr.message, routeErr.stack);
+}
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -128,7 +157,7 @@ app.get('/api/health', (req, res) => {
 app.get('/api/debug/carts', async (req, res) => {
   try {
     const carts = await Cart.find({}).lean();
-    console.log('All carts in database:', carts);
+
     res.json({ carts, count: carts.length });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -138,7 +167,7 @@ app.get('/api/debug/carts', async (req, res) => {
 app.get('/api/debug/wishlists', async (req, res) => {
   try {
     const wishlists = await Wishlist.find({}).lean();
-    console.log('All wishlists in database:', wishlists);
+
     res.json({ wishlists, count: wishlists.length });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -148,7 +177,7 @@ app.get('/api/debug/wishlists', async (req, res) => {
 app.get('/api/debug/users', async (req, res) => {
   try {
     const users = await User.find({}).select('-password').lean();
-    console.log('All users in database:', users);
+
     res.json({ users, count: users.length });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -157,7 +186,7 @@ app.get('/api/debug/users', async (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+
   res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
@@ -168,6 +197,23 @@ app.use((req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+try {
+  const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+  
+  server.on('error', (err) => {
+    console.error('[Server Error]', err.message);
+    process.exit(1);
+  });
+  
+  // Keep server alive
+  process.on('exit', () => {
+    console.log('[Server] Shutting down gracefully');
+  });
+} catch (err) {
+  console.error('[Server Startup Error]', err.message);
+  process.exit(1);
+}
+

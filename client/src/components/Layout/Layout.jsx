@@ -15,10 +15,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
         items.forEach((item, idx) => {
             const itemPath = `${path}[${idx}]`;
             const hasLink = item.url || item.link;
-            const linkValue = item.url || item.link;
-            console.log(`✓ ${itemPath}: "${item.label || item.name}" → ${hasLink ? `"${linkValue}"` : '❌ NO LINK'}`);
-
-            // Recursively check submenu items
+            const linkValue = item.url || item.link;// Recursively check submenu items
             const submenuItems = item.submenu || item.sub || [];
             if (submenuItems.length > 0) {
                 validateMenuLinks(submenuItems, itemPath);
@@ -34,17 +31,9 @@ const Layout = ({ children, showMenuSlider = false }) => {
                 const res = await fetch(`${API}/api/settings/menu`);
                 if (!res.ok) return;
                 const data = await res.json();
-                if (data && Array.isArray(data.browseMenu)) {
-                    console.log('=== LAYOUT MENU LOADED FROM API ===');
-                    console.log('Menu data:', data.browseMenu);
-                    console.log('=== VALIDATING MENU LINKS ===');
-                    validateMenuLinks(data.browseMenu);
-                    console.log('=== VALIDATION COMPLETE ===');
-                    setMenuItems(data.browseMenu);
+                if (data && Array.isArray(data.browseMenu)) {validateMenuLinks(data.browseMenu);setMenuItems(data.browseMenu);
                 }
-            } catch (err) {
-                console.warn('Could not load browse menu', err);
-            }
+            } catch (err) {}
         };
         loadMenu();
     }, []);
@@ -320,7 +309,6 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                             </Link>
                                         </div>
 
-
                                     </div>
                                 </div>
                             ))}
@@ -358,7 +346,6 @@ const Layout = ({ children, showMenuSlider = false }) => {
                             </div>
                         </div>
 
-
                     </div>
                 </div>
             </div>
@@ -367,7 +354,6 @@ const Layout = ({ children, showMenuSlider = false }) => {
             <main className="w-full">
                 {children}
             </main>
-
 
         </div>
     );

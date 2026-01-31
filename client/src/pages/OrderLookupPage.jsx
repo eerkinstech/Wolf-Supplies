@@ -29,9 +29,7 @@ const OrderLookupPage = () => {
 
       // Order found, navigate to order detail page
       navigate(`/order/${orderId}`);
-    } catch (err) {
-      console.error('Order lookup failed', err);
-      toast.error(err.message || 'Order not found. Please check the order ID and try again.');
+    } catch (err) {toast.error(err.message || 'Order not found. Please check the order ID and try again.');
     } finally {
       setLoading(false);
     }
