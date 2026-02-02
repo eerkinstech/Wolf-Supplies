@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import useMetaTags from '../hooks/useMetaTags';
 import { FaArrowLeft, FaStar, FaCheck, FaUsers, FaGlobeEurope, FaTrophy, FaLeaf } from 'react-icons/fa';
+import wolfLogo from '../assets/Wolf Supplies LTD.png';
 
 // Load images from src/assets using Vite glob and pick those that mention "warehouse".
 // This handles filenames like: "warehouse images (1).png" or "warehouse-01.jpg".
@@ -57,20 +58,19 @@ const AboutUsPage = () => {
             <div>
               <h2 className="text-4xl font-bold text-[var(--color-text-primary)] mb-6">Our Story</h2>
               <p className="text-[var(--color-text-light)] text-lg leading-relaxed mb-4">
-                Wolf Supplies LTD is a trusted UK-based online retailer operating with full compliance to UK consumer protection laws, GDPR data protection regulations, and Google Merchant Center standards. We are registered with Companies House (Company Number: 16070029) and operate from our Birmingham warehouse.
-              </p>
+                Wolf Supplies LTD is a UK-based online retailer registered with Companies House (Company Number: 16070029) operating from Birmingham. We operate in accordance with UK consumer protection laws and data protection regulations.              </p>
               <p className="text-[var(--color-text-light)] text-lg leading-relaxed mb-4">
-                Our mission is to provide customers across the United Kingdom with a carefully curated selection of quality products at competitive prices, backed by transparent policies, secure payments, and responsive customer service. Every product undergoes quality verification before dispatch, and we stand behind our products with a 31-day money-back guarantee.
+                We offer customers across the United Kingdom a selection of products at competitive prices with transparent policies, secure payment processing, and customer support. We offer a 31-day returns policy and free UK shipping.
               </p>
               <p className="text-[var(--color-text-light)] text-lg leading-relaxed">
-                We're committed to building trust through transparency, compliance, and customer-first service. Your satisfaction is guaranteed with our hassle-free returns policy, free UK shipping, and dedicated support team available Monday-Friday, 9 AM - 6 PM GMT.
+                We are committed to transparency and compliance with applicable UK law. Support is available Monday-Friday, 9 AM - 6 PM GMT.
               </p>
             </div>
             <div className="bg-[var(--color-bg-section)] rounded-lg p-8 border-2 border-[var(--color-border-light)]">
                 <div className="text-center">
-                  <div className="text-6xl mb-4">🛍️</div>
-                  <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Wolf Supplies LTD</h3>
-                  <p className="text-[var(--color-text-light)] mb-4">Your trusted online shopping partner since 2024</p>
+                  <img src={wolfLogo} alt="Wolf Supplies Logo" className="h-40 w-auto mx-auto mb-4" />
+                 
+                  <p className="text-[var(--color-text-light)] mb-4">UK-based online retailer serving customers since 2024</p>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p><strong>Wolf Supplies Ltd</strong></p>
                   <p>Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:underline">16070029</a></p>
@@ -100,7 +100,7 @@ const AboutUsPage = () => {
                 Our Vision
               </h3>
               <p className="text-[var(--color-text-light)] leading-relaxed">
-                To become the leading UK online marketplace trusted by millions, known for innovation, customer-centricity, sustainability, and creating a positive impact on communities we serve.
+                To serve UK customers with a reliable online marketplace, offering competitive pricing, transparent practices, and responsive customer service.
               </p>
             </div>
           </div>
@@ -113,8 +113,8 @@ const AboutUsPage = () => {
             {[
               {
                 icon: FaUsers,
-                title: 'Customer First',
-                desc: 'We put our customers at the center of everything we do, listening to feedback and continuously improving.'
+                title: 'Responsive Service',
+                desc: 'We respond to customer inquiries during business hours (Monday-Friday, 9 AM - 6 PM GMT).'
               },
               {
                 icon: FaCheck,
@@ -144,10 +144,10 @@ const AboutUsPage = () => {
           <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">By The Numbers</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { number: '50K+', label: 'Products Available', icon: FaStar },
-              { number: '100K+', label: 'Happy Customers', icon: FaUsers },
-              { number: '2-4', label: 'Day Shipping', icon: FaGlobeEurope },
-              { number: '31', label: 'Day Returns', icon: FaCheck }
+              { number: 'Free', label: 'UK Shipping', icon: FaStar },
+              { number: '31', label: 'Day Returns', icon: FaUsers },
+              { number: '2-4', label: 'Day Delivery', icon: FaGlobeEurope },
+              { number: 'Secure', label: 'Payments', icon: FaCheck }
             ].map((stat, idx) => {
               const IconComponent = stat.icon;
               return (
@@ -167,14 +167,14 @@ const AboutUsPage = () => {
           <div className="bg-white rounded-lg shadow-lg p-12">
             <div className="grid md:grid-cols-2 gap-8">
               {[
-                '✓ Wide Selection of Quality Products',
-                '✓ Competitive Pricing & Regular Discounts',
-                '✓ Fast UK Delivery (2-4 Business Days)',
-                '✓ 30-Day Money-Back Guarantee',
-                '✓ 24/7 Customer Support',
+                '✓ Selection of Products',
+                '✓ Competitive Pricing',
+                '✓ Free UK Delivery (2-4 Business Days)',
+                '✓ 31-Day Returns Policy',
+                '✓ Customer Support (Mon-Fri 9 AM - 6 PM GMT)',
                 '✓ Secure Payment Processing',
-                '✓ UK GDPR Compliant Data Protection',
-                '✓ Easy Return & Refunds'
+                '✓ UK GDPR Compliant',
+                '✓ Transparent Return Process'
               ].map((feature, idx) => (
                 <p key={idx} className="text-lg text-gray-700 font-semibold flex items-center gap-3">
                   <span className="text-gray-400 text-2xl">✓</span>
@@ -189,7 +189,7 @@ const AboutUsPage = () => {
         <section className="mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Our Warehouse & Facilities</h2>
           <p className="text-center text-gray-600 text-lg mb-12">
-            Based in Birmingham, United Kingdom - State-of-the-art facilities ensuring fast and reliable service to customers across the UK
+            Based in Birmingham, United Kingdom - Our fulfillment facility serving UK customers
           </p>
           <div className="bg-white rounded-lg p-6 mb-8 border-l-4 border-gray-400">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Our Location</h3>
@@ -230,23 +230,7 @@ const AboutUsPage = () => {
             ))}
           </div>
 
-          {/* Warehouse Stats */}
-          <div className="mt-12 bg-gray-50 rounded-lg p-8 border-2 border-gray-300">
-            <div className="grid md:grid-cols-3 gap-8 text-center">
-              <div>
-                <p className="text-3xl font-bold text-gray-700 mb-2">50,000+</p>
-                <p className="text-gray-700">Square Feet of Warehouse Space</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-gray-400 mb-2">24/7</p>
-                <p className="text-gray-700">Operational for Customer Fulfillment</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-purple-600 mb-2">99.9%</p>
-                <p className="text-gray-700">Order Accuracy Rate</p>
-              </div>
-            </div>
-          </div>
+       
         </section>
 
         {/* Team */}
@@ -257,7 +241,7 @@ const AboutUsPage = () => {
               Our dedicated team of professionals is committed to bringing you the best online shopping experience.
             </p>
             <p className="text-lg text-gray-600">
-              From product curation to customer service, logistics to technology, every member of our team works tirelessly to ensure your satisfaction.
+              From product curation to customer service, logistics to technology, Our team supports day-to-day operations including product handling, order fulfillment, and customer service.
             </p>
           </div>
         </section>

@@ -1,5 +1,7 @@
 import Order from '../models/Order.js';
 import crypto from 'crypto';
+import { sendOrderStatusUpdateEmail, sendOrderWithPDF } from '../utils/emailService.js';
+import { generateOrderPDF } from '../utils/pdfGenerator.js';
 
 // Get all orders (admin only)
 export const getAllOrders = async (req, res) => {
@@ -203,6 +205,11 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
+    // Send status update email to customer (in background - don't wait)
+    sendOrderStatusUpdateEmail(order, status).catch(emailErr => {
+      console.error(`✗ Failed to send status update email for order ${order.orderId}:`, emailErr.message);
+    });
+
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -252,6 +259,11 @@ export const updateOrderDelivery = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
+    // Send status update email to customer (in background - don't wait)
+    sendOrderStatusUpdateEmail(order).catch(emailErr => {
+      console.error(`✗ Failed to send delivery status email for order ${order.orderId}:`, emailErr.message);
+    });
+
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -274,6 +286,41 @@ export const updateOrderRefund = async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
+
+    // Send status update email to customer (in background - don't wait)
+    sendOrderStatusUpdateEmail(order).catch(emailErr => {
+      console.error(`✗ Failed to send refund status email for order ${order.orderId}:`, emailErr.message);
+    });
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update order fulfillment status (admin only)
+export const updateOrderFulfillment = async (req, res) => {
+  try {
+    const { fulfillmentStatus } = req.body;
+
+    if (!['unfulfilled', 'fulfilled'].includes(fulfillmentStatus)) {
+      return res.status(400).json({ message: 'Invalid fulfillment status' });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { fulfillmentStatus },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Send status update email to customer (in background - don't wait)
+    sendOrderStatusUpdateEmail(order).catch(emailErr => {
+      console.error(`✗ Failed to send fulfillment status email for order ${order.orderId}:`, emailErr.message);
+    });
 
     res.json(order);
   } catch (error) {
@@ -375,6 +422,25 @@ export const updateOrderBilling = async (req, res) => {
     }
 
     res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Resend order invoice PDF to customer (admin only)
+export const resendOrderPDF = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Generate PDF and send
+    const pdfBuffer = await generateOrderPDF(order);
+    await sendOrderWithPDF(order, pdfBuffer);
+
+    res.json({ message: 'Order invoice PDF sent successfully to customer' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

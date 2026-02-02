@@ -3,6 +3,8 @@ import Order from '../models/Order.js';
 import Coupon from '../models/Coupon.js';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import { sendOrderConfirmationEmail, sendOrderNotificationToAdmin, sendOrderWithPDF } from '../utils/emailService.js';
+import { generateOrderPDF } from '../utils/pdfGenerator.js';
 
 dotenv.config();
 
@@ -226,6 +228,16 @@ export const createCheckoutSession = async (req, res, next) => {
                 cancel_url: `${SERVER_BASE.replace(/\/$/, '')}/checkout?canceled=true`,
                 metadata: { orderId: order._id.toString(), userId: user?._id?.toString() || 'guest' },
             });
+
+            // Send confirmation emails (don't block checkout if emails fail)
+            try {
+                await sendOrderConfirmationEmail(order);
+                await sendOrderNotificationToAdmin(order);
+                console.log('[Payment:Checkout] ✓ Emails sent successfully');
+            } catch (emailErr) {
+                console.error('[Payment:Checkout] ✗ Email sending failed:', emailErr.message);
+                // Don't fail the checkout, just log the error
+            }
         } catch (stripeErr) {
             // Return Stripe error details to client for debugging
 
@@ -347,6 +359,16 @@ export const createPaymentIntent = async (req, res, next) => {
             return res.status(400).json({ message: 'Failed to create order', error: saveErr.message });
         }
 
+        // Send confirmation emails (don't block checkout if emails fail)
+        try {
+            await sendOrderConfirmationEmail(order);
+            await sendOrderNotificationToAdmin(order);
+            console.log('[Payment:Intent] ✓ Emails sent successfully');
+        } catch (emailErr) {
+            console.error('[Payment:Intent] ✗ Email sending failed:', emailErr.message);
+            // Don't fail the checkout, just log the error
+        }
+
         const amount = Math.round((totalAmount || itemsPrice || 0) * 100);
 
         // Create PaymentIntent
@@ -443,6 +465,18 @@ export const webhookHandler = async (req, res) => {
         // Increment coupon usage when payment is completed
         if (orderId) {
             await incrementCouponUsage(orderId);
+
+            // Generate and send PDF invoice
+            try {
+                const order = await Order.findById(orderId);
+                if (order) {
+                    const pdfBuffer = await generateOrderPDF(order);
+                    await sendOrderWithPDF(order, pdfBuffer);
+                    console.log('[Webhook] ✓ Order PDF sent successfully');
+                }
+            } catch (pdfErr) {
+                console.error('[Webhook] ✗ PDF generation/send failed:', pdfErr.message);
+            }
         } else {
             console.log('[Webhook] ⚠️  No orderId in metadata');
         }
@@ -457,6 +491,18 @@ export const webhookHandler = async (req, res) => {
         // Increment coupon usage when payment is completed
         if (orderId) {
             await incrementCouponUsage(orderId);
+
+            // Generate and send PDF invoice
+            try {
+                const order = await Order.findById(orderId);
+                if (order) {
+                    const pdfBuffer = await generateOrderPDF(order);
+                    await sendOrderWithPDF(order, pdfBuffer);
+                    console.log('[Webhook] ✓ Order PDF sent successfully');
+                }
+            } catch (pdfErr) {
+                console.error('[Webhook] ✗ PDF generation/send failed:', pdfErr.message);
+            }
         } else {
             console.log('[Webhook] ⚠️  No orderId in metadata');
         }
@@ -471,6 +517,18 @@ export const webhookHandler = async (req, res) => {
         // Increment coupon usage when payment is completed
         if (orderId) {
             await incrementCouponUsage(orderId);
+
+            // Generate and send PDF invoice
+            try {
+                const order = await Order.findById(orderId);
+                if (order) {
+                    const pdfBuffer = await generateOrderPDF(order);
+                    await sendOrderWithPDF(order, pdfBuffer);
+                    console.log('[Webhook] ✓ Order PDF sent successfully');
+                }
+            } catch (pdfErr) {
+                console.error('[Webhook] ✗ PDF generation/send failed:', pdfErr.message);
+            }
         } else {
             console.log('[Webhook] ⚠️  No orderId in metadata');
         }

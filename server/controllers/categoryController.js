@@ -5,9 +5,9 @@ export const getCategories = async (req, res) => {
   try {
     // Get all categories (both main and subcategories) based on query param
     const allCategories = req.query.all === 'true';
-    
+
     let categories;
-    
+
     if (allCategories) {
       // Get ALL categories without hierarchy filter
       categories = await Category.find({})
@@ -160,7 +160,7 @@ export const getCategoryBySlug = async (req, res) => {
     };
 
     await addProductCount(category);
-    
+
     // Convert to plain object to ensure productCount is included
     const result = category.toObject();
     res.json(result);
@@ -212,7 +212,7 @@ export const updateCategory = async (req, res) => {
     };
 
     await addProductCount(updated);
-    
+
     // Convert to plain object to ensure productCount is included
     const result = updated.toObject();
     res.json(result);

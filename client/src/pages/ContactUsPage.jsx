@@ -8,7 +8,7 @@ const ContactUsPage = () => {
   // Set up meta tags for SEO
   useMetaTags({
     title: 'Contact Wolf Supplies LTD | UK Customer Support - 9AM-6PM GMT',
-    description: 'Contact Wolf Supplies LTD (Company 16070029). Customer support Monday-Friday 9AM-6PM GMT. Email: support@wolfsuppliesltd.co.uk | Phone: +44 7398 998101. UK based, GDPR compliant.',
+    description: 'Contact Wolf Supplies LTD (Company 16070029). Customer support Monday-Friday 9AM-6PM GMT. Email: sales@wolfsuppliesltd.co.uk | Phone: +44 7398 998101. UK based, GDPR compliant.',
     keywords: 'contact, customer service, support, UK, wolf supplies, phone, email, help',
     url: typeof window !== 'undefined' ? window.location.href : '',
   });
@@ -90,8 +90,8 @@ toast.error('Failed to send message. Please try again.');
             <FaEnvelope className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
             <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Email Us</h3>
             <p className="mb-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-              <a href="mailto:support@wolfsuppliesltd.co.uk" className="hover:opacity-75 transition duration-300" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
-                support@wolfsuppliesltd.co.uk
+              <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:opacity-75 transition duration-300" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
+                sales@wolfsuppliesltd.co.uk
               </a>
             </p>
             <p className="text-sm" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>We'll respond within 24 hours</p>
@@ -274,7 +274,7 @@ toast.error('Failed to send message. Please try again.');
                 <li><strong>Company Number:</strong> <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">16070029</a> (UK Companies House)</li>
                 <li><strong>Trading Address:</strong> Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</li>
                 <li><strong>Website:</strong> <a href="https://wolfsuppliesltd.co.uk" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">wolfsuppliesltd.co.uk</a></li>
-                <li><strong>Email:</strong> <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-blue-600 hover:underline">support@wolfsuppliesltd.co.uk</a></li>
+                <li><strong>Email:</strong> <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-blue-600 hover:underline">sales@wolfsuppliesltd.co.uk</a></li>
                 <li><strong>Phone:</strong> <a href="tel:+447398998101" className="text-blue-600 hover:underline">+44 7398 998101</a></li>
               </ul>
             </div>

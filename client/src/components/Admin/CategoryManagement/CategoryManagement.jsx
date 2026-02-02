@@ -55,7 +55,8 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                                         alt="Preview"
                                         className="w-32 h-32 object-cover rounded-lg border-2 shadow-md"
                                         style={{ borderColor: 'var(--color-accent-primary)' }}
-                                        onError={(e) => {e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
+                                        onError={(e) => {
+e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
                                         }}
                                     />
                                     <button
@@ -190,7 +191,8 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                                         alt="Preview"
                                         className="w-32 h-32 object-cover rounded-lg border-2 shadow-md"
                                         style={{ borderColor: 'var(--color-accent-primary)' }}
-                                        onError={(e) => {e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
+                                        onError={(e) => {
+e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
                                         }}
                                     />
                                     <button
@@ -338,7 +340,8 @@ const NestedCategoryRows = ({
                                 src={category.image.startsWith('http') ? category.image : `${API}${category.image}`}
                                 alt={category.name}
                                 className="w-10 h-10 object-cover rounded-lg border-2 border-gray-300"
-                                onError={(e) => {e.target.style.display = 'none';
+                                onError={(e) => {
+e.target.style.display = 'none';
                                 }}
                             />
                         ) : (
@@ -729,7 +732,8 @@ const CategoryManagement = () => {
                     return updatedFormData;
                 });
                 toast.success('Image uploaded successfully');
-            } catch (err) {toast.error('Failed to upload image. Please try again.');
+            } catch (err) {
+toast.error('Failed to upload image. Please try again.');
             }
         }
     };
@@ -910,8 +914,8 @@ const CategoryManagement = () => {
                         <div className="rounded-xl shadow-lg p-4 text-white" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-semibold uppercase" style={{ color: 'var(--color-accent-light)' }}>Total Categories</p>
-                                    <p className="text-xs mt-1" style={{ color: 'var(--color-accent-light)' }}>(Main + All Sub)</p>
+                                    <p className="text-sm font-semibold uppercase" >Total Categories</p>
+                                    <p className="text-xs mt-1" >(Main + All Sub)</p>
                                 </div>
                                 <p className="text-3xl font-bold">{totalCategoriesCount}</p>
                             </div>
@@ -1103,7 +1107,8 @@ const CategoryManagement = () => {
                                                                         alt={category.name}
                                                                         className="w-10 h-10 object-cover rounded-lg border-2"
                                                                         style={{ borderColor: 'var(--color-accent-primary)' }}
-                                                                        onError={(e) => {e.target.style.display = 'none';
+                                                                        onError={(e) => {
+e.target.style.display = 'none';
                                                                         }}
                                                                     />
                                                                 ) : (

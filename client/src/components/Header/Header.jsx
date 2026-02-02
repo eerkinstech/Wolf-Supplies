@@ -27,6 +27,7 @@ const Header = ({ hideMenu = false }) => {
     const dispatch = useDispatch();
     const desktopSearchRef = useRef(null);
     const mobileSearchRef = useRef(null);
+    const browseMenuTimeoutRef = useRef(null);
 
     // local saved menu from settings (fetched below)
     const [browseMenu, setBrowseMenu] = useState([]);
@@ -88,7 +89,7 @@ const Header = ({ hideMenu = false }) => {
         }
 
         recognition.onstart = () => {
-};
+        };
 
         recognition.onresult = (event) => {
             let interimTranscript = '';
@@ -111,7 +112,7 @@ const Header = ({ hideMenu = false }) => {
         };
 
         recognition.onerror = (event) => {
-if (event.error !== 'no-speech') {
+            if (event.error !== 'no-speech') {
                 toast.error('Error in voice search. Please try again.');
             }
             if (isMobile) {
@@ -172,7 +173,7 @@ if (event.error !== 'no-speech') {
             const itemPath = `${path}[${idx}]`;
             const hasLink = item.url || item.link;
             const linkValue = item.url || item.link;
-// Recursively check submenu items
+            // Recursively check submenu items
             const submenuItems = item.submenu || item.sub || [];
             if (submenuItems.length > 0) {
                 validateMenuLinks(submenuItems, itemPath);
@@ -189,11 +190,11 @@ if (event.error !== 'no-speech') {
                 if (!res.ok) return;
                 const data = await res.json();
                 if (data && Array.isArray(data.browseMenu)) {
-validateMenuLinks(data.browseMenu);
-setBrowseMenu(data.browseMenu);
+                    validateMenuLinks(data.browseMenu);
+                    setBrowseMenu(data.browseMenu);
                 }
             } catch (err) {
-}
+            }
         };
         loadMenu();
     }, []);
@@ -356,7 +357,7 @@ setBrowseMenu(data.browseMenu);
 
             {/* Main Header */}
             <div className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-light)]">
-                <div className="max-w-7xl mx-auto sm:px-2 lg:px-2 pt-3">
+                <div className="max-w-7xl mx-auto sm:px-2 lg:px-2">
                     <div className='px-2 py-4 border-b border-[var(--color-border-light)]'>
                         <div className="flex items-center justify-between gap-3 md:gap-6">
                             {/* Logo & Menu */}
@@ -471,8 +472,16 @@ setBrowseMenu(data.browseMenu);
                             <div className="flex items-center gap-4 px-4 py-2 overflow-x-auto">
                                 {/* Browse Categories Button */}
                                 <button
-                                    onMouseEnter={() => setBrowseOpen(true)}
-                                    onMouseLeave={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                    onMouseEnter={() => {
+                                        if (browseMenuTimeoutRef.current) clearTimeout(browseMenuTimeoutRef.current);
+                                        setBrowseOpen(true);
+                                    }}
+                                    onMouseLeave={() => {
+                                        browseMenuTimeoutRef.current = setTimeout(() => {
+                                            setBrowseOpen(false);
+                                            setActiveMenuPath([0]);
+                                        }, 150);
+                                    }}
                                     className="flex items-center gap-2   text-black hover:opacity-90 transition duration-300 font-bold text-lg whitespace-nowrap min-w-fit"
                                 >
                                     <svg viewBox="0 0 16 12" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.4">
@@ -507,7 +516,7 @@ setBrowseMenu(data.browseMenu);
                                     >
                                         Shop
                                     </Link>
-                                    
+
                                     <Link
                                         to="/contact"
                                         className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap"
@@ -522,8 +531,16 @@ setBrowseMenu(data.browseMenu);
                             {browseOpen && (
                                 <div
                                     className="absolute left-0 right-0 top-full z-40 opacity-100 visible translate-y-0"
-                                    onMouseEnter={() => setBrowseOpen(true)}
-                                    onMouseLeave={() => { setBrowseOpen(false); setActiveMenuPath([0]); }}
+                                    onMouseEnter={() => {
+                                        if (browseMenuTimeoutRef.current) clearTimeout(browseMenuTimeoutRef.current);
+                                        setBrowseOpen(true);
+                                    }}
+                                    onMouseLeave={() => {
+                                        browseMenuTimeoutRef.current = setTimeout(() => {
+                                            setBrowseOpen(false);
+                                            setActiveMenuPath([0]);
+                                        }, 150);
+                                    }}
                                 >
                                     <div className="w-full bg-white shadow-2xl border-t border-[var(--color-border-light)] flex h-96 overflow-x-auto">
                                         {/* Left Column - All Main Categories */}

@@ -58,6 +58,11 @@ const Footer = () => {
                   Contact Us
                 </Link>
               </li>
+               <li>
+                <Link to="/payment-options" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300">
+                  Payment Options
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -103,7 +108,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3 text-gray-700">
                 <FaEnvelope className="text-black" />
-                <a href="mailto:support@wolfsuppliesltd.co.uk" className="hover:text-black">support@WolfSuppliesLTD.co.uk</a>
+                <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:text-black">sales@wolfsuppliesltd.co.uk</a>
               </li>
               <li className="flex items-start gap-3 text-gray-700">
                 <FaMapMarkerAlt className="text-black mt-1" />

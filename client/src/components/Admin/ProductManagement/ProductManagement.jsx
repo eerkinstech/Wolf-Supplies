@@ -71,19 +71,56 @@ const ProductManagement = () => {
     return product.variantCombinations && product.variantCombinations.length > 0;
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API}/api/products/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error('Failed to delete product');
+  const handleDelete = async (id, isBulk = false) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API}/api/products/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Failed to delete product');
+      // Only show toast and refetch for single deletes
+      if (!isBulk) {
         toast.success('Product deleted successfully');
         dispatch(fetchProducts());
-      } catch (error) {
+      }
+      return true;
+    } catch (error) {
+      if (!isBulk) {
         toast.error(error.message);
+      }
+      return false;
+    }
+  };
+
+  const handleBulkDelete = async (ids) => {
+    if (window.confirm(`Delete ${ids.length} product(s)? This cannot be undone.`)) {
+      try {
+        const token = localStorage.getItem('token');
+
+        // Make all delete requests in parallel
+        const deletePromises = ids.map(id =>
+          fetch(`${API}/api/products/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        );
+
+        const responses = await Promise.all(deletePromises);
+        const failedDeletes = responses.filter(r => !r.ok).length;
+        const successfulDeletes = ids.length - failedDeletes;
+
+        if (successfulDeletes > 0) {
+          toast.success(`Deleted ${successfulDeletes} product(s)`);
+        }
+        if (failedDeletes > 0) {
+          toast.error(`Failed to delete ${failedDeletes} product(s)`);
+        }
+
+        // Refetch products only once after all deletes
+        dispatch(fetchProducts());
+      } catch (error) {
+        toast.error('Error deleting products: ' + error.message);
       }
     }
   };
@@ -126,6 +163,264 @@ const ProductManagement = () => {
     }
   };
 
+  const handleImportProducts = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv')) {
+      toast.error('Please upload a valid CSV file');
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const lines = text.trim().split('\n');
+
+      if (lines.length < 2) {
+        toast.error('CSV file must have headers and at least one product row');
+        return;
+      }
+
+      // Helper function to parse CSV line properly with proper unescaping
+      const parseCSVLine = (line) => {
+        const values = [];
+        let current = '';
+        let insideQuotes = false;
+
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          const nextChar = line[j + 1];
+
+          if (char === '"') {
+            if (insideQuotes && nextChar === '"') {
+              // CSV escape: "" represents a literal "
+              current += '"';
+              j++; // Skip the next quote
+            } else {
+              // Toggle quote state
+              insideQuotes = !insideQuotes;
+            }
+          } else if (char === ',' && !insideQuotes) {
+            // End of field
+            values.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+
+        // Add the last field
+        values.push(current.trim());
+
+        return values;
+      };
+
+      // Helper to normalize header names
+      const normalizeHeader = (header) => {
+        return header.toLowerCase().replace(/\s+/g, ' ').trim();
+      };
+
+      // Parse CSV headers
+      const headerLine = lines[0];
+      const rawHeaders = parseCSVLine(headerLine);
+      const headers = rawHeaders.map(normalizeHeader);
+
+      // Check for required headers - normalize search terms
+      const hasName = headers.some(h => h.includes('name'));
+      const hasPrice = headers.some(h => h.includes('price'));
+
+      if (!hasName || !hasPrice) {
+        toast.error(`CSV must include at least: Name, Price\nFound headers: ${rawHeaders.join(', ')}`);
+        return;
+      }
+
+      // Parse products
+      const productsToImport = [];
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const values = parseCSVLine(line);
+
+        // Map values to headers
+        const product = {};
+        headers.forEach((header, idx) => {
+          product[header] = values[idx] || '';
+        });
+
+        // Build product object for API
+        const getFieldValue = (key) => {
+          const normalKey = normalizeHeader(key);
+          return Object.entries(product).find(([k]) => normalizeHeader(k) === normalKey)?.[1] || '';
+        };
+
+        const categoryStr = getFieldValue('category');
+        // Split categories by " | " if there are multiple
+        const categories = categoryStr && categoryStr.trim() 
+          ? categoryStr.split('|').map(cat => cat.trim()).filter(Boolean) 
+          : [];
+
+        const productData = {
+          name: getFieldValue('name'),
+          slug: getFieldValue('slug') || getFieldValue('name')?.toLowerCase().replace(/\s+/g, '-'),
+          description: getFieldValue('description'),
+          price: parseFloat(getFieldValue('base price') || getFieldValue('price')) || 0,
+          originalPrice: parseFloat(getFieldValue('original price')) || null,
+          discount: parseFloat(getFieldValue('discount')) || 0,
+          stock: parseInt(getFieldValue('base stock') || getFieldValue('stock')) || 0,
+          categories: categories.length > 0 ? categories : [],
+          isDraft: getFieldValue('status')?.toLowerCase() === 'draft',
+          rating: parseFloat(getFieldValue('rating')) || 0,
+          numReviews: parseInt(getFieldValue('number of reviews')) || 0,
+          metaTitle: getFieldValue('meta title'),
+          metaDescription: getFieldValue('meta description'),
+          metaKeywords: getFieldValue('meta keywords'),
+          benefitsHeading: getFieldValue('benefits heading') || 'Why Buy This Product',
+          benefits: getFieldValue('benefits'),
+          sku: getFieldValue('sku'),
+          images: getFieldValue('images') ? getFieldValue('images').split('|').map(img => img.trim()).filter(Boolean) : [],
+        };
+
+        // Handle variants - try new format first, then JSON, then pipe-separated format
+        const variantsStr = getFieldValue('variants');
+        const variantCombinationsStr = getFieldValue('variant combinations');
+        const variantsJsonStr = getFieldValue('variants json');
+        const variantTypeStr = getFieldValue('variant type');
+        const variantValuesStr = getFieldValue('variant values');
+
+        console.log('Variant fields found:', { variantsStr: !!variantsStr, variantCombinationsStr: !!variantCombinationsStr });
+
+        if (variantsStr && variantsStr.trim()) {
+          // New format: Variants column contains the variants array
+          try {
+            console.log('Parsing variants from Variants column:', variantsStr.substring(0, 100));
+            const parsedVariants = JSON.parse(variantsStr);
+            console.log('Parsed variants:', parsedVariants);
+
+            if (Array.isArray(parsedVariants)) {
+              productData.variants = parsedVariants;
+            }
+          } catch (e) {
+            console.warn('Failed to parse variants column:', e.message);
+          }
+        } else if (variantsJsonStr && variantsJsonStr.trim()) {
+          // Old format: Variants JSON column
+          try {
+            console.log('Parsing variants from Variants JSON column:', variantsJsonStr.substring(0, 100));
+            const parsedVariants = JSON.parse(variantsJsonStr);
+            console.log('Parsed variants:', parsedVariants);
+
+            if (parsedVariants.variants && Array.isArray(parsedVariants.variants)) {
+              productData.variants = parsedVariants.variants;
+              console.log('Set variants:', productData.variants);
+            }
+            if (parsedVariants.variantCombinations && Array.isArray(parsedVariants.variantCombinations)) {
+              productData.variantCombinations = parsedVariants.variantCombinations;
+              console.log('Set variantCombinations:', productData.variantCombinations.length, 'items');
+            }
+          } catch (e) {
+            console.warn('Failed to parse variants JSON:', e.message);
+            console.warn('Raw string was:', variantsJsonStr);
+          }
+        } else if (variantTypeStr && variantValuesStr) {
+          // Pipe-separated format: "Colour | Size" and "Colour: blue | Size: 10mm"
+          try {
+            const variantTypes = variantTypeStr.split('|').map(v => v.trim());
+            const variantPairs = variantValuesStr.split('|').map(v => v.trim());
+
+            // Parse variant pairs into key-value object
+            const variantValues = {};
+            variantPairs.forEach(pair => {
+              const [key, value] = pair.split(':').map(s => s.trim());
+              if (key && value) {
+                variantValues[key] = value;
+              }
+            });
+
+            console.log('Parsed pipe-separated variants:', { variantTypes, variantValues });
+
+            // Create variants array
+            productData.variants = variantTypes.map(name => ({
+              name: name,
+              values: [] // Values will be populated from variantCombinations
+            }));
+
+            // Create single variant combination
+            productData.variantCombinations = [{
+              variantValues: variantValues,
+              sku: getFieldValue('sku') || '',
+              price: parseFloat(getFieldValue('variant price')) || parseFloat(getFieldValue('price')) || 0,
+              stock: parseInt(getFieldValue('variant stock')) || parseInt(getFieldValue('stock')) || 0,
+              image: getFieldValue('variant image') || getFieldValue('images')?.split('|')[0] || '',
+            }];
+
+            console.log('Created variants and combinations:', { variants: productData.variants, combinations: productData.variantCombinations });
+          } catch (e) {
+            console.warn('Failed to parse pipe-separated variants:', e.message);
+          }
+        }
+
+        // Handle variant combination if provided as separate column
+        if (variantCombinationsStr && variantCombinationsStr.trim()) {
+          try {
+            console.log('Parsing variant combination:', variantCombinationsStr.substring(0, 100));
+            const vc = JSON.parse(variantCombinationsStr);
+
+            // If this row has a variant combination, set it
+            if (vc && vc.variantValues) {
+              if (!productData.variantCombinations) {
+                productData.variantCombinations = [];
+              }
+              productData.variantCombinations.push({
+                variantValues: vc.variantValues,
+                sku: vc.sku || '',
+                price: parseFloat(vc.price) || productData.price || 0,
+                stock: parseInt(vc.stock) || 0,
+                image: vc.image || '',
+              });
+              console.log('Added variant combination. Total:', productData.variantCombinations.length);
+            }
+          } catch (e) {
+            console.warn('Failed to parse variant combination:', e.message);
+          }
+        }
+
+        productsToImport.push(productData);
+      }
+
+      if (productsToImport.length === 0) {
+        toast.error('No valid products found in CSV');
+        return;
+      }
+
+      console.log('Products to import:', JSON.stringify(productsToImport.slice(0, 2), null, 2));
+
+      // Import products via API
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API}/api/products/import`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ products: productsToImport }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to import products');
+      }
+
+      toast.success(`Successfully imported ${productsToImport.length} product(s)`);
+      dispatch(fetchProducts());
+
+      // Reset file input
+      event.target.value = '';
+    } catch (error) {
+      toast.error(error.message || 'Failed to import products');
+    }
+  };
+
   const handleExportSelected = () => {
     const selectedProducts = visibleProducts.filter(p => p.selected);
     if (selectedProducts.length === 0) {
@@ -154,83 +449,117 @@ const ProductManagement = () => {
         'Meta Keywords',
         'Benefits Heading',
         'Benefits',
-        'Variant Type',
-        'Variant Values',
         'SKU',
-        'Variant Price',
-        'Variant Stock',
-        'Variant Image',
+        'Variants',
+        'Variant Combinations',
         'Created Date',
         'Updated Date'
       ];
 
       // Create CSV rows - one row per variant combination
       const rows = [];
-      
+
       selectedProducts.forEach(product => {
-        const imagesStr = product.images && product.images.length > 0 
-          ? product.images.join(' | ') 
+        const imagesStr = product.images && product.images.length > 0
+          ? product.images.join(' | ')
           : '';
 
-        const variantTypesStr = product.variants && product.variants.length > 0
-          ? product.variants.map(v => v.name).join(' | ')
-          : '';
+        // Extract category names from categories array
+        let categoryStr = '';
+        if (product.categories && product.categories.length > 0) {
+          categoryStr = product.categories
+            .map(cat => {
+              if (typeof cat === 'string') return cat;
+              if (cat.name) return cat.name;
+              return '';
+            })
+            .filter(Boolean)
+            .join(' | ');
+        } else if (product.category) {
+          categoryStr = typeof product.category === 'string' ? product.category : product.category.name || '';
+        }
 
-        const baseRow = [
-          product._id || '',
-          `"${(product.name || '').replace(/"/g, '""')}"`,
-          product.slug || '',
-          `"${(product.description || '').replace(/"/g, '""')}"`,
-          product.price || '0',
-          product.originalPrice || '',
-          product.discount || '0',
-          product.stock || '0',
-          product.category || '',
-          product.isDraft ? 'Draft' : 'Active',
-          product.rating || '0',
-          product.numReviews || '0',
-          `"${imagesStr}"`,
-          `"${(product.metaTitle || '').replace(/"/g, '""')}"`,
-          `"${(product.metaDescription || '').replace(/"/g, '""')}"`,
-          `"${(product.metaKeywords || '').replace(/"/g, '""')}"`,
-          `"${(product.benefitsHeading || 'Why Buy This Product').replace(/"/g, '""')}"`,
-          `"${(product.benefits || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-          variantTypesStr
-        ];
+        // Build variants array with values
+        let variantsWithValues = [];
+        if (product.variants && product.variants.length > 0) {
+          variantsWithValues = product.variants.map(variant => {
+            const uniqueValues = new Set();
+            if (product.variantCombinations) {
+              product.variantCombinations.forEach(vc => {
+                if (vc.variantValues && vc.variantValues[variant.name]) {
+                  uniqueValues.add(vc.variantValues[variant.name]);
+                }
+              });
+            }
+            return {
+              name: variant.name,
+              values: Array.from(uniqueValues)
+            };
+          });
+        }
 
-        // If product has variants, create one row per variant combination
+        // Serialize variants and combinations as JSON strings
+        const variantsJSON = JSON.stringify(variantsWithValues).replace(/"/g, '""');
+
+        // If product has variant combinations, create one row per combination
         if (product.variantCombinations && product.variantCombinations.length > 0) {
           product.variantCombinations.forEach(vc => {
-            const variantValues = vc.variantValues 
-              ? Object.entries(vc.variantValues).map(([key, val]) => `${key}: ${val}`).join(' | ')
-              : '';
-
-            const variantRow = [
-              ...baseRow,
-              variantValues,
-              vc.sku || '',
-              vc.price || product.price || '0',
-              vc.stock || '0',
-              vc.image || '',
+            const combinationJSON = JSON.stringify(vc).replace(/"/g, '""');
+            const row = [
+              product._id || '',
+              `"${(product.name || '').replace(/"/g, '""')}"`,
+              product.slug || '',
+              `"${(product.description || '').replace(/"/g, '""')}"`,
+              product.price || '0',
+              product.originalPrice || '',
+              product.discount || '0',
+              product.stock || '0',
+              `"${categoryStr}"`,
+              product.isDraft ? 'Draft' : 'Active',
+              product.rating || '0',
+              product.numReviews || '0',
+              `"${imagesStr}"`,
+              `"${(product.metaTitle || '').replace(/"/g, '""')}"`,
+              `"${(product.metaDescription || '').replace(/"/g, '""')}"`,
+              `"${(product.metaKeywords || '').replace(/"/g, '""')}"`,
+              `"${(product.benefitsHeading || 'Why Buy This Product').replace(/"/g, '""')}"`,
+              `"${(product.benefits || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+              product.sku || '',
+              `"${variantsJSON}"`,
+              `"${combinationJSON}"`,
               product.createdAt ? new Date(product.createdAt).toLocaleString() : '',
               product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''
             ];
-            rows.push(variantRow);
+            rows.push(row);
           });
         } else {
-          // If no variants, create single row for the product
-          const singleRow = [
-            ...baseRow,
-            '', // Variant Type (empty for no variants)
-            '', // Variant Values
-            product.sku || '', // SKU
-            product.price || '0', // Use base price
-            product.stock || '0', // Use base stock
-            product.images && product.images.length > 0 ? product.images[0] : '', // First image
+          // No variant combinations - create single row
+          const row = [
+            product._id || '',
+            `"${(product.name || '').replace(/"/g, '""')}"`,
+            product.slug || '',
+            `"${(product.description || '').replace(/"/g, '""')}"`,
+            product.price || '0',
+            product.originalPrice || '',
+            product.discount || '0',
+            product.stock || '0',
+            `"${categoryStr}"`,
+            product.isDraft ? 'Draft' : 'Active',
+            product.rating || '0',
+            product.numReviews || '0',
+            `"${imagesStr}"`,
+            `"${(product.metaTitle || '').replace(/"/g, '""')}"`,
+            `"${(product.metaDescription || '').replace(/"/g, '""')}"`,
+            `"${(product.metaKeywords || '').replace(/"/g, '""')}"`,
+            `"${(product.benefitsHeading || 'Why Buy This Product').replace(/"/g, '""')}"`,
+            `"${(product.benefits || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+            product.sku || '',
+            `"${variantsJSON}"`,
+            '',
             product.createdAt ? new Date(product.createdAt).toLocaleString() : '',
             product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''
           ];
-          rows.push(singleRow);
+          rows.push(row);
         }
       });
 
@@ -261,12 +590,23 @@ const ProductManagement = () => {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-        <button
-          onClick={() => navigate('/admin/products/add')}
-          className="flex items-center gap-2 bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-lg font-semibold transition duration-300"
-        >
-          <FaPlus /> Add Product
-        </button>
+        <div className="flex gap-3">
+          <label className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 cursor-pointer">
+            📥 Import Products
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleImportProducts}
+              className="hidden"
+            />
+          </label>
+          <button
+            onClick={() => navigate('/admin/products/add')}
+            className="flex items-center gap-2 bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-lg font-semibold transition duration-300"
+          >
+            <FaPlus /> Add Product
+          </button>
+        </div>
       </div>
 
       {/* Tabs: All / Active / Draft */}
@@ -342,9 +682,7 @@ const ProductManagement = () => {
             <button
               onClick={() => {
                 const selectedIds = visibleProducts.filter(p => p.selected).map(p => p._id);
-                if (window.confirm(`Delete ${selectedIds.length} product(s)? This cannot be undone.`)) {
-                  selectedIds.forEach(id => handleDelete(id));
-                }
+                handleBulkDelete(selectedIds);
               }}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition"
             >

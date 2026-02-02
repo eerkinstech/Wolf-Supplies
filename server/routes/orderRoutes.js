@@ -9,11 +9,13 @@ import {
   updateOrderPayment,
   updateOrderDelivery,
   updateOrderRefund,
+  updateOrderFulfillment,
   deleteOrder,
   updateOrderRemarks,
   updateOrderContact,
   updateOrderShipping,
   updateOrderBilling,
+  resendOrderPDF,
 } from '../controllers/orderController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -34,10 +36,12 @@ router.put('/:id/status', protect, admin, updateOrderStatus); // Update order st
 router.put('/:id/payment', protect, admin, updateOrderPayment); // Update payment status
 router.put('/:id/delivery', protect, admin, updateOrderDelivery); // Update delivery status
 router.put('/:id/refund', protect, admin, updateOrderRefund); // Update refund status
+router.put('/:id/fulfillment', protect, admin, updateOrderFulfillment); // Update fulfillment status
 router.put('/:id/remarks', protect, admin, updateOrderRemarks); // Update remarks
 router.put('/:id/contact', protect, admin, updateOrderContact); // Update contact details
 router.put('/:id/shipping', protect, admin, updateOrderShipping); // Update shipping address
 router.put('/:id/billing', protect, admin, updateOrderBilling); // Update billing address
+router.post('/:id/resend-pdf', protect, admin, resendOrderPDF); // Resend order PDF to customer
 router.put('/:id', protect, admin, updateOrderStatus); // Generic update for status
 
 export default router;

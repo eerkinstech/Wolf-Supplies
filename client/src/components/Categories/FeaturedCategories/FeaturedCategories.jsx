@@ -36,11 +36,11 @@ const FeaturedCategories = ({
     const [screenSize, setScreenSize] = useState('lg');
     const { categories, loading } = useSelector((state) => state.category);
 
-    // Determine items per slide based on screen size
+    // Determine items per slide based on screen size (responsive)
     const getItemsPerSlide = () => {
-        if (screenSize === 'sm') return 1;
-        if (screenSize === 'md') return 2;
-        return 5; // lg and xl
+        if (screenSize === 'sm') return 2; // Mobile: 2 columns
+        if (screenSize === 'md') return 3; // Tablet: 3 columns
+        return 6; // Desktop: 6 columns
     };
 
     const ITEMS_PER_SLIDE = getItemsPerSlide();
@@ -81,16 +81,9 @@ const FeaturedCategories = ({
         return sizeMap[sizeValue] || 'text-base';
     };
 
-    // Get grid columns class
-    const getColumnsClass = (col) => {
-        const colMap = {
-            2: 'lg:grid-cols-2',
-            3: 'lg:grid-cols-3',
-            4: 'lg:grid-cols-4',
-            5: 'lg:grid-cols-4',
-            6: 'lg:grid-cols-6'
-        };
-        return colMap[col] || 'lg:grid-cols-4';
+    // Get grid columns class - responsive (2 mobile, 3 tablet, 6 desktop)
+    const getColumnsClass = () => {
+        return 'md:grid-cols-4 lg:grid-cols-6';
     };
 
     // Monitor screen size
@@ -223,8 +216,8 @@ const FeaturedCategories = ({
                 </div>
 
                 {layout === 'grid' ? (
-                    // Grid Layout
-                    <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${getColumnsClass(columns)} gap-1 sm:gap-2 md:gap-4 lg:gap-8`}>
+                    // Grid Layout - Responsive: 2 mobile, 3 tablet, 6 desktop
+                    <div className={`grid grid-cols-2 ${getColumnsClass()} gap-1 sm:gap-2 md:gap-4 lg:gap-8`}>
                         {filteredCategories.map((category) => (
                             <div key={category._id} className="transform hover:scale-105 transition duration-300">
                                 <CategoryCard category={category} />
@@ -254,7 +247,7 @@ const FeaturedCategories = ({
                                 }}
                             >
                                 {filteredCategories.map((category) => (
-                                    <div key={category._id} className="transform hover:scale-105 transition duration-300 flex-shrink-0 px-2 md:px-3" style={{ width: `${100 / filteredCategories.length}%` }}>
+                                    <div key={category._id} className="0 flex-shrink-0 px-2 md:px-3" style={{ width: `${100 / filteredCategories.length}%` }}>
                                         <CategoryCard category={category} />
                                     </div>
                                 ))}

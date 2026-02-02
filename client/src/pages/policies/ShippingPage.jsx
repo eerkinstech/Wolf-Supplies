@@ -73,7 +73,8 @@ const PoliciesShippingPage = () => {
             <div className="border-l-4 border-[var(--color-accent-primary)] pl-6">
               <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">International Shipping</h3>
               <ul className="text-[var(--color-text-light)] space-y-2">
-                <li>🌍 <strong>International Orders:</strong> We ship worldwide! However, due to varying customs and regulations, we recommend contacting us before placing an international order.</li>
+                <li>🌍 <strong>International Orders:</strong> We currently deliver within the United Kingdom only. International shipping is not available through our online checkout.
+</li>
                 <li>📧 <strong>Contact Us:</strong> Please <Link to="/contact" className="text-[var(--color-accent-primary)] hover:underline font-semibold">contact our team</Link> for international shipping inquiries, custom quotes, and delivery timelines.</li>
                 <li>💷 <strong>Cost:</strong> Shipping costs vary based on destination and will be confirmed via email after your inquiry.</li>
               </ul>
@@ -106,7 +107,7 @@ const PoliciesShippingPage = () => {
             Our customer support team is here to help. Contact us at:
           </p>
           <div className="space-y-2 text-[var(--color-text-light)]">
-            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">support@wolfsuppliesltd.co.uk</a></p>
+            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
             <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>

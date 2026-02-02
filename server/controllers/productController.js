@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import Settings from '../models/Settings.js';
-import User from '../models/User.js';
 
 // Normalize benefits to an HTML string. Accepts:
 // - HTML string (leave as-is)
@@ -66,7 +65,7 @@ export const getProductById = async (req, res) => {
       const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       product = await Product.findOne({ slug: { $regex: `^${escapeRegExp(slugVal)}$`, $options: 'i' } }).populate('categories');
     }
-    
+
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -75,10 +74,10 @@ export const getProductById = async (req, res) => {
     if (product.reviews && Array.isArray(product.reviews) && product.reviews.length > 0) {
       const User = mongoose.model('User');
       const populatedReviews = [];
-      
+
       for (const review of product.reviews) {
         let reviewObj = review.toObject ? review.toObject() : { ...review };
-        
+
         // Populate user data if user ID exists
         if (reviewObj.user) {
           try {
@@ -94,15 +93,15 @@ export const getProductById = async (req, res) => {
             // If user fetch fails, keep the user ID
           }
         }
-        
+
         populatedReviews.push(reviewObj);
       }
-      
+
       product.reviews = populatedReviews;
     } else if (!product.reviews) {
       product.reviews = [];
     }
-    
+
     res.json(product);
   } catch (error) {
 
@@ -368,13 +367,13 @@ export const updateReviewApprovalStatus = async (req, res) => {
     }
 
     product.reviews[reviewIndex].isApproved = Boolean(isApproved);
-    
+
     // Recalculate rating based on all reviews (both approved and unapproved)
     product.numReviews = product.reviews.length;
     product.rating = product.reviews.length > 0
       ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length
       : 0;
-    
+
     await product.save();
 
     res.json({ message: 'Review approval status updated' });
@@ -397,14 +396,354 @@ export const deleteProductReview = async (req, res) => {
 
     product.reviews.splice(reviewIndex, 1);
     product.numReviews = product.reviews.length;
-    product.rating = product.reviews.length > 0 
-      ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length 
+    product.rating = product.reviews.length > 0
+      ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length
       : 0;
 
     await product.save();
     res.json({ message: 'Review deleted' });
   } catch (error) {
 
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// POST /api/products/import - Import products from CSV
+export const importProducts = async (req, res) => {
+  try {
+    const { products: productsData } = req.body;
+
+    if (!Array.isArray(productsData) || productsData.length === 0) {
+      return res.status(400).json({ message: 'No products provided for import' });
+    }
+
+    const importedProducts = [];
+    const errors = [];
+
+    // Group products by slug to merge variant combinations
+    const productsBySlug = {};
+
+    const normalizeKey = (key) => {
+      if (!key) return '';
+      return key.toLowerCase().replace(/\s+/g, ' ').trim();
+    };
+
+    const normalize = (obj) => {
+      const result = {};
+      if (typeof obj === 'object' && obj !== null) {
+        Object.entries(obj).forEach(([key, value]) => {
+          result[normalizeKey(key)] = value;
+        });
+      }
+      return result;
+    };
+
+    // First pass: normalize and group by slug
+    for (let i = 0; i < productsData.length; i++) {
+      try {
+        const productData = productsData[i];
+        const normalized = normalize(productData);
+
+        // Validate required fields
+        if (!normalized.name) {
+          errors.push(`Row ${i + 1}: Product name is required`);
+          continue;
+        }
+
+        // Handle price
+        let price = null;
+        if (normalized.price !== undefined && normalized.price !== null && normalized.price !== '') {
+          price = parseFloat(normalized.price);
+        } else if (normalized['base price'] !== undefined && normalized['base price'] !== null && normalized['base price'] !== '') {
+          price = parseFloat(normalized['base price']);
+        }
+
+        if (price === null || isNaN(price)) {
+          errors.push(`Row ${i + 1}: Valid product price is required`);
+          continue;
+        }
+
+        const slug = normalized.slug || normalized.name.toLowerCase().replace(/\s+/g, '-');
+
+        // If this product doesn't exist yet, create base structure
+        if (!productsBySlug[slug]) {
+          productsBySlug[slug] = {
+            name: normalized.name,
+            slug: slug,
+            description: normalized.description || '',
+            price: price,
+            originalPrice: normalized['original price'] ? parseFloat(normalized['original price']) : null,
+            discount: normalized['discount (%)'] ? parseFloat(normalized['discount (%)']) : 0,
+            stock: normalized['base stock'] ? parseInt(normalized['base stock']) : (normalized.stock ? parseInt(normalized.stock) : 0),
+            metaTitle: normalized['meta title'] || '',
+            metaDescription: normalized['meta description'] || '',
+            metaKeywords: normalized['meta keywords'] || '',
+            benefitsHeading: normalized['benefits heading'] || 'Why Buy This Product',
+            benefits: normalizeBenefitsToHtml(normalized.benefits),
+            sku: normalized.sku || '',
+            isDraft: normalized.status?.toLowerCase() === 'draft' || normalized.isdraft === true || normalized.isdraft === 'true',
+            rating: normalized.rating ? parseFloat(normalized.rating) : 0,
+            numReviews: normalized['number of reviews'] ? parseInt(normalized['number of reviews']) : 0,
+            variants: [],
+            variantCombinations: [],
+            variantTypes: new Set(), // Track unique variant types
+            categories: Array.isArray(normalized.categories) ? normalized.categories : (normalized.category ? [normalized.category] : []),
+            images: [],
+          };
+        }
+
+        // Parse images
+        if (normalized.images) {
+          if (Array.isArray(normalized.images)) {
+            productsBySlug[slug].images = normalized.images.filter(img => img && typeof img === 'string');
+          } else if (typeof normalized.images === 'string' && normalized.images.trim()) {
+            const imgs = normalized.images.split('|').map(img => img.trim()).filter(Boolean);
+            productsBySlug[slug].images = Array.from(new Set([...productsBySlug[slug].images, ...imgs]));
+          }
+        }
+
+        // Parse variants and create variant combination
+        const variantsJsonStr = normalized['variants json'] || normalized['variants'];
+        const variantCombinationsStr = normalized['variantcombinations'];
+        const variantTypeStr = normalized['variant type'];
+        const variantValuesStr = normalized['variant values'];
+
+        // Debug: log all available fields
+        if (i < 3) {
+          console.log(`Row ${i + 1}: Available normalized fields:`, Object.keys(normalized));
+          console.log(`Row ${i + 1}: Raw variants value:`, normalized['variants']);
+          console.log(`Row ${i + 1}: Raw variantcombinations value:`, normalized['variantcombinations']);
+          console.log(`Row ${i + 1}: variantsJsonStr="${variantsJsonStr}", variantCombinationsStr="${variantCombinationsStr}"`);
+          console.log(`Row ${i + 1}: variantsJsonStr type: ${typeof variantsJsonStr}, length: ${String(variantsJsonStr).length}`);
+        }
+
+        if (variantsJsonStr && !variantsJsonStr.includes('[object Object]')) {
+          // JSON format - could be a string or already an object
+          try {
+            let variantData = variantsJsonStr;
+
+            // If it's a string, parse it
+            if (typeof variantsJsonStr === 'string') {
+              console.log(`Row ${i + 1}: Parsing JSON string for variants`);
+              variantData = JSON.parse(variantsJsonStr);
+            } else {
+              console.log(`Row ${i + 1}: Variants already received as object`);
+            }
+
+            console.log(`Row ${i + 1}: Variant data:`, variantData);
+
+            // Handle direct variants array
+            if (Array.isArray(variantData)) {
+              productsBySlug[slug].variants = variantData;
+              variantData.forEach(v => {
+                productsBySlug[slug].variantTypes.add(v.name);
+              });
+            } else if (variantData.variants && Array.isArray(variantData.variants)) {
+              productsBySlug[slug].variants = variantData.variants;
+              variantData.variants.forEach(v => {
+                productsBySlug[slug].variantTypes.add(v.name);
+              });
+            }
+
+            // Handle variant combinations
+            let combos = null;
+            if (variantCombinationsStr) {
+              if (typeof variantCombinationsStr === 'string' && !variantCombinationsStr.includes('[object Object]')) {
+                try {
+                  combos = JSON.parse(variantCombinationsStr);
+                } catch (e) {
+                  console.warn(`Row ${i + 1}: Failed to parse variantcombinations string`, e.message);
+                }
+              } else if (Array.isArray(variantCombinationsStr)) {
+                combos = variantCombinationsStr;
+                console.log(`Row ${i + 1}: Variant combinations already received as array: ${combos.length} items`);
+              }
+            } else if (variantData.variantCombinations && Array.isArray(variantData.variantCombinations)) {
+              combos = variantData.variantCombinations;
+              console.log(`Row ${i + 1}: Using variantCombinations from variants object: ${combos.length} items`);
+            }
+
+            if (combos) {
+              console.log(`Row ${i + 1}: Processing ${combos.length} variant combinations`);
+              productsBySlug[slug].variantCombinations.push(...combos.map(vc => ({
+                variantValues: vc.variantValues || {},
+                sku: vc.sku || '',
+                price: parseFloat(vc.price) || price,
+                stock: parseInt(vc.stock) || 0,
+                image: vc.image || '',
+              })));
+            }
+          } catch (e) {
+            console.warn(`Row ${i + 1}: Failed to process variants`, e.message);
+          }
+        } else if (variantTypeStr && variantValuesStr) {
+          // Pipe-separated format
+          try {
+            console.log(`Row ${i + 1}: Parsing variants - Type: "${variantTypeStr}", Values: "${variantValuesStr}"`);
+
+            const variantTypes = variantTypeStr.split('|').map(v => v.trim());
+            const variantPairs = variantValuesStr.split('|').map(v => v.trim());
+
+            const variantValues = {};
+            variantPairs.forEach(pair => {
+              const [key, value] = pair.split(':').map(s => s.trim());
+              if (key && value) {
+                variantValues[key] = value;
+                productsBySlug[slug].variantTypes.add(key);
+                console.log(`  Added variant type: ${key} = ${value}`);
+              }
+            });
+
+            // Add variant combination
+            productsBySlug[slug].variantCombinations.push({
+              variantValues: variantValues,
+              sku: normalized.sku || '',
+              price: normalized['variant price'] ? parseFloat(normalized['variant price']) : price,
+              stock: normalized['variant stock'] ? parseInt(normalized['variant stock']) : 0,
+              image: normalized['variant image'] || '',
+            });
+
+            console.log(`  Combination added. Total combinations: ${productsBySlug[slug].variantCombinations.length}`);
+          } catch (e) {
+            console.warn(`Row ${i + 1}: Failed to parse pipe-separated variants`, e.message);
+          }
+        }
+      } catch (error) {
+        errors.push(`Row ${i + 1}: ${error.message}`);
+      }
+    }
+
+    // Second pass: create or update products with merged variant data
+    for (const slug in productsBySlug) {
+      try {
+        const productData = productsBySlug[slug];
+
+        console.log(`\n=== Processing product: ${slug} ===`);
+        console.log(`Variant Types collected: ${Array.from(productData.variantTypes)}`);
+        console.log(`Variant Combinations count: ${productData.variantCombinations.length}`);
+        console.log(`First combination:`, productData.variantCombinations[0]);
+
+        // Build final variants array with collected values
+        if (productData.variantTypes.size > 0) {
+          productData.variants = Array.from(productData.variantTypes).map(name => {
+            const uniqueValues = new Set();
+            productData.variantCombinations.forEach(vc => {
+              if (vc.variantValues && vc.variantValues[name]) {
+                uniqueValues.add(vc.variantValues[name]);
+              }
+            });
+            return {
+              name: name,
+              values: Array.from(uniqueValues)
+            };
+          });
+          console.log(`Built variants:`, productData.variants);
+        }
+
+        // Handle categories (create if doesn't exist) - can be array or pipe-separated string
+        console.log(`Processing categories for ${slug}:`, productData.categories);
+
+        if (productData.categories && Array.isArray(productData.categories) && productData.categories.length > 0) {
+          const categoryIds = [];
+          for (const catName of productData.categories) {
+            if (typeof catName === 'string' && catName.trim()) {
+              console.log(`  Looking for category: "${catName}"`);
+              let category = await Category.findOne({ name: catName });
+              if (!category) {
+                console.log(`  Creating new category: "${catName}"`);
+                category = await Category.create({
+                  name: catName,
+                  slug: catName.toLowerCase().replace(/\s+/g, '-'),
+                });
+              } else {
+                console.log(`  Found existing category: ${category._id}`);
+              }
+              categoryIds.push(category._id);
+            }
+          }
+          if (categoryIds.length > 0) {
+            productData.categories = categoryIds;
+            console.log(`  Set product categories to: ${categoryIds.join(', ')}`);
+          }
+        } else if (productData.category && typeof productData.category === 'string' && productData.category.trim()) {
+          // Legacy single category field - split by | in case multiple categories
+          console.log(`  Processing legacy category string: "${productData.category}"`);
+          const categoryNames = productData.category.split('|').map(cat => cat.trim()).filter(Boolean);
+          const categoryIds = [];
+
+          for (const catName of categoryNames) {
+            console.log(`  Looking for category: "${catName}"`);
+            let category = await Category.findOne({ name: catName });
+            if (!category) {
+              console.log(`  Creating new category: "${catName}"`);
+              category = await Category.create({
+                name: catName,
+                slug: catName.toLowerCase().replace(/\s+/g, '-'),
+              });
+            } else {
+              console.log(`  Found existing category: ${category._id}`);
+            }
+            categoryIds.push(category._id);
+          }
+
+          productData.categories = categoryIds.length > 0 ? categoryIds : [];
+          console.log(`  Set product categories to: ${categoryIds.join(', ')}`);
+          delete productData.category;
+        }
+
+        // Remove temporary tracking fields before saving
+        delete productData.variantTypes;
+
+        // Create or update product
+        let product;
+        const existingProduct = await Product.findOne({ slug: productData.slug });
+
+        if (existingProduct) {
+          // Update existing product
+          console.log(`Updating existing product: ${slug}`);
+          existingProduct.variants = productData.variants;
+          existingProduct.variantCombinations = productData.variantCombinations;
+          existingProduct.images = productData.images;
+          existingProduct.name = productData.name;
+          existingProduct.description = productData.description;
+          existingProduct.price = productData.price;
+          existingProduct.stock = productData.stock;
+          existingProduct.metaTitle = productData.metaTitle;
+          existingProduct.metaDescription = productData.metaDescription;
+          existingProduct.metaKeywords = productData.metaKeywords;
+          existingProduct.benefitsHeading = productData.benefitsHeading;
+          existingProduct.benefits = productData.benefits;
+          existingProduct.rating = productData.rating;
+          existingProduct.numReviews = productData.numReviews;
+          existingProduct.isDraft = productData.isDraft;
+          if (productData.categories) {
+            existingProduct.categories = productData.categories;
+          }
+
+          product = await existingProduct.save();
+        } else {
+          // Create new product
+          console.log(`Creating new product: ${slug}`);
+          product = new Product(productData);
+          product = await product.save();
+        }
+
+        console.log(`Product saved with variants:`, product.variants.length, `combinations:`, product.variantCombinations.length);
+        importedProducts.push(product);
+      } catch (error) {
+        console.error(`Error processing product ${slug}:`, error);
+        errors.push(`Product ${slug}: ${error.message}`);
+      }
+    }
+
+    // Send final response
+    res.json({
+      message: `Successfully imported ${importedProducts.length} product(s)`,
+      imported: importedProducts.length,
+      errors: errors.length > 0 ? errors : undefined,
+      products: importedProducts,
+    });
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

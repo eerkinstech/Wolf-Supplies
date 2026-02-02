@@ -1,8 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaQuestionCircle, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { useMetaTags } from '../../hooks/useMetaTags';
 
 const PoliciesFAQPage = () => {
+  useMetaTags({
+    title: 'FAQs | Frequently Asked Questions - Wolf Supplies LTD',
+    description: 'Frequently Asked Questions about shipping, returns, payments, privacy, and more. Get answers to common questions about Wolf Supplies.',
+    keywords: 'FAQ, help, customer support, shipping, returns, payments, privacy, Wolf Supplies, frequently asked questions',
+    url: typeof window !== 'undefined' ? window.location.href : '',
+    ogType: 'website',
+  });
   const faqs = [
     {
       category: 'Shipping & Delivery',
@@ -20,8 +28,8 @@ const PoliciesFAQPage = () => {
           answer: 'You\'ll receive a tracking number via email once your order ships. You can track your package in real-time on our website and through our carrier\'s tracking page.'
         },
         {
-          question: 'Do you ship internationally?',
-          answer: 'Yes, we ship worldwide! For international orders, please contact support@wolfsuppliesltd.co.uk for a custom quote and timeline, as shipping costs vary by destination.'
+          question: 'Where do you deliver?',
+          answer: 'We deliver exclusively to the United Kingdom to all UK postcodes, including remote areas.'
         },
         {
           question: 'What carriers do you use?',
@@ -34,7 +42,7 @@ const PoliciesFAQPage = () => {
       items: [
         {
           question: 'What is your return policy?',
-          answer: 'You have 31 days from delivery to return unused items in original packaging for a full refund. Under UK Consumer Rights Act 2015, you have 14 days to cancel for any reason. Defective items can be returned anytime with proof of purchase.'
+          answer: 'You have 31 days from delivery to return unused items in original packaging for a full refund. Under the UK Consumer Rights Act 2015, you also have 14 days to cancel for any reason. For defective items, you have statutory rights to repair, replacement, or refund under consumer protection law.'
         },
         {
           question: 'How long does a refund take?',
@@ -55,15 +63,15 @@ const PoliciesFAQPage = () => {
       items: [
         {
           question: 'What payment methods do you accept?',
-          answer: 'We accept all major credit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, and Google Pay. All payments are processed securely with PCI-DSS Level 1 compliance.'
+          answer: 'We accept all major credit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, and Google Pay. All payments are processed securely through Stripe, a leading payment provider.'
         },
         {
           question: 'Is my payment information safe?',
-          answer: 'Yes! All payments are encrypted using SSL/TLS technology. We never store full card details on our servers. All transactions comply with PCI-DSS standards.'
+          answer: 'Yes! All payments are encrypted using SSL/TLS technology and processed through Stripe. We never store full card details on our servers. Your payment information is protected to industry standards.'
         },
         {
           question: 'Can I change my order after placing it?',
-          answer: 'If your order hasn\'t shipped, we may be able to modify or cancel it. Contact us immediately at support@wolfsuppliesltd.co.uk within 1 business day of placing your order.'
+          answer: 'If your order hasn\'t shipped, we may be able to modify or cancel it. Contact us immediately at sales@wolfsuppliesltd.co.uk within 1 business day of placing your order.'
         },
         {
           question: 'What happens if an item is out of stock?',
@@ -80,7 +88,7 @@ const PoliciesFAQPage = () => {
         },
         {
           question: 'Can I request a copy of my data?',
-          answer: 'Yes! Under UK GDPR, you have the right to access your data. Email privacy@wolfsuppliesltd.co.uk with proof of identity, and we\'ll provide your data within 30 days.'
+          answer: 'Yes! Under UK GDPR, you have the right to access your data. Email sales@wolfsuppliesltd.co.uk with proof of identity, and we\'ll provide your data within 30 days.'
         },
         {
           question: 'How long do you keep my information?',
@@ -110,7 +118,7 @@ const PoliciesFAQPage = () => {
       items: [
         {
           question: 'How do I contact customer support?',
-          answer: 'Email: support@wolfsuppliesltd.co.uk | Phone: +44 7398 998101 | Monday-Friday, 9 AM - 6 PM GMT'
+          answer: 'Email: sales@wolfsuppliesltd.co.uk | Phone: +44 7398 998101 | Monday-Friday, 9 AM - 6 PM GMT'
         },
         {
           question: 'What are your customer support hours?',
@@ -127,7 +135,7 @@ const PoliciesFAQPage = () => {
       items: [
         {
           question: 'What laws protect me as a UK customer?',
-          answer: 'You\'re protected under the Consumer Rights Act 2015, Distance Selling Directive, and UK GDPR. These give you rights to quality products, clear information, cooling-off period, and data protection.'
+          answer: 'You\'re protected under the Consumer Rights Act 2015, Consumer Contracts Regulations 2013, and UK GDPR. These give you rights to quality products, clear information, cooling-off period, and data protection.'
         },
         {
           question: 'What is your company registration number?',
@@ -188,7 +196,7 @@ const PoliciesFAQPage = () => {
             Our support team at Wolf Supplies Ltd is here to help with any questions or concerns you may have.
           </p>
           <div className="space-y-2 text-[var(--color-text-light)] mb-6">
-            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">support@wolfsuppliesltd.co.uk</a></p>
+            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
             <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>

@@ -35,7 +35,8 @@ const ReviewManagement = () => {
                 if (!response.ok) throw new Error('Failed to fetch settings');
                 const data = await response.json();
                 setRequireApproval(data.requireReviewApproval !== false);
-            } catch (error) {}
+            } catch (error) {
+}
         };
         fetchSettings();
     }, []);
@@ -48,7 +49,8 @@ const ReviewManagement = () => {
                 if (!response.ok) throw new Error('Failed to fetch products');
                 const data = await response.json();
                 setProducts(data.products || []);
-            } catch (error) {}
+            } catch (error) {
+}
         };
         fetchProducts();
     }, []);
@@ -100,7 +102,8 @@ const ReviewManagement = () => {
                                     r.user = uData.user || uData;
                                 }
                             }
-                        } catch (err) {}
+                        } catch (err) {
+}
                         return r;
                     })
                 );
@@ -113,7 +116,8 @@ const ReviewManagement = () => {
                 setApprovedCount(approvedCountCalc);
                 setPendingCount(pendingCountCalc);
                 setTotalCount(enriched.length);
-            } catch (error) {toast.error('Failed to fetch reviews');
+            } catch (error) {
+toast.error('Failed to fetch reviews');
             } finally {
                 setLoading(false);
             }
@@ -163,7 +167,8 @@ const ReviewManagement = () => {
                                         r.user = uData.user || uData;
                                     }
                                 }
-                            } catch (err) {}
+                            } catch (err) {
+}
                             return r;
                         })
                     );
@@ -269,6 +274,196 @@ const ReviewManagement = () => {
         }
     };
 
+    // Export reviews
+    const handleExportReviews = () => {
+        try {
+            const headers = [
+                'Review ID',
+                'Product Name',
+                'Product ID',
+                'User Name',
+                'User Email',
+                'Rating',
+                'Comment',
+                'Status',
+                'Created At'
+            ];
+
+            const rows = reviews.map(review => [
+                review._id || '',
+                `"${(review.productName || '').replace(/"/g, '""')}"`,
+                review.productId || '',
+                `"${(review.name || '').replace(/"/g, '""')}"`,
+                review.user?.email || review.email || '',
+                review.rating || '0',
+                `"${(review.comment || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+                review.isApproved ? 'Approved' : 'Pending',
+                review.createdAt ? new Date(review.createdAt).toLocaleString() : ''
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `reviews_export_${new Date().getTime()}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success(`Exported ${reviews.length} review(s) successfully`);
+        } catch (error) {
+            toast.error('Failed to export reviews');
+        }
+    };
+
+    // Import reviews
+    const handleImportReviews = async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (!file.name.endsWith('.csv')) {
+            toast.error('Please upload a valid CSV file');
+            return;
+        }
+
+        try {
+            const text = await file.text();
+            const lines = text.trim().split('\n');
+
+            if (lines.length < 2) {
+                toast.error('CSV file must have headers and at least one review row');
+                return;
+            }
+
+            const parseCSVLine = (line) => {
+                const values = [];
+                let current = '';
+                let insideQuotes = false;
+
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    const nextChar = line[j + 1];
+
+                    if (char === '"') {
+                        if (insideQuotes && nextChar === '"') {
+                            current += '"';
+                            j++;
+                        } else {
+                            insideQuotes = !insideQuotes;
+                        }
+                    } else if (char === ',' && !insideQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+
+                values.push(current.trim());
+                return values;
+            };
+
+            const normalizeHeader = (header) => {
+                return header.toLowerCase().replace(/\s+/g, ' ').trim();
+            };
+
+            const headerLine = lines[0];
+            const rawHeaders = parseCSVLine(headerLine);
+            const headers = rawHeaders.map(normalizeHeader);
+
+            const getFieldValue = (product, key) => {
+                const normalKey = normalizeHeader(key);
+                return Object.entries(product).find(([k]) => normalizeHeader(k) === normalKey)?.[1] || '';
+            };
+
+            let importedCount = 0;
+            let failedCount = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const values = parseCSVLine(line);
+                const reviewData = {};
+                headers.forEach((header, idx) => {
+                    reviewData[header] = values[idx] || '';
+                });
+
+                const productId = getFieldValue(reviewData, 'product id');
+                const comment = getFieldValue(reviewData, 'comment');
+                const rating = parseInt(getFieldValue(reviewData, 'rating')) || 0;
+                const isApproved = getFieldValue(reviewData, 'status')?.toLowerCase() === 'approved';
+                const userName = getFieldValue(reviewData, 'user name');
+                const userEmail = getFieldValue(reviewData, 'user email');
+
+                if (!productId || !comment || !rating) {
+                    failedCount++;
+                    continue;
+                }
+
+                try {
+                    const response = await fetch(`${API}/api/products/${productId}/reviews`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                            name: userName || 'Imported Review',
+                            email: userEmail || '',
+                            rating: rating,
+                            comment: comment,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        // If approval status is provided and differs from default, update it
+                        if (isApproved !== requireApproval) {
+                            // Get the product to find the review index
+                            const productRes = await fetch(`${API}/api/products/${productId}`);
+                            const product = await productRes.json();
+                            if (product.reviews && product.reviews.length > 0) {
+                                const lastReview = product.reviews.length - 1;
+                                await fetch(`${API}/api/products/${productId}/reviews/${lastReview}`, {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                    body: JSON.stringify({
+                                        isApproved: isApproved,
+                                    }),
+                                });
+                            }
+                        }
+                        importedCount++;
+                    } else {
+                        failedCount++;
+                    }
+                } catch (error) {
+                    failedCount++;
+                }
+            }
+
+            toast.success(`Imported ${importedCount} review(s)${failedCount > 0 ? ` (${failedCount} failed)` : ''}`);
+            
+            // Refresh reviews
+            setActiveTab('');
+            setTimeout(() => setActiveTab('all'), 50);
+
+            // Reset file input
+            event.target.value = '';
+        } catch (error) {
+            toast.error(error.message || 'Failed to import reviews');
+        }
+    };
+
     // Update global settings
     const toggleRequireApproval = async () => {
         setSavingSettings(true);
@@ -362,29 +557,54 @@ const ReviewManagement = () => {
             </div>
 
             {/* Tabs */}
-            <div className="mb-8 flex gap-4">
-                <button
-                    onClick={() => {
-                        setActiveTab('all');
-                        setSelectedProduct(null);
-                        setFilterTab('all');
-                    }}
-                    className={`px-6 py-3 rounded-lg font-semibold transition`}
-                    style={{ backgroundColor: activeTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)', color: activeTab === 'all' ? 'white' : 'var(--color-text-primary)' }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = activeTab === 'all' ? 'var(--color-accent-light)' : 'var(--color-border-light)'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = activeTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)'}
-                >
-                    All Reviews
-                </button>
-                <button
-                    onClick={() => setActiveTab('by-product')}
-                    className={`px-6 py-3 rounded-lg font-semibold transition`}
-                    style={{ backgroundColor: activeTab === 'by-product' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)', color: activeTab === 'by-product' ? 'white' : 'var(--color-text-primary)' }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = activeTab === 'by-product' ? 'var(--color-accent-light)' : 'var(--color-border-light)'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = activeTab === 'by-product' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)'}
-                >
-                    Reviews by Product
-                </button>
+            <div className="mb-8 flex gap-4 justify-between items-center">
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => {
+                            setActiveTab('all');
+                            setSelectedProduct(null);
+                            setFilterTab('all');
+                        }}
+                        className={`px-6 py-3 rounded-lg font-semibold transition`}
+                        style={{ backgroundColor: activeTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)', color: activeTab === 'all' ? 'white' : 'var(--color-text-primary)' }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = activeTab === 'all' ? 'var(--color-accent-light)' : 'var(--color-border-light)'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = activeTab === 'all' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)'}
+                    >
+                        All Reviews
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('by-product')}
+                        className={`px-6 py-3 rounded-lg font-semibold transition`}
+                        style={{ backgroundColor: activeTab === 'by-product' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)', color: activeTab === 'by-product' ? 'white' : 'var(--color-text-primary)' }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = activeTab === 'by-product' ? 'var(--color-accent-light)' : 'var(--color-border-light)'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = activeTab === 'by-product' ? 'var(--color-accent-primary)' : 'var(--color-bg-section)'}
+                    >
+                        Reviews by Product
+                    </button>
+                </div>
+                
+                <div className="flex gap-3">
+                    <label className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300 cursor-pointer">
+                        📥 Import Reviews
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleImportReviews}
+                            className="hidden"
+                        />
+                    </label>
+                    <button
+                        onClick={handleExportReviews}
+                        disabled={reviews.length === 0}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition duration-300 ${
+                            reviews.length === 0 
+                                ? 'bg-gray-300 text-gray-600 cursor-not-allowed' 
+                                : 'bg-green-600 hover:bg-green-700 text-white'
+                        }`}
+                    >
+                        📤 Export Reviews
+                    </button>
+                </div>
             </div>
 
             {/* Search Bar */}

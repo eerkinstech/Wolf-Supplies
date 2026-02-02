@@ -53,9 +53,10 @@ const orderSchema = new mongoose.Schema({
   discountAmount: { type: Number, default: 0 }, // Discount amount applied
 
   paidAt: Date,
-  deliveryStatus: { type: String, enum: ['', 'shipped', 'delivered', 'refunded'], default: '' }, // Single delivery status field
+  fulfillmentStatus: { type: String, enum: ['unfulfilled', 'fulfilled'], default: 'unfulfilled' }, // Order fulfillment status
+  deliveryStatus: { type: String, enum: ['', 'shipped', 'delivered', 'refunded'], default: '' }, // Delivery status field
   deliveredAt: Date,
-  status: { type: String, default: 'pending' },
+  status: { type: String, default: 'pending' }, // Payment/processing status
   remarks: { type: String, default: '' },
 }, { timestamps: true });
 

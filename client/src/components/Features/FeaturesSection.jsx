@@ -51,13 +51,13 @@ const FeaturesSection = () => {
                                 className="no-underline"
                             >
                                 <div
-                                    className="flex flex-row items-center gap-6 hover:scale-105 transition-transform duration-300 p-4 border border-[var(--color-accent-primary)] rounded-lg bg-[var(--color-bg-secondary)] cursor-pointer h-full"
+                                    className="flex flex-row items-center gap-4 hover:scale-105 transition-transform duration-300 p-4 border border-gray-100 rounded-lg cursor-pointer h-full"
                                 >
                                     <div className="flex-shrink-0">
                                         {/* Icon */}
-                                        <div className="p-4 bg-[var(--color-bg-section)] rounded-lg flex items-center justify-center w-16 h-16">
-                                            <IconComponent className={`${feature.color} text-3xl`} />
-                                        </div>
+
+                                        <IconComponent className={`${feature.color} text-3xl`} />
+
                                     </div>
                                     <div className="flex-1 pt-1">
                                         {/* Title */}

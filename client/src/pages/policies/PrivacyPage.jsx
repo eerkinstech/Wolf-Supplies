@@ -33,13 +33,13 @@ const PoliciesPrivacyPage = () => {
         {/* Overview */}
         <div className="rounded-lg shadow-md p-8 mb-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
           <p className="mb-4 leading-relaxed" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-            Wolf Supplies LTD ("we", "our", or "us") is committed to protecting your personal data and privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information in accordance with the UK General Data Protection Regulation (UK GDPR) and Data Protection Act 2018.
+            Wolf Supplies LTD ("we", "our", or "us") operates the wolfsuppliesltd.co.uk website. This Privacy Policy explains what personal information we collect, how we use it, and your rights under UK data protection law.
           </p>
           <p className="mb-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
             <strong>Company Details:</strong> Wolf Supplies Ltd | Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>16070029</a> | Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom
           </p>
           <p style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-            <strong>Last Updated:</strong> January 19, 2026 | <strong>Effective Date:</strong> Immediately
+            <strong>Last Updated:</strong> January 31, 2026 | <strong>Effective Date:</strong> Immediately
           </p>
         </div>
 
@@ -54,16 +54,15 @@ const PoliciesPrivacyPage = () => {
                 <li>Full name and contact information</li>
                 <li>Email address and phone number</li>
                 <li>Delivery and billing address</li>
-                <li>Payment information (processed securely via PCI-DSS Level 1 compliant providers)</li>
                 <li>Order history and purchase preferences</li>
               </ul>
             </div>
 
             <div className="pl-6" style={{ borderLeft: '4px solid var(--color-accent-primary, #a5632a)' }}>
-              <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>Account Information</h3>
+              <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>Shopping Information</h3>
               <ul className="list-disc list-inside space-y-1" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-                <li>Username and securely hashed password</li>
-                <li>Account preferences, wishlist, and saved items</li>
+                <li>Shopping cart contents and saved items</li>
+                <li>Wishlist items</li>
                 <li>Order history and tracking information</li>
                 <li>Customer reviews and ratings</li>
               </ul>
@@ -73,10 +72,28 @@ const PoliciesPrivacyPage = () => {
               <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text-primary, #000000)' }}>Technical Information</h3>
               <ul className="list-disc list-inside space-y-1" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
                 <li>Device information and browser type</li>
-                <li>IP address and approximate location (for fraud prevention)</li>
-                <li>Cookies and website usage analytics (with your consent)</li>
+                <li>IP address for site security purposes</li>
+                <li>Website usage analytics (only collected with your consent via cookie settings)</li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* Guest ID System */}
+        <div className="rounded-lg shadow-md p-8 mb-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary, #000000)' }}>How We Store Your Shopping Experience</h2>
+
+          <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
+            <p>
+              We do not require you to create a user account or password to shop with us. Instead, we use a secure guest identification system:
+            </p>
+            <ul className="list-disc list-inside space-y-2">
+              <li><strong>Guest ID:</strong> When you first visit our website, a unique identifier is assigned and stored on your device using essential cookies required for site functionality.</li>
+              <li><strong>Shopping Cart & Wishlist:</strong> Your cart contents, saved items, and wishlist are linked to this guest identifier and stored on our servers</li>
+              <li><strong>Order Retrieval:</strong> After placing an order using your email and billing information, you can retrieve past orders using your Order ID</li>
+              <li><strong>Data Security:</strong> Your guest ID and associated shopping data are protected using the same security measures as all other customer information</li>
+              <li><strong>Privacy:</strong> You remain anonymous until you choose to provide personal information for checkout or contact us</li>
+            </ul>
           </div>
         </div>
 
@@ -86,18 +103,17 @@ const PoliciesPrivacyPage = () => {
 
           <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
             <p>
-              We implement industry-leading security measures to protect your personal data:
+              We implement security measures to protect your personal information:
             </p>
             <ul className="list-disc list-inside space-y-2 mb-4">
-              <li><strong>SSL/TLS Encryption:</strong> All data transmissions encrypted (HTTPS)</li>
-              <li><strong>PCI-DSS Level 1 Compliance:</strong> Highest payment card security standards</li>
-              <li><strong>Secure Authentication:</strong> Password hashing with bcrypt or equivalent</li>
-              <li><strong>Regular Security Audits:</strong> Annual penetration testing and vulnerability assessments</li>
-              <li><strong>Access Controls:</strong> Limited employee access to sensitive data</li>
-              <li><strong>Data Retention:</strong> Personal data deleted after order fulfillment and refund period (where not legally required)</li>
+              <li><strong>Encryption:</strong> Data transmitted to and from our website uses encryption (HTTPS)</li>
+              <li><strong>Guest ID System:</strong> Your shopping cart, wishlist, and order history are stored securely using a unique guest identifier assigned to your device</li>
+              <li><strong>Access Control:</strong> Access to personal data is restricted to authorized personnel only</li>
+              <li><strong>Third-Party Security:</strong> Payment processing partners comply with industry security standards</li>
+              <li><strong>Data Retention:</strong> Personal data is retained for the duration of your business relationship with us and for as long as required by law (typically 6 years for tax and legal compliance purposes)</li>
             </ul>
             <p className="font-semibold">
-              <strong>Breach Notification:</strong> In the unlikely event of a data breach, we will notify affected customers within 72 hours as required by UK GDPR.
+              <strong>Data Breach:</strong> If a data breach occurs, we will notify affected individuals as required by applicable UK data protection law.
             </p>
           </div>
         </div>
@@ -121,10 +137,38 @@ const PoliciesPrivacyPage = () => {
               </div>
             ))}
           </div>
-          
+
           <p style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-            To exercise any of these rights, please contact us at <a href="mailto:privacy@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>privacy@wolfsuppliesltd.co.uk</a> with proof of identity. We will respond within 30 days.
+            To exercise any of these rights, please contact us at <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>sales@wolfsuppliesltd.co.uk</a> with proof of identity. We will respond within 30 days.
           </p>
+        </div>
+
+        {/* Cookies & Tracking */}
+        <div className="rounded-lg shadow-md p-8 mb-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary, #000000)' }}>Cookies & Website Tracking</h2>
+
+          <div className="space-y-4" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
+            <p>
+              Our website uses cookies to enhance your browsing experience. Cookies are small text files stored on your device that help us remember your preferences and understand how you use our site.
+            </p>
+            <div>
+              <h3 className="font-bold mb-2">Types of Cookies We Use:</h3>
+              <ul className="list-disc list-inside space-y-1 mb-4">
+                <li><strong>Essential Cookies:</strong> Required for basic site functionality (shopping cart, guest identification). These cannot be disabled.</li>
+                <li><strong>Preference Cookies:</strong> Remember your choices (language, theme) for improved user experience.</li>
+                <li><strong>Analytics Cookies:</strong> Collect anonymous data about site usage to help us improve our services. These require your consent.</li>
+              </ul>
+            </div>
+            <p>
+              <strong>Your Cookie Choices:</strong> When you first visit our website, a cookie banner will appear asking for your consent to non-essential cookies. You can:
+            </p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Accept all cookies by clicking "Accept"</li>
+              <li>Decline non-essential cookies by clicking "Decline"</li>
+              <li>Customize your preferences by clicking "Preferences"</li>
+              <li>Change your cookie settings at any time through your browser settings</li>
+            </ul>
+          </div>
         </div>
 
         {/* Contact */}
@@ -134,14 +178,14 @@ const PoliciesPrivacyPage = () => {
             Contact our Data Protection Officer:
           </p>
           <div className="space-y-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-            <p><FaEnvelope className="inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }} /> Email: <a href="mailto:privacy@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>privacy@wolfsuppliesltd.co.uk</a></p>
+            <p><FaEnvelope className="inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }} /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>sales@wolfsuppliesltd.co.uk</a></p>
             <p><FaPhone className="inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }} /> Phone: <a href="tel:+447398998101" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>+44 7398 998101</a></p>
           </div>
         </div>
 
         {/* Last Updated */}
         <p className="text-center text-sm mt-8" style={{ color: 'var(--color-text-primary, #000000)' }}>
-          Last updated: January 19, 2026 | Wolf Supplies LTD
+          Last updated: January 31, 2026 | Wolf Supplies LTD
         </p>
       </div>
     </div>

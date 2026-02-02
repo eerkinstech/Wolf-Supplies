@@ -5,11 +5,6 @@ import { fetchCategories } from '../../redux/slices/categorySlice';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout.jsx';
-import FeaturedProducts from '../../components/Products/FeaturedProducts/FeaturedProducts.jsx';
-import FeaturedCategories from '../../components/Categories/FeaturedCategories/FeaturedCategories.jsx';
-
-const FEATURED_CATEGORIES_KEY = 'shophub_featured_categories';
-const FEATURED_PRODUCTS_KEY = 'shophub_featured_products';
 
 const AdminCollectionsPage = () => {
     const dispatch = useDispatch();
@@ -69,7 +64,8 @@ const AdminCollectionsPage = () => {
                 if (data.featuredProducts && Array.isArray(data.featuredProducts) && data.featuredProducts.length > 0) {
                     setFeaturedProductsSections(data.featuredProducts);
                 }
-            } catch (e) {}
+            } catch (e) {
+            }
         };
         loadFeaturedCollections();
     }, []);
@@ -99,7 +95,8 @@ const AdminCollectionsPage = () => {
             });
             if (!response.ok) throw new Error('Failed to save');
             toast.success('✅ Featured categories saved to database!');
-        } catch (error) {toast.error('❌ Failed to save featured categories');
+        } catch (error) {
+            toast.error('❌ Failed to save featured categories');
         }
     };
 
@@ -133,7 +130,8 @@ const AdminCollectionsPage = () => {
             });
             if (!response.ok) throw new Error('Failed to save');
             toast.success('✅ Featured products saved to database!');
-        } catch (error) {toast.error('❌ Failed to save featured products');
+        } catch (error) {
+            toast.error('❌ Failed to save featured products');
         }
     };
 
@@ -269,8 +267,11 @@ const AdminCollectionsPage = () => {
                                 {/* Columns Selection */}
                                 <div className="border rounded-lg p-6" style={{ borderColor: 'var(--color-border-light)', backgroundColor: 'var(--color-bg-section)' }}>
                                     <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-                                        <span className="text-xl">🔲</span> Number of Columns (Grid Only)
+                                        <span className="text-xl">🔲</span> Number of Columns
                                     </h3>
+                                    <p className="text-xs mb-4" style={{ color: 'var(--color-text-light)' }}>
+                                        Applies to both Grid and Carousel layouts
+                                    </p>
                                     <div className="flex items-center gap-4">
                                         <input
                                             type="range"

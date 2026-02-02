@@ -239,7 +239,7 @@ const PaymentOptionsPage = () => {
                 <li><strong>Company Name:</strong> Wolf Supplies LTD</li>
                 <li><strong>Registration:</strong> UK Company Number: <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">16070029</a></li>
                 <li><strong>Address:</strong> Unit 4 Atlas Estates, Colebrook Road, Birmingham, West Midlands, B11 2NT, United Kingdom</li>
-                <li><strong>Email:</strong> <a href="mailto:support@wolfsuppliesltd.co.uk" className="text-blue-600 hover:underline">support@wolfsuppliesltd.co.uk</a></li>
+                <li><strong>Email:</strong> <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-blue-600 hover:underline">sales@wolfsuppliesltd.co.uk</a></li>
                 <li><strong>Phone:</strong> <a href="tel:+447398998101" className="text-blue-600 hover:underline">+44 7398 998101</a></li>
                 <li><strong>Website:</strong> <a href="https://wolfsuppliesltd.co.uk" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">wolfsuppliesltd.co.uk</a></li>
               </ul>

@@ -135,7 +135,7 @@ const ProductCard = ({ product }) => {
 
         {/* Info */}
         <div className="flex flex-col flex-grow">
-          <h3 className="font-bold text-[var(--color-text-light)] mb-2 line-clamp-2 text-sm group-hover:text-[var(--color-accent-primary)] transition duration-300">
+          <h3 className="font-bold text-black mb-2 line-clamp-2 text-sm group-hover:text-[var(--color-accent-primary)] transition duration-300">
             {product.name}
           </h3>
 
@@ -161,7 +161,7 @@ const ProductCard = ({ product }) => {
                 <span className="text-xs text-[var(--color-text-light)]">
                   From
                 </span>
-                <span className="text-lg font-bold text-[var(--color-text-primary)]">
+                <span className="text-lg font-bold text-[var(--color-accent-primary)]">
                   £
                   {product.variantCombinations[0].price?.toFixed(2) ||
                     product.price?.toFixed(2) ||
@@ -169,8 +169,8 @@ const ProductCard = ({ product }) => {
                 </span>
               </>
             ) : (
-              <span className="text-lg font-bold text-[var(--color-text-primary)]">
-                £{product.price?.toFixed(2) || '0.00'}
+              <span className="text-lg font-bold text-[var(--color-accent-primary)]">
+                £  {product.price?.toFixed(2) || '0.00'}
               </span>
             )}
           </div>

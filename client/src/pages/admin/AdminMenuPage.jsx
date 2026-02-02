@@ -28,6 +28,9 @@ const AdminMenuPage = () => {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [loadingSelector, setLoadingSelector] = useState(false);
     const [editingForLink, setEditingForLink] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [faqsList, setFaqsList] = useState([]);
+    const [paymentOptionsList, setPaymentOptionsList] = useState([]);
 
     const startCreateMain = () => {
         setIsCreatingMain(true);
@@ -162,6 +165,7 @@ const AdminMenuPage = () => {
     const openSelector = async (type) => {
         setSelectorModal(type);
         setSelectedItems(new Set());
+        setSearchTerm('');
         setLoadingSelector(true);
 
         try {
@@ -176,15 +180,26 @@ const AdminMenuPage = () => {
                 const data = await res.json();
                 setProductsList(data.products || data || []);
             } else if (type === 'pages') {
-                const res = await fetch(`${API}/api/pages`);
-                const data = await res.json();
-                setPagesList(data.pages || data || []);
+                // Hardcoded pages
+                setPagesList([
+                    { _id: 'about', name: 'About', slug: 'about', url: '/about' },
+                    { _id: 'shop', name: 'Shop', slug: 'shop', url: '/shop' },
+                    { _id: 'categories', name: 'Categories', slug: 'categories', url: '/categories' },
+                    { _id: 'contact', name: 'Contact', slug: 'contact', url: '/contact' },
+                    { _id: 'faqs', name: 'FAQs', slug: 'faqs', url: '/policies/faq' },
+                    { _id: 'payment-options', name: 'Payment Options', slug: 'payment-options', url: '/payment-options' },
+                ]);
             } else if (type === 'policies') {
-                const res = await fetch(`${API}/api/policies`);
-                const data = await res.json();
-                setPoliciesList(data.policies || data || []);
+                // Hardcoded policies
+                setPoliciesList([
+                    { _id: 'privacy', name: 'Privacy Policy', slug: 'privacy', url: '/privacy' },
+                    { _id: 'terms', name: 'Terms & Conditions', slug: 'terms', url: '/terms' },
+                    { _id: 'return-refund', name: 'Return & Refund Policy', slug: 'return-refund', url: '/return-refund' },
+                    { _id: 'shipping', name: 'Shipping Policy', slug: 'shipping', url: '/shipping' },
+                ]);
             }
-        } catch (err) {toast.error(`Failed to load ${type}`);
+        } catch (err) {
+            toast.error(`Failed to load ${type}`);
         } finally {
             setLoadingSelector(false);
         }
@@ -202,6 +217,20 @@ const AdminMenuPage = () => {
             }
             setSelectedItems(newSet);
         }
+    };
+
+    const getFilteredList = () => {
+        const term = searchTerm.toLowerCase();
+        if (selectorModal === 'categories') {
+            return categoriesList.filter(c => (c.name || c.title || '').toLowerCase().includes(term));
+        } else if (selectorModal === 'products') {
+            return productsList.filter(p => (p.name || p.title || '').toLowerCase().includes(term));
+        } else if (selectorModal === 'pages') {
+            return pagesList.filter(p => (p.name || p.title || '').toLowerCase().includes(term));
+        } else if (selectorModal === 'policies') {
+            return policiesList.filter(p => (p.name || p.title || '').toLowerCase().includes(term));
+        }
+        return [];
     };
 
     const confirmSelection = () => {
@@ -224,10 +253,10 @@ const AdminMenuPage = () => {
 
         if (editingForLink && itemsToAdd.length > 0) {
             const item = itemsToAdd[0];
-            const url = selectorModal === 'categories' ? `/category/${item.slug || item._id}`
+            const url = item.url || (selectorModal === 'categories' ? `/category/${item.slug || item._id}`
                 : selectorModal === 'products' ? `/product/${item.slug || item._id}`
                     : selectorModal === 'pages' ? `/${item.slug || item._id}`
-                        : `/policies/${item.slug || item._id}`;
+                        : `/policies/${item.slug || item._id}`);
             setEditLink(url);
             toast.success(`Link set to: ${url}`);
             setSelectorModal(null);
@@ -238,10 +267,10 @@ const AdminMenuPage = () => {
 
         if (mainSelectorFor && itemsToAdd.length > 0) {
             const item = itemsToAdd[0];
-            const url = selectorModal === 'categories' ? `/category/${item.slug || item._id}`
+            const url = item.url || (selectorModal === 'categories' ? `/category/${item.slug || item._id}`
                 : selectorModal === 'products' ? `/product/${item.slug || item._id}`
                     : selectorModal === 'pages' ? `/${item.slug || item._id}`
-                        : `/policies/${item.slug || item._id}`;
+                        : `/policies/${item.slug || item._id}`);
             setMainText(item.name || item.title);
             setMainLink(url);
             toast.success(`Selected: ${item.name || item.title}`);
@@ -253,10 +282,10 @@ const AdminMenuPage = () => {
 
         if (subSelectorFor && itemsToAdd.length > 0) {
             const item = itemsToAdd[0];
-            const url = selectorModal === 'categories' ? `/category/${item.slug || item._id}`
+            const url = item.url || (selectorModal === 'categories' ? `/category/${item.slug || item._id}`
                 : selectorModal === 'products' ? `/product/${item.slug || item._id}`
                     : selectorModal === 'pages' ? `/${item.slug || item._id}`
-                        : `/policies/${item.slug || item._id}`;
+                        : `/policies/${item.slug || item._id}`);
             setAddingSubText(item.name || item.title);
             setAddingSubLink(url);
             toast.success(`Selected: ${item.name || item.title}`);
@@ -268,10 +297,10 @@ const AdminMenuPage = () => {
 
         itemsToAdd.forEach((item) => {
             const id = `main_${Date.now()}_${Math.random()}`;
-            const url = selectorModal === 'categories' ? `/category/${item.slug || item._id}`
+            const url = item.url || (selectorModal === 'categories' ? `/category/${item.slug || item._id}`
                 : selectorModal === 'products' ? `/product/${item.slug || item._id}`
                     : selectorModal === 'pages' ? `/${item.slug || item._id}`
-                        : `/policies/${item.slug || item._id}`;
+                        : `/policies/${item.slug || item._id}`);
 
             const newItem = {
                 id,
@@ -306,7 +335,8 @@ const AdminMenuPage = () => {
         setExpanded((e) => ({ ...e, [id]: true }));
     };
 
-    const handleMainDragStart = (e, index, level = 0, parentPath = []) => {e.stopPropagation();
+    const handleMainDragStart = (e, index, level = 0, parentPath = []) => {
+        e.stopPropagation();
         setDraggedItem({ index, level, parentPath });
         e.dataTransfer.effectAllowed = 'move';
     };
@@ -324,28 +354,35 @@ const AdminMenuPage = () => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!draggedItem) {setDraggedItem(null);
+        if (!draggedItem) {
+            setDraggedItem(null);
             setDragOverId(null);
             return;
         }
 
         const draggedLevel = draggedItem.level;
-        const draggedPath = draggedItem.parentPath;if (draggedLevel === level && JSON.stringify(draggedPath) === JSON.stringify(parentPath)) {
-            if (draggedItem.index === targetIndex) {setDraggedItem(null);
+        const draggedPath = draggedItem.parentPath;
+        if (draggedLevel === level && JSON.stringify(draggedPath) === JSON.stringify(parentPath)) {
+            if (draggedItem.index === targetIndex) {
+                setDraggedItem(null);
                 setDragOverId(null);
                 return;
-            }if (level === 0) {
+            }
+            if (level === 0) {
                 setMenuItems((prev) => {
                     const newItems = [...prev];
                     const item = newItems[draggedItem.index];
                     newItems.splice(draggedItem.index, 1);
-                    newItems.splice(targetIndex, 0, item);return newItems;
+                    newItems.splice(targetIndex, 0, item);
+                    return newItems;
                 });
             } else {
-                setMenuItems((prev) => {return reorderAtPath(prev, parentPath, draggedItem.index, targetIndex);
+                setMenuItems((prev) => {
+                    return reorderAtPath(prev, parentPath, draggedItem.index, targetIndex);
                 });
             }
-        } else {}
+        } else {
+        }
 
         setDraggedItem(null);
         setDragOverId(null);
@@ -838,11 +875,22 @@ const AdminMenuPage = () => {
 
                 {selectorModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-96 flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+                        <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
                             <div className="p-6 border-b" style={{ borderColor: 'var(--color-border-light)' }}>
-                                <h3 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                                <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>
                                     Select {selectorModal.charAt(0).toUpperCase() + selectorModal.slice(1)}
                                 </h3>
+
+                                {(selectorModal === 'categories' || selectorModal === 'products') && (
+                                    <input
+                                        type="text"
+                                        placeholder={`Search ${selectorModal}...`}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full border-2 px-3 py-2 rounded text-sm"
+                                        style={{ borderColor: 'var(--color-border-light)' }}
+                                    />
+                                )}
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-6 space-y-2">
@@ -850,22 +898,67 @@ const AdminMenuPage = () => {
                                     <p style={{ color: 'var(--color-text-light)' }}>Loading...</p>
                                 ) : (
                                     <>
-                                        {(selectorModal === 'categories' ? categoriesList
-                                            : selectorModal === 'products' ? productsList
-                                                : selectorModal === 'pages' ? pagesList
-                                                    : policiesList).map((item) => (
-                                                        <label key={item._id || item.id} className="flex items-center p-3 rounded cursor-pointer hover:bg-gray-100" style={{ backgroundColor: selectedItems.has(item._id || item.id) ? 'rgba(0,0,0,0.05)' : 'transparent' }}>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedItems.has(item._id || item.id)}
-                                                                onChange={() => toggleItemSelection(item._id || item.id)}
-                                                                className="mr-3"
-                                                            />
-                                                            <div className="flex-1">
-                                                                <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{item.name || item.title}</p>
-                                                            </div>
-                                                        </label>
-                                                    ))}
+                                        {selectorModal === 'policies' ? (
+                                            <div className="space-y-4">
+                                                <div className="mb-4">
+                                                    <h4 className="font-bold text-sm mb-2" style={{ color: 'var(--color-text-primary)' }}>Policies</h4>
+                                                    {policiesList.length > 0 ? (
+                                                        policiesList.map((item) => (
+                                                            <label key={item._id || item.id} className="flex items-center p-3 rounded cursor-pointer hover:bg-gray-100" style={{ backgroundColor: selectedItems.has(item._id || item.id) ? 'rgba(0,0,0,0.05)' : 'transparent' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedItems.has(item._id || item.id)}
+                                                                    onChange={() => toggleItemSelection(item._id || item.id)}
+                                                                    className="mr-3"
+                                                                />
+                                                                <div className="flex-1">
+                                                                    <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{item.name || item.title}</p>
+                                                                </div>
+                                                            </label>
+                                                        ))
+                                                    ) : (
+                                                        <p style={{ color: 'var(--color-text-light)' }}>No policies available</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : selectorModal === 'pages' ? (
+                                            <div className="space-y-4">
+                                                <div className="mb-4">
+                                                    <h4 className="font-bold text-sm mb-2" style={{ color: 'var(--color-text-primary)' }}>Pages</h4>
+                                                    {pagesList.length > 0 ? (
+                                                        pagesList.map((item) => (
+                                                            <label key={item._id || item.id} className="flex items-center p-3 rounded cursor-pointer hover:bg-gray-100" style={{ backgroundColor: selectedItems.has(item._id || item.id) ? 'rgba(0,0,0,0.05)' : 'transparent' }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedItems.has(item._id || item.id)}
+                                                                    onChange={() => toggleItemSelection(item._id || item.id)}
+                                                                    className="mr-3"
+                                                                />
+                                                                <div className="flex-1">
+                                                                    <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{item.name || item.title}</p>
+                                                                </div>
+                                                            </label>
+                                                        ))
+                                                    ) : (
+                                                        <p style={{ color: 'var(--color-text-light)' }}>No pages available</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            getFilteredList().map((item) => (
+                                                <label key={item._id || item.id} className="flex items-center p-3 rounded cursor-pointer hover:bg-gray-100" style={{ backgroundColor: selectedItems.has(item._id || item.id) ? 'rgba(0,0,0,0.05)' : 'transparent' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedItems.has(item._id || item.id)}
+                                                        onChange={() => toggleItemSelection(item._id || item.id)}
+                                                        className="mr-3"
+                                                    />
+                                                    <div className="flex-1">
+                                                        <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{item.name || item.title}</p>
+                                                    </div>
+                                                </label>
+                                            ))
+                                        )}
                                     </>
                                 )}
                             </div>
