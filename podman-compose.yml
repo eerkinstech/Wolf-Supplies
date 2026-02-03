@@ -25,7 +25,7 @@ services:
     networks:
       - appnet
     volumes:                       # <- THIS MUST BE INSIDE api
-      - /opt/wolf-supplies/uploads:/app/uploads
+     - /opt/wolf-supplies/server/uploads:/app/uploads
 
 volumes:
   mongo_data:
