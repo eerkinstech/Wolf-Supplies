@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '../uploads');
+// Ensure uploads directory exists, use env variable for VPS compatibility
+const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
