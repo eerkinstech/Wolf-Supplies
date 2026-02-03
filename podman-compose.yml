@@ -9,7 +9,8 @@ services:
       - mongo_data:/data/db
     networks:
       - appnet
-api:
+
+  api:
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -18,7 +19,7 @@ api:
     env_file:
       - ./server/.env.production
     environment:
-      - UPLOADS_DIR=/app/uploads
+      - UPLOADS_DIR=/app/uploads  # container path
     depends_on:
       - mongo
     ports:
@@ -26,7 +27,9 @@ api:
     networks:
       - appnet
     volumes:
-        - /opt/wolf-supplies/server/uploads:/app/uploads  # host path : container path
+      - /opt/wolf-supplies/server/uploads:/app/uploads  # host : container path
+    user: "1000:1000"  # optional: ensures Node container can write to uploads folder
+
 volumes:
   mongo_data:
 
