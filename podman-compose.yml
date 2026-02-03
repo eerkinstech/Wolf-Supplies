@@ -20,7 +20,7 @@ services:
       - ./server/.env.production
     environment:
       - UPLOADS_DIR=/app/uploads  # container path
-    user: "0:0"   # <-- run as root
+    user: "0:0"                  # run as root so container can write to host bind mount
     depends_on:
       - mongo
     ports:
@@ -29,7 +29,6 @@ services:
       - appnet
     volumes:
       - /opt/wolf-supplies/server/uploads:/app/uploads  # host : container path
-    user: "1000:1000"  # optional: ensures Node container can write to uploads folder
 
 volumes:
   mongo_data:
