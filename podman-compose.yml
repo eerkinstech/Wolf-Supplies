@@ -9,8 +9,7 @@ services:
       - mongo_data:/data/db
     networks:
       - appnet
-
-  api:
+api:
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -18,15 +17,16 @@ services:
     restart: always
     env_file:
       - ./server/.env.production
+    environment:
+      - UPLOADS_DIR=/opt/wolf-supplies/server/uploads
     depends_on:
       - mongo
     ports:
       - "127.0.0.1:5000:5000"
     networks:
       - appnet
-    volumes:                       # <- THIS MUST BE INSIDE api
-     - /opt/wolf-supplies/server/uploads:/app/uploads
-
+    volumes:
+      - /opt/wolf-supplies/server/uploads:/opt/wolf-supplies/server/uploads
 volumes:
   mongo_data:
 
