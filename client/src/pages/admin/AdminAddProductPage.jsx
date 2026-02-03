@@ -113,7 +113,8 @@ const AdminAddProductPage = () => {
           metaDescription: prod.metaDescription || '',
           metaKeywords: prod.metaKeywords || '',
         }));
-      } catch (err) {}
+      } catch (err) {
+      }
     };
     fetchProduct();
   }, [id]);
@@ -137,7 +138,8 @@ const AdminAddProductPage = () => {
     try {
       const response = await axios.get(`${API}/api/categories`);
       setCategories(response.data);
-    } catch (err) {}
+    } catch (err) {
+    }
   };
 
   // Build payload used by submit and autosave
@@ -592,7 +594,8 @@ const AdminAddProductPage = () => {
           setTimeout(() => navigate(`/admin/products/edit/${created._id}`), 800);
         }
       }
-    } catch (err) {const errorMsg = err.response?.data?.message || err.message || 'Error creating/updating product';
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || 'Error creating/updating product';
       toast.error(errorMsg);
       setError(errorMsg);
       setSaveStatus(null);
@@ -723,7 +726,8 @@ const AdminAddProductPage = () => {
       });
 
       return res.data.url; // Returns /uploads/filename
-    } catch (err) {setError('Failed to upload image. Please try again.');
+    } catch (err) {
+      setError('Failed to upload image. Please try again.');
       return null;
     }
   };
