@@ -28,7 +28,8 @@ services:
     networks:
       - appnet
     volumes:
-      - /opt/wolf-supplies/server/uploads:/app/uploads  # host : container path
+     - /opt/wolf-supplies/server/uploads:/app/uploads:Z
+
 
 volumes:
   mongo_data:
