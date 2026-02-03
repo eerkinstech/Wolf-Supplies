@@ -18,7 +18,7 @@ api:
     env_file:
       - ./server/.env.production
     environment:
-      - UPLOADS_DIR=/opt/wolf-supplies/server/uploads
+        - UPLOADS_DIR=/opt/wolf-supplies/server/uploads
     depends_on:
       - mongo
     ports:
