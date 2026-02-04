@@ -38,6 +38,30 @@ const ProductsPage = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  // Calculate the maximum price from all products (for filter display)
+  const maxPriceFromProducts = useMemo(() => {
+    if (!products || products.length === 0) return 100;
+
+    let maxPrice = 0;
+    products.forEach((p) => {
+      // Check base price
+      if (p.price > maxPrice) {
+        maxPrice = p.price;
+      }
+      // Check variant prices
+      if (p.variantCombinations && p.variantCombinations.length > 0) {
+        p.variantCombinations.forEach((vc) => {
+          const vcPrice = vc.price || p.price;
+          if (vcPrice > maxPrice) {
+            maxPrice = vcPrice;
+          }
+        });
+      }
+    });
+
+    return maxPrice || 100;
+  }, [products]);
+
   // Separate and organize products: exact matches first, then partial matches, then others
   useEffect(() => {
     let result = products;
@@ -88,10 +112,55 @@ const ProductsPage = () => {
       });
     }
 
+    // Apply stock filter (check both variant and non-variant products)
+    if (filters.availability && filters.availability.length > 0) {
+      organizingResult = organizingResult.filter((p) => {
+        // Check if product has variants
+        const hasVariants = p.variants && p.variants.length > 0;
+        let isInStock;
+
+        if (hasVariants) {
+          // For variant products, check if any variant combination has stock
+          const hasStock = p.variantCombinations && p.variantCombinations.some(vc => vc.stock > 0);
+          isInStock = hasStock;
+        } else {
+          // For non-variant products, check basic stock
+          isInStock = p.stock > 0;
+        }
+
+        // Check if the product's stock status matches the selected filters
+        if (filters.availability.includes('in_stock') && isInStock) return true;
+        if (filters.availability.includes('out_of_stock') && !isInStock) return true;
+        return false;
+      });
+    }
+
     // Apply price filter
-    organizingResult = organizingResult.filter(
-      (p) => p.price >= filters.price.min && p.price <= filters.price.max
-    );
+    // For products with variants: check lowest variant price (ignore blank base price)
+    // For products without variants: check base price
+    organizingResult = organizingResult.filter((p) => {
+      const hasVariants = p.variants && p.variants.length > 0;
+
+      if (hasVariants && p.variantCombinations && p.variantCombinations.length > 0) {
+        // For variant products: get the lowest available price from variants
+        let lowestVariantPrice = null;
+        for (const vc of p.variantCombinations) {
+          if (vc.price && vc.price > 0) {
+            if (lowestVariantPrice === null || vc.price < lowestVariantPrice) {
+              lowestVariantPrice = vc.price;
+            }
+          }
+        }
+
+        // Use variant price if available, otherwise use base price
+        const priceToCheck = lowestVariantPrice !== null ? lowestVariantPrice : p.price;
+        return priceToCheck >= filters.price.min && priceToCheck <= filters.price.max;
+      }
+
+      // For non-variant products, check base price
+      return p.price >= filters.price.min && p.price <= filters.price.max;
+      return basePriceInRange;
+    });
 
     setFilteredProducts(organizingResult);
   }, [products, filters]);
@@ -132,6 +201,7 @@ const ProductsPage = () => {
             <div className="sticky top-24">
               <ProductFilter
                 filters={filters}
+                maxPrice={maxPriceFromProducts}
                 onFilterChange={(newFilters) => dispatch(setFilter(newFilters))}
               />
             </div>
@@ -164,7 +234,7 @@ const ProductsPage = () => {
                 </div>
 
                 {/* Products Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredProducts.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}

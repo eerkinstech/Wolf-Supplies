@@ -87,7 +87,7 @@ const FeaturedProducts = ({
 
     // Determine items per slide based on screen size
     const getItemsPerSlide = () => {
-        if (screenSize === 'sm') return 1;
+        if (screenSize === 'sm') return 2;
         if (screenSize === 'md') return 2;
         return 5; // lg and xl
     };
@@ -182,7 +182,7 @@ const FeaturedProducts = ({
                         )}
                     </div>
                     {layout === 'grid' ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
                             {[...Array(limit)].map((_, index) => (
                                 <div key={index} className="bg-gradient-to-br from-gray-200 to-black-300 rounded-3xl h-96 animate-pulse"></div>
                             ))}
@@ -236,8 +236,8 @@ const FeaturedProducts = ({
                 </div>
 
                 {layout === 'grid' ? (
-                    // Grid Layout - More Responsive
-                    <div className={`grid grid-cols-1 sm:grid-cols-2 ${getColumnsClass(columns)} gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8`}>
+                    // Grid Layout - More Responsive - 2 columns on mobile
+                    <div className={`grid grid-cols-2 ${getColumnsClass(columns)} gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8`}>
                         {filteredProducts.slice(0, limit).map((product) => (
                             <div key={product._id} className="w-full transform hover:scale-105 transition duration-300">
                                 <ProductCard product={product} />

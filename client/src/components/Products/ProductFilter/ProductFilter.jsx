@@ -1,113 +1,121 @@
-import React, { useEffect } from 'react';
-import { FaFilter, FaTimes } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategories } from '../../../redux/slices/categorySlice';
+import React, { useState } from 'react';
+import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
 
-const ProductFilter = ({ filters, onFilterChange }) => {
-  const dispatch = useDispatch();
-  const { categories = [] } = useSelector((state) => state.category || {});
+const ProductFilter = ({ filters, onFilterChange, maxPrice = 100 }) => {
+  const [availabilityOpen, setAvailabilityOpen] = useState(true);
+  const [priceOpen, setPriceOpen] = useState(true);
 
-  useEffect(() => {
-    if (!categories || categories.length === 0) {
-      dispatch(fetchCategories());
+  const handleAvailabilityChange = (status) => {
+    const newAvailability = filters.availability || [];
+    if (newAvailability.includes(status)) {
+      onFilterChange({
+        availability: newAvailability.filter((s) => s !== status),
+      });
+    } else {
+      onFilterChange({
+        availability: [...newAvailability, status],
+      });
     }
-  }, [categories, dispatch]);
-  const priceRanges = [
-    { min: 0, max: 50, label: 'Under £50' },
-    { min: 50, max: 100, label: '£50 - £100' },
-    { min: 100, max: 500, label: '£100 - £500' },
-    { min: 500, max: 10000, label: 'Above £500' },
-  ];
+  };
+
+  const handlePriceChange = (field, value) => {
+    const numValue = parseFloat(value) || 0;
+    const currentPrice = filters.price || { min: 0, max: maxPrice };
+    onFilterChange({
+      price: {
+        ...currentPrice,
+        [field]: numValue,
+      },
+    });
+  };
+
+  const currentPrice = filters.price || { min: 0, max: maxPrice };
+  const availability = filters.availability || [];
+
+  // Use the actual maxPrice from products, but keep the filter value if user set a custom max
+  const displayMaxPrice = currentPrice.max === 10000 || currentPrice.max === 0 ? maxPrice : currentPrice.max;
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+    <div className="bg-white rounded-lg p-6 space-y-0">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-6 border-b-2 border-gray-200">
-        <FaFilter className="text-2xl text-gray-400" />
-        <h2 className="text-2xl font-bold text-gray-900">Filters</h2>
-      </div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">FILTERS</h2>
 
-      {/* Search */}
-      <div className="space-y-4">
-        <label className="block text-sm font-bold text-gray-900">Search Products</label>
-        <input
-          type="text"
-          value={filters.search}
-          onChange={(e) => onFilterChange({ search: e.target.value })}
-          placeholder="Search..."
-          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-transparent outline-none transition text-lg"
-        />
-      </div>
+      {/* Availability Filter */}
+      <div className="border-b border-gray-300">
+        <button
+          onClick={() => setAvailabilityOpen(!availabilityOpen)}
+          className="w-full flex items-center justify-between py-4 hover:bg-gray-50 transition"
+        >
+          <h3 className="text-lg font-semibold text-gray-900">Availability</h3>
+          {availabilityOpen ? <FaChevronUp className="text-gray-600" /> : <FaChevronDown className="text-gray-600" />}
+        </button>
 
-      {/* Category Filter */}
-      <div className="space-y-4 pb-8 border-b-2 border-gray-200">
-        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Category</h3>
-        <div className="space-y-3">
-          {(categories && categories.length > 0 ? categories : []).map((category) => (
-            <label key={category._id || category.name} className="flex items-center cursor-pointer group">
+        {availabilityOpen && (
+          <div className="pb-4 space-y-3">
+            <label className="flex items-center cursor-pointer group">
               <input
-                type="radio"
-                name="category"
-                value={category.name}
-                checked={filters.category === category.name}
-                onChange={(e) => onFilterChange({ category: e.target.value })}
-                className="w-5 h-5 text-gray-400 rounded focus:ring-2 focus:ring-gray-400 transition duration-300"
+                type="checkbox"
+                checked={availability.includes('in_stock')}
+                onChange={() => handleAvailabilityChange('in_stock')}
+                className="w-5 h-5 rounded border-2 border-gray-400 cursor-pointer transition"
               />
-              <span className="ml-3 text-gray-700 group-hover:text-gray-400 transition duration-300 font-medium">{category.name}</span>
+              <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition">In stock</span>
             </label>
-          ))}
-          <label className="flex items-center cursor-pointer group">
-            <input
-              type="radio"
-              name="category"
-              value=""
-              checked={filters.category === ''}
-              onChange={(e) => onFilterChange({ category: '' })}
-              className="w-5 h-5 text-gray-400 rounded focus:ring-2 focus:ring-gray-400 transition duration-300"
-            />
-            <span className="ml-3 text-gray-700 group-hover:text-gray-400 transition duration-300 font-medium">All Categories</span>
-          </label>
-        </div>
+            <label className="flex items-center cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={availability.includes('out_of_stock')}
+                onChange={() => handleAvailabilityChange('out_of_stock')}
+                className="w-5 h-5 rounded border-2 border-gray-400 cursor-pointer transition"
+              />
+              <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition">Out of stock</span>
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Price Filter */}
-      <div className="space-y-4 pb-8 border-b-2 border-gray-200">
-        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Price Range</h3>
-        <div className="space-y-3">
-          {priceRanges.map((range) => (
-            <label key={range.label} className="flex items-center cursor-pointer group">
-              <input
-                type="radio"
-                name="price"
-                value={JSON.stringify(range)}
-                checked={
-                  filters.price.min === range.min && filters.price.max === range.max
-                }
-                onChange={(e) => {
-                  const { min, max } = JSON.parse(e.target.value);
-                  onFilterChange({ price: { min, max } });
-                }}
-                className="w-5 h-5 text-gray-400 rounded focus:ring-2 focus:ring-gray-400 transition duration-300"
-              />
-              <span className="ml-3 text-gray-700 group-hover:text-gray-400 transition duration-300 font-medium">{range.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      <div className="border-b border-gray-300">
+        <button
+          onClick={() => setPriceOpen(!priceOpen)}
+          className="w-full flex items-center justify-between py-4 hover:bg-gray-50 transition"
+        >
+          <h3 className="text-lg font-semibold text-gray-900">Price</h3>
+          {priceOpen ? <FaChevronUp className="text-gray-600" /> : <FaChevronDown className="text-gray-600" />}
+        </button>
 
-      {/* Clear Filters */}
-      <button
-        onClick={() =>
-          onFilterChange({
-            search: '',
-            category: '',
-            price: { min: 0, max: 10000 },
-          })
-        }
-        className="w-full bg-linear-to-r bg-black hover:bg-gray-700 text-white py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2 transform hover:scale-105"
-      >
-        <FaTimes className="text-[10px]" /> Clear All Filters
-      </button>
+        {priceOpen && (
+          <div className="pb-4 space-y-4">
+            {/* Price Range Inputs */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-gray-100 rounded px-3 py-2">
+                <span className="text-gray-600 font-semibold">£</span>
+                <input
+                  type="number"
+                  value={currentPrice.min}
+                  onChange={(e) => handlePriceChange('min', e.target.value)}
+                  placeholder="0"
+                  className="bg-gray-100 w-20 outline-none text-gray-900 font-semibold text-center"
+                />
+              </div>
+              <span className="text-gray-600 font-semibold">to</span>
+              <div className="flex items-center bg-gray-100 rounded px-3 py-2">
+                <span className="text-gray-600 font-semibold">£</span>
+                <input
+                  type="number"
+                  value={displayMaxPrice}
+                  onChange={(e) => handlePriceChange('max', e.target.value)}
+                  max={maxPrice}
+                  className="bg-gray-100 w-20 outline-none text-gray-900 font-semibold text-center"
+                />
+              </div>
+            </div>
+
+            {/* Max Price Info */}
+            <p className="text-sm text-gray-600">The highest price is £{maxPrice.toFixed(2)}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

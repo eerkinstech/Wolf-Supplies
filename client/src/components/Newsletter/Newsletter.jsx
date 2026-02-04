@@ -26,11 +26,6 @@ const Newsletter = ({ content = {} }) => {
     { id: '2', title: 'Early Access', description: 'Subscriber-only previews' },
     { id: '3', title: 'Easy Opt-out', description: 'One click to unsubscribe' }
   ];
-  const stats = content.stats || [
-    { id: '1', value: '500K+', label: 'Subscribers' },
-    { id: '2', value: '50+', label: 'Weekly Deals' },
-    { id: '3', value: '30%', label: 'Average Savings' }
-  ];
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -111,7 +106,7 @@ setIsLoading(false);
           }}>
             {!isSubscribed ? (
               <form onSubmit={handleSubscribe} className="space-y-6">
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                   <div className="flex-1 w-full">
                     <label className="sr-only">Email address</label>
                     <input
@@ -137,7 +132,9 @@ setIsLoading(false);
                   <button
                     type="submit"
                     disabled={isLoading}
+                    className="w-full sm:w-auto"
                     style={{
+                      
                       backgroundColor: 'var(--color-accent-primary)',
                       color: 'white',
                       padding: '12px 24px',
@@ -196,20 +193,7 @@ setIsLoading(false);
             )}
           </div>
 
-          {stats && stats.length > 0 && (
-            <div className="grid sm:grid-cols-3 gap-6 mt-8 text-center">
-              {stats.map((stat) => (
-                <div key={stat.id}>
-                  <p style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-secondary)' }}>
-                    {stat.value}
-                  </p>
-                  <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+       
         </div>
       </section>
     );
@@ -315,7 +299,7 @@ setIsLoading(false);
 
               {/* Email Input and Button */}
               {!isSubscribed ? (
-                <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 sm:gap-3 sm:items-center">
                   <input
                     type="email"
                     value={email}
@@ -336,6 +320,7 @@ setIsLoading(false);
                   <button
                     type="submit"
                     disabled={isLoading}
+                    className="w-full sm:w-auto"
                     style={{
                       backgroundColor: accentColor,
                       color: 'white',

@@ -306,9 +306,12 @@ const Header = ({ hideMenu = false }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
                     <div className="flex justify-between items-center text-xs sm:text-sm md:text-base">
                         <div className="flex items-center gap-4 sm:gap-6">
-                            <Link to="/about" className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold whitespace-nowrap">
+                            <Link to="/about" className="hover:text-[var(--color-bg-section)] hidden sm:block transition duration-300 font-semibold whitespace-nowrap">
                                 About Us
                             </Link>
+                            <a href="tel:+447398998101" className="hover:text-[var(--color-bg-section)]  sm:hidden flex items-center gap-1.5 transition duration-300 font-semibold whitespace-nowrap">
+                              <FaPhone/> +447398998101
+                            </a>
                             <div className="hidden sm:block text-white text-opacity-60">|</div>
                             <Link to="/policies/shipping" className="hidden sm:block hover:text-[var(--color-bg-section)] transition duration-300 font-semibold">
                                 Shipping
@@ -359,25 +362,22 @@ const Header = ({ hideMenu = false }) => {
             <div className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-light)]">
                 <div className="max-w-7xl mx-auto sm:px-2 lg:px-2">
                     <div className='px-2 py-4 border-b border-[var(--color-border-light)]'>
-                        <div className="flex items-center justify-between gap-3 md:gap-6">
-                            {/* Logo & Menu */}
-                            <div className="flex items-center gap-2 md:gap-4">
-                                {/* Mobile Menu Toggle */}
-                                <button
-                                    onClick={() => { setMobileSearchOpen(false); setMobileMenuOpen(!mobileMenuOpen); }}
-                                    className="md:hidden text-2xl text-gray-700 hover:text-gray-400 transition duration-300"
-                                    aria-label="Toggle menu"
-                                >
-                                    {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-                                </button>
+                        <div className="flex md:flex-row flex-row items-center md:justify-between md:gap-6 gap-0">
+                            {/* Mobile Menu Toggle - Left Column */}
+                            <button
+                                onClick={() => { setMobileSearchOpen(false); setMobileMenuOpen(!mobileMenuOpen); }}
+                                className="md:hidden text-2xl text-gray-700 ml-2 hover:text-gray-400 transition duration-300 flex-shrink-0"
+                                aria-label="Toggle menu"
+                            >
+                                {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+                            </button>
 
-                                {/* Logo */}
-                                <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-                                    <img src={wolfLogo} alt="Wolf Supplies LTD" className="h-24 w-auto object-contain" />
-                                </Link>
-                            </div>
+                            {/* Logo - Center on Mobile, Left on Desktop */}
+                            <Link to="/" className="flex items-center gap-2 flex-shrink-0 md:flex-shrink-0 md:flex-1 md:flex-none md:order-first flex-1 justify-center md:justify-start">
+                                <img src={wolfLogo} alt="Wolf Supplies LTD" className="h-24 w-auto object-contain" />
+                            </Link>
 
-                            {/* Search Bar - Main */}
+                            {/* Search Bar - Main (Desktop Only) */}
                             <div className="flex-1 mx-4 md:mx-6 hidden lg:block">
                                 <form onSubmit={handleDesktopSearchSubmit} className="relative w-full flex items-center">
                                     <input
@@ -405,7 +405,7 @@ const Header = ({ hideMenu = false }) => {
                                 </form>
                             </div>
 
-                            {/* Right Actions */}
+                            {/* Right Actions - Right Column */}
                             <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
                                 {/* Mobile Search Toggle */}
                                 <button
@@ -829,7 +829,7 @@ const Header = ({ hideMenu = false }) => {
                                 </button>
                             </div>
                         </form>
-                        <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-xl sm:text-2xl text-[var(--color-text-light)] p-1 sm:p-2 hover:bg-[var(--color-bg-section)] rounded-md flex-shrink-0">
+                        <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-2xl text-[var(--color-text-light)] p-2 hover:bg-[var(--color-bg-section)] rounded-md">
                             <FaTimes />
                         </button>
                     </div>

@@ -68,7 +68,7 @@ const AboutUsPage = () => {
             </div>
             <div className="bg-[var(--color-bg-section)] rounded-lg p-8 border-2 border-[var(--color-border-light)]">
                 <div className="text-center">
-                  <img src={wolfLogo} alt="Wolf Supplies Logo" className="h-40 w-auto mx-auto mb-4" />
+                  <img src={wolfLogo} alt="Wolf Supplies Logo" className="h-auto w-auto mx-auto mb-4" />
                  
                   <p className="text-[var(--color-text-light)] mb-4">UK-based online retailer serving customers since 2024</p>
                 <div className="text-sm text-gray-600 space-y-1">
