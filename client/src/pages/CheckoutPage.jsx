@@ -112,47 +112,63 @@ const CheckoutPage = () => {
     }
   }, []);
 
-  // Initialize Stripe Payment Element (client-side only) - supports Apple Pay, Google Pay, Card, etc.
+  // Initialize Stripe Card Element
   useEffect(() => {
     const setupStripe = async () => {
       try {
         const pk = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-        if (!pk) return // use singleton getStripe to avoid creating multiple instances
+        if (!pk) {
+          console.error('Stripe publishable key not found');
+          return;
+        }
         const stripe = await getStripe();
+        if (!stripe) {
+          console.error('Failed to initialize Stripe');
+          return;
+        }
         stripeRef.current = stripe;
-        // create elements from the existing stripe instance
-        const elements = stripeRef.current.elements({
-          locale: 'en',
-          appearance: {
-            theme: 'stripe',
-            variables: {
-              colorPrimary: '#000000',
-              colorBackground: '#ffffff',
-              colorText: '#000000',
-              colorDanger: '#EF4444',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              spacingUnit: '4px',
-              borderRadius: '6px',
-            }
-          }
-        });
+        const elements = stripeRef.current.elements();
         elementsRef.current = elements;
+
         if (!cardMountedRef.current) {
-          // Use Payment Element instead of Card Element for Apple Pay, Google Pay support
-          const payment = elements.create('payment');
-          payment.mount('#card-element');
-          cardRef.current = payment;
-          cardMountedRef.current = true;
-          // display real-time validation errors
-          payment.on('change', (e) => {
-            const display = document.getElementById('card-errors');
-            if (display) {
-              display.textContent = e.error ? e.error.message : '';
-              display.style.display = e.error ? 'block' : 'none';
-            }
+          // Use Card Element for better compatibility
+          const cardElement = elements.create('card', {
+            style: {
+              base: {
+                fontSize: '16px',
+                color: '#000000',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                '::placeholder': {
+                  color: '#999999',
+                },
+              },
+              invalid: {
+                color: '#EF4444',
+                iconColor: '#EF4444',
+              },
+            },
           });
+          const mountElement = document.getElementById('card-element');
+          if (mountElement) {
+            cardElement.mount('#card-element');
+            cardRef.current = cardElement;
+            cardMountedRef.current = true;
+            console.log('Card Element mounted successfully');
+
+            // Display validation errors
+            cardElement.on('change', (e) => {
+              const display = document.getElementById('card-errors');
+              if (display) {
+                display.textContent = e.error ? e.error.message : '';
+                display.style.display = e.error ? 'block' : 'none';
+              }
+            });
+          } else {
+            console.error('Card element container not found');
+          }
         }
       } catch (err) {
+        console.error('Stripe setup error:', err);
       }
     };
     setupStripe();
@@ -163,47 +179,52 @@ const CheckoutPage = () => {
     };
   }, []);
 
-  // Ensure Stripe Elements are initialized (attempt re-init if necessary)
+  // Ensure Stripe Elements are initialized
   const ensureStripeReady = async () => {
     if (stripeRef.current && cardRef.current) return true;
     const pk = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
     if (!pk) return false;
     try {
-      // If stripe is already loaded but payment not mounted, create elements from same stripe instance
-      // use singleton getStripe to avoid creating multiple instances
       const stripe = await getStripe();
+      if (!stripe) return false;
       stripeRef.current = stripe;
+
       if (!cardRef.current) {
-        const elements = stripeRef.current.elements({
-          locale: 'en',
-          appearance: {
-            theme: 'stripe',
-            variables: {
-              colorPrimary: '#000000',
-              colorBackground: '#ffffff',
-              colorText: '#000000',
-              colorDanger: '#EF4444',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              spacingUnit: '4px',
-              borderRadius: '6px',
-            }
-          }
-        });
+        const elements = stripeRef.current.elements();
         elementsRef.current = elements;
-        const payment = elements.create('payment');
-        payment.mount('#card-element');
-        cardRef.current = payment;
-        cardMountedRef.current = true;
-        payment.on('change', (e) => {
-          const display = document.getElementById('card-errors');
-          if (display) {
-            display.textContent = e.error ? e.error.message : '';
-            display.style.display = e.error ? 'block' : 'none';
-          }
+        const cardElement = elements.create('card', {
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#000000',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              '::placeholder': {
+                color: '#999999',
+              },
+            },
+            invalid: {
+              color: '#EF4444',
+              iconColor: '#EF4444',
+            },
+          },
         });
+        const mountElement = document.getElementById('card-element');
+        if (mountElement) {
+          cardElement.mount('#card-element');
+          cardRef.current = cardElement;
+          cardMountedRef.current = true;
+          cardElement.on('change', (e) => {
+            const display = document.getElementById('card-errors');
+            if (display) {
+              display.textContent = e.error ? e.error.message : '';
+              display.style.display = e.error ? 'block' : 'none';
+            }
+          });
+        }
       }
       return true;
     } catch (err) {
+      console.error('Stripe ready error:', err);
       return false;
     }
   };
@@ -348,56 +369,18 @@ const CheckoutPage = () => {
       const clientSecret = data.clientSecret;
       if (!clientSecret) throw new Error('Missing clientSecret from payment API');
 
-      // verify singleton stripe instance before confirming
-      const singletonStripe = await getStripe();
-      if (!stripeRef.current || stripeRef.current !== singletonStripe) {
-        // unmount existing payment element if present
-        try { if (cardRef.current) { cardRef.current.unmount(); cardRef.current = null; cardMountedRef.current = false; } } catch (e) { }
-        stripeRef.current = singletonStripe;
-        const elements = stripeRef.current.elements({ 
-          locale: 'en',
-          appearance: {
-            theme: 'stripe',
-            variables: {
-              colorPrimary: '#000000',
-              colorBackground: '#ffffff',
-              colorText: '#000000',
-              colorDanger: '#EF4444',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              spacingUnit: '4px',
-              borderRadius: '6px',
-            }
-          }
-        });
-        elementsRef.current = elements;
-        const payment = elements.create('payment');
-        payment.mount('#card-element');
-        cardRef.current = payment;
-        cardMountedRef.current = true;
-        payment.on('change', (e) => {
-          const display = document.getElementById('card-errors');
-          if (display) {
-            display.textContent = e.error ? e.error.message : '';
-            display.style.display = e.error ? 'block' : 'none';
-          }
-        });
-      }
       const stripe = stripeRef.current;
-      const payment = cardRef.current;
-      if (!stripe || !payment) throw new Error('Stripe Payment Element not initialized');
+      const cardElement = cardRef.current;
+      if (!stripe || !cardElement) throw new Error('Stripe Card Element not initialized');
 
-      // Use confirmPayment for Payment Element (supports Apple Pay, Google Pay, Cards, etc.)
-      const confirmResult = await stripe.confirmPayment({
-        elements: elementsRef.current,
-        clientSecret: clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/order-confirmation`,
-          payment_method_data: {
-            billing_details: {
-              name: `${firstName} ${lastName}`.trim() || undefined,
-              email: email || undefined,
-              phone: phone || undefined,
-            },
+      // Use confirmCardPayment for Card Element
+      const confirmResult = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: `${firstName} ${lastName}`.trim() || undefined,
+            email: email || undefined,
+            phone: phone || undefined,
           },
         },
       });
@@ -406,8 +389,7 @@ const CheckoutPage = () => {
         throw new Error(confirmResult.error.message || 'Payment confirmation failed');
       }
 
-      // For Payment Element, confirmPayment redirects to return_url for certain payment methods (Apple Pay, Google Pay)
-      // For cards, it returns here with paymentIntent in status
+      // For Card Element, confirmCardPayment returns paymentIntent
       if (confirmResult.paymentIntent) {
         if (confirmResult.paymentIntent.status === 'succeeded') {
           // Payment succeeded; clear cart, show thank you, then navigate to order page
@@ -426,7 +408,6 @@ const CheckoutPage = () => {
           throw new Error('Payment not completed. Status: ' + confirmResult.paymentIntent.status);
         }
       } else {
-        // This shouldn't happen with confirmPayment, but handle it just in case
         throw new Error('No payment intent returned');
       }
     } catch (err) {
