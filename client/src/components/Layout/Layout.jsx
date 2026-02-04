@@ -289,7 +289,11 @@ const Layout = ({ children, showMenuSlider = false }) => {
                             {slides.map((slide, idx) => (
                                 <div
                                     key={slide.id}
-                                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlide ? 'opacity-100' : 'opacity-0'
+                                    className={`absolute inset-0 transition-transform duration-700 ease-in-out ${idx === currentSlide 
+                                        ? 'translate-x-0' 
+                                        : idx < currentSlide 
+                                        ? '-translate-x-full'
+                                        : 'translate-x-full'
                                         }`}
                                     style={{
                                         backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${slide.bgImage}')`,
