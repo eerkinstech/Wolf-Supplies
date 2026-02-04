@@ -68,9 +68,9 @@ const OrderManagement = () => {
     if (filterTab === 'all') {
       filtered = filtered;
     } else if (filterTab === 'fulfilled') {
-      filtered = filtered.filter(o => o.status === 'completed');
+      filtered = filtered.filter(o => o.fulfillmentStatus === 'fulfilled');
     } else if (filterTab === 'unfulfilled') {
-      filtered = filtered.filter(o => o.status !== 'completed');
+      filtered = filtered.filter(o => o.fulfillmentStatus === 'unfulfilled');
     } else if (filterTab === 'shipped') {
       filtered = filtered.filter(o => o.deliveryStatus === 'shipped');
     } else if (filterTab === 'delivered') {
@@ -140,17 +140,17 @@ const OrderManagement = () => {
   const handleFulfilledToggle = async (orderId, fulfilled) => {
     try {
       const token = localStorage.getItem('token');
-      const newStatus = fulfilled ? 'completed' : 'pending';
-      const response = await fetch(`${API}/api/orders/${orderId}/status`, {
+      const fulfillmentStatus = fulfilled ? 'fulfilled' : 'unfulfilled';
+      const response = await fetch(`${API}/api/orders/${orderId}/fulfillment`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ fulfillmentStatus }),
       });
-      if (!response.ok) throw new Error('Failed to update fulfilled status');
-      toast.success(`Order ${fulfilled ? 'fulfilled' : 'marked unfulfilled'}`);
+      if (!response.ok) throw new Error('Failed to update fulfillment status');
+      toast.success(`Order marked as ${fulfillmentStatus}`);
       dispatch(fetchOrders());
     } catch (error) {
       toast.error(error.message);
@@ -160,7 +160,7 @@ const OrderManagement = () => {
   const handleDeliveryUpdate = async (orderId, deliveryStatus) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       const res = await fetch(`${API}/api/orders/${orderId}/delivery`, {
         method: 'PUT',
         headers: {
@@ -171,14 +171,14 @@ const OrderManagement = () => {
       });
 
       if (!res.ok) throw new Error('Failed to update delivery status');
-      
+
       const statusMessage = {
         '': 'Status cleared',
         'shipped': 'Order marked as shipped',
         'delivered': 'Order marked as delivered',
         'refunded': 'Order marked as refunded'
       };
-      
+
       toast.success(statusMessage[deliveryStatus] || 'Status updated');
       dispatch(fetchOrders());
     } catch (error) {
@@ -214,8 +214,8 @@ const OrderManagement = () => {
             <button
               onClick={() => setFilterTab('all')}
               className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'all'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
             >
               All Orders
@@ -223,8 +223,8 @@ const OrderManagement = () => {
             <button
               onClick={() => setFilterTab('fulfilled')}
               className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'fulfilled'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
             >
               Fulfilled
@@ -232,8 +232,8 @@ const OrderManagement = () => {
             <button
               onClick={() => setFilterTab('unfulfilled')}
               className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'unfulfilled'
-                  ? 'bg-yellow-600 text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
             >
               Unfulfilled
@@ -241,8 +241,8 @@ const OrderManagement = () => {
             <button
               onClick={() => setFilterTab('shipped')}
               className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'shipped'
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-orange-600 text-white'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
             >
               Shipped
@@ -250,8 +250,8 @@ const OrderManagement = () => {
             <button
               onClick={() => setFilterTab('delivered')}
               className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'delivered'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
             >
               Delivered
@@ -259,8 +259,8 @@ const OrderManagement = () => {
             <button
               onClick={() => setFilterTab('refunded')}
               className={`px-4 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition ${filterTab === 'refunded'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
             >
               Refunded
@@ -345,7 +345,7 @@ const OrderManagement = () => {
                   const fullDate = order.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A';
 
                   const total = order.totalPrice ?? order.totalAmount ?? 0;
-                  const fulfilled = order.status === 'completed';
+                  const fulfilled = order.fulfillmentStatus === 'fulfilled';
                   // Delivery status: single status field
                   const deliveryStatus = order.deliveryStatus || '';
 

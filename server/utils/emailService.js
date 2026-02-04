@@ -4,32 +4,32 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: process.env.EMAIL_SECURE === 'true',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-    },
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: process.env.EMAIL_SECURE === 'true',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
 });
 
 // Verify transporter connection
 transporter.verify((error, success) => {
-    if (error) {
-        console.error('Email service error:', error);
-    } else {
-        console.log('Email service ready:', success ? 'Connected' : 'Failed');
-    }
+  if (error) {
+    console.error('Email service error:', error);
+  } else {
+    console.log('Email service ready:', success ? 'Connected' : 'Failed');
+  }
 });
 
 // Color scheme
 const colors = {
-    primary: '#a5632a',
-    background: '#f5f5f5',
-    cardBg: '#ffffff',
-    text: '#333333',
-    textLight: '#666666',
-    border: '#dddddd',
+  primary: '#a5632a',
+  background: '#f5f5f5',
+  cardBg: '#ffffff',
+  text: '#333333',
+  textLight: '#666666',
+  border: '#dddddd',
 };
 
 /**
@@ -50,45 +50,51 @@ const colors = {
  * - Company contact footer
  */
 export const sendOrderConfirmationEmail = async (order) => {
-    try {
-        const {
-            orderId,
-            contactDetails,
-            orderItems,
-            shippingAddress,
-            billingAddress,
-            itemsPrice,
-            taxPrice,
-            shippingPrice,
-            totalPrice,
-            couponCode,
-            discountAmount,
-            fulfillmentStatus,
-            deliveryStatus,
-        } = order;
+  try {
+    const {
+      orderId,
+      contactDetails,
+      orderItems,
+      shippingAddress,
+      billingAddress,
+      itemsPrice,
+      taxPrice,
+      shippingPrice,
+      totalPrice,
+      couponCode,
+      discountAmount,
+      fulfillmentStatus,
+      deliveryStatus,
+    } = order;
 
-        const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+    // Color scheme for fulfillment statuses
+    const fulfillmentColors = {
+      unfulfilled: '#FFA500', // Orange - being processed
+      fulfilled: '#4169E1',   // Blue - ready to ship
+    };
 
-        const itemsHTML = orderItems
-            .map((item) => {
-                const variants = [];
-                if (item.selectedSize) variants.push(`Size: ${item.selectedSize}`);
-                if (item.selectedColor) variants.push(`Color: ${item.selectedColor}`);
-                if (item.selectedVariants && typeof item.selectedVariants === 'object') {
-                    Object.entries(item.selectedVariants).forEach(([k, v]) => {
-                        if (v) variants.push(`${k}: ${v}`);
-                    });
-                }
-                if (item.sku) variants.push(`SKU: ${item.sku}`);
+    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
 
-                const variantText = variants.length > 0 ? variants.join(', ') : 'None';
-                const itemTotal = (item.price * item.qty).toFixed(2);
+    const itemsHTML = orderItems
+      .map((item) => {
+        const variants = [];
+        if (item.selectedSize) variants.push(`Size: ${item.selectedSize}`);
+        if (item.selectedColor) variants.push(`Color: ${item.selectedColor}`);
+        if (item.selectedVariants && typeof item.selectedVariants === 'object') {
+          Object.entries(item.selectedVariants).forEach(([k, v]) => {
+            if (v) variants.push(`${k}: ${v}`);
+          });
+        }
+        if (item.sku) variants.push(`SKU: ${item.sku}`);
 
-                return `
+        const variantText = variants.length > 0 ? variants.join(', ') : 'None';
+        const itemTotal = (item.price * item.qty).toFixed(2);
+
+        return `
           <tr>
             <td style="padding: 12px 10px; border-bottom: 1px solid ${colors.border}; font-weight: 600;">${item.name}</td>
             <td style="padding: 12px 10px; border-bottom: 1px solid ${colors.border}; font-size: 12px; color: ${colors.textLight};">${variantText}</td>
@@ -97,14 +103,14 @@ export const sendOrderConfirmationEmail = async (order) => {
             <td style="padding: 12px 10px; border-bottom: 1px solid ${colors.border}; text-align: right; font-weight: 600;">£${itemTotal}</td>
           </tr>
         `;
-            })
-            .join('');
+      })
+      .join('');
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-            to: contactDetails.email,
-            subject: `Order Confirmation - ${orderId}`,
-            html: `
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: contactDetails.email,
+      subject: `Order Confirmation - ${orderId}`,
+      html: `
         <div style="font-family: 'Outfit', Arial, sans-serif; max-width: 700px; margin: 0 auto; background-color: ${colors.cardBg};">
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid ${colors.primary}; padding-bottom: 20px; background-color: ${colors.cardBg}; padding: 40px 30px 20px;">
@@ -229,8 +235,8 @@ export const sendOrderConfirmationEmail = async (order) => {
             <div style="margin-bottom: 30px;">
               <h2 style="font-size: 16px; font-weight: 700; color: ${colors.text}; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid ${colors.primary};">Order Status</h2>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <span style="display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; ${order.fulfillmentStatus === 'fulfilled' ? 'background-color: #d1ecf1; color: #0c5460;' : 'background-color: #e2e3e5; color: #383d41;'}">
-                  ${order.fulfillmentStatus === 'fulfilled' ? '✓ Fulfilled' : '⏳ Unfulfilled'}
+                <span style="display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: ${fulfillmentColors[fulfillmentStatus]}; color: white;">
+                  ${fulfillmentStatus === 'fulfilled' ? '✅ FULFILLED' : '⏳ UNFULFILLED'}
                 </span>
                 ${deliveryStatus === 'delivered' ? `<span style="display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #d4edda; color: #155724;">✓ Delivered</span>` : ''}
                 ${deliveryStatus === 'shipped' ? `<span style="display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #fff3cd; color: #856404;">📦 Shipped</span>` : ''}
@@ -247,15 +253,15 @@ export const sendOrderConfirmationEmail = async (order) => {
           </div>
         </div>
       `,
-        };
+    };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`✓ Order confirmation email sent to ${contactDetails.email}`);
-        return true;
-    } catch (error) {
-        console.error('Error sending order confirmation email:', error);
-        return false;
-    }
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ Order confirmation email sent to ${contactDetails.email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending order confirmation email:', error);
+    return false;
+  }
 };
 
 /**
@@ -276,41 +282,41 @@ export const sendOrderConfirmationEmail = async (order) => {
  * - Company footer
  */
 export const sendOrderNotificationToAdmin = async (order) => {
-    try {
-        const {
-            orderId,
-            contactDetails,
-            orderItems,
-            shippingAddress,
-            billingAddress,
-            itemsPrice,
-            taxPrice,
-            shippingPrice,
-            totalPrice,
-            paymentMethod,
-        } = order;
+  try {
+    const {
+      orderId,
+      contactDetails,
+      orderItems,
+      shippingAddress,
+      billingAddress,
+      itemsPrice,
+      taxPrice,
+      shippingPrice,
+      totalPrice,
+      paymentMethod,
+    } = order;
 
-        const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
 
-        const itemsHTML = orderItems
-            .map((item) => {
-                const variants = [];
-                if (item.selectedSize) variants.push(`Size: ${item.selectedSize}`);
-                if (item.selectedColor) variants.push(`Color: ${item.selectedColor}`);
-                if (item.selectedVariants && typeof item.selectedVariants === 'object') {
-                    Object.entries(item.selectedVariants).forEach(([k, v]) => {
-                        if (v) variants.push(`${k}: ${v}`);
-                    });
-                }
-                if (item.sku) variants.push(`SKU: ${item.sku}`);
+    const itemsHTML = orderItems
+      .map((item) => {
+        const variants = [];
+        if (item.selectedSize) variants.push(`Size: ${item.selectedSize}`);
+        if (item.selectedColor) variants.push(`Color: ${item.selectedColor}`);
+        if (item.selectedVariants && typeof item.selectedVariants === 'object') {
+          Object.entries(item.selectedVariants).forEach(([k, v]) => {
+            if (v) variants.push(`${k}: ${v}`);
+          });
+        }
+        if (item.sku) variants.push(`SKU: ${item.sku}`);
 
-                const variantText = variants.length > 0 ? variants.join(', ') : 'None';
-                const itemTotal = (item.price * item.qty).toFixed(2);
-                return `
+        const variantText = variants.length > 0 ? variants.join(', ') : 'None';
+        const itemTotal = (item.price * item.qty).toFixed(2);
+        return `
           <tr>
             <td style="padding: 12px 10px; border-bottom: 1px solid ${colors.border}; font-weight: 600;">${item.name}</td>
             <td style="padding: 12px 10px; border-bottom: 1px solid ${colors.border}; font-size: 12px; color: ${colors.textLight};">${variantText}</td>
@@ -319,14 +325,14 @@ export const sendOrderNotificationToAdmin = async (order) => {
             <td style="padding: 12px 10px; border-bottom: 1px solid ${colors.border}; text-align: right; font-weight: 600;">£${itemTotal}</td>
           </tr>
         `;
-            })
-            .join('');
+      })
+      .join('');
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-            to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
-            subject: `🎉 New Order Received - ${orderId}`,
-            html: `
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
+      subject: `🎉 New Order Received - ${orderId}`,
+      html: `
         <div style="font-family: 'Outfit', Arial, sans-serif; max-width: 700px; margin: 0 auto; background-color: ${colors.cardBg};">
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid ${colors.primary}; padding: 40px 30px 20px; background-color: ${colors.cardBg};">
@@ -442,15 +448,15 @@ export const sendOrderNotificationToAdmin = async (order) => {
           </div>
         </div>
       `,
-        };
+    };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`✓ Order notification email sent to admin`);
-        return true;
-    } catch (error) {
-        console.error('Error sending order notification to admin:', error);
-        return false;
-    }
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ Order notification email sent to admin`);
+    return true;
+  } catch (error) {
+    console.error('Error sending order notification to admin:', error);
+    return false;
+  }
 };
 
 /**
@@ -471,41 +477,41 @@ export const sendOrderNotificationToAdmin = async (order) => {
  * - Company footer
  */
 export const sendOrderStatusUpdateEmail = async (order, newStatus) => {
-    try {
-        const { orderId, contactDetails, orderItems, totalPrice, fulfillmentStatus, deliveryStatus } = order;
+  try {
+    const { orderId, contactDetails, orderItems, totalPrice, fulfillmentStatus, deliveryStatus } = order;
 
-        // Fulfillment status messages - what admin is doing with the order
-        const fulfillmentMessages = {
-            unfulfilled: 'Your order has been received by our team and is being verified. We are checking inventory and preparing your items for shipment.',
-            fulfilled: 'Your order has been verified and packed by our team. It is ready to be shipped out soon!',
-        };
+    // Fulfillment status messages - what admin is doing with the order
+    const fulfillmentMessages = {
+      unfulfilled: 'Your order has been received by our team and is being verified. We are checking inventory and preparing your items for shipment.',
+      fulfilled: 'Your order has been verified and packed by our team. It is ready to be shipped out soon!',
+    };
 
-        // Delivery status messages - where the order is in shipping
-        const deliveryMessages = {
-            '': 'Your order is awaiting shipment. We will send it out very soon!',
-            shipped: 'Great news! Your order has been shipped and is on its way to you. You will receive it within the estimated delivery period.',
-            delivered: 'Your order has been delivered! Please check your package. Thank you for shopping with us!',
-            refunded: 'Your order has been refunded. The refund amount will appear in your account within 5-7 business days.',
-        };
+    // Delivery status messages - where the order is in shipping
+    const deliveryMessages = {
+      '': 'Your order is awaiting shipment. We will send it out very soon!',
+      shipped: 'Great news! Your order has been shipped and is on its way to you. You will receive it within the estimated delivery period.',
+      delivered: 'Your order has been delivered! Please check your package. Thank you for shopping with us!',
+      refunded: 'Your order has been refunded. The refund amount will appear in your account within 5-7 business days.',
+    };
 
-        // Color scheme for different statuses
-        const fulfillmentColors = {
-            unfulfilled: '#FFA500', // Orange - being processed
-            fulfilled: '#4169E1',   // Blue - ready to ship
-        };
+    // Color scheme for different statuses
+    const fulfillmentColors = {
+      unfulfilled: '#FFA500', // Orange - being processed
+      fulfilled: '#4169E1',   // Blue - ready to ship
+    };
 
-        const deliveryColors = {
-            '': '#9CA3AF',           // Gray - awaiting shipment
-            shipped: '#F59E0B',      // Amber - in transit
-            delivered: '#10B981',    // Green - delivered
-            refunded: '#EF4444',     // Red - refunded
-        };
+    const deliveryColors = {
+      '': '#9CA3AF',           // Gray - awaiting shipment
+      shipped: '#F59E0B',      // Amber - in transit
+      delivered: '#10B981',    // Green - delivered
+      refunded: '#EF4444',     // Red - refunded
+    };
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-            to: contactDetails.email,
-            subject: `Order Status Update - ${orderId}`,
-            html: `
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: contactDetails.email,
+      subject: `Order Status Update - ${orderId}`,
+      html: `
         <div style="font-family: 'Outfit', Arial, sans-serif; max-width: 700px; margin: 0 auto; background-color: ${colors.cardBg};">
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid ${colors.primary}; padding: 40px 30px 20px; background-color: ${colors.cardBg};">
@@ -526,9 +532,9 @@ export const sendOrderStatusUpdateEmail = async (order, newStatus) => {
               <div style="background-color: ${colors.background}; border: 2px solid ${fulfillmentColors[fulfillmentStatus]}; border-left: 5px solid ${fulfillmentColors[fulfillmentStatus]}; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
                 <div style="display: flex; align-items: center; margin-bottom: 10px;">
                   <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: ${fulfillmentColors[fulfillmentStatus]}; color: white; margin-right: 10px;">
-                    ${fulfillmentStatus === 'fulfilled' ? '✓ FULFILLED' : '⏳ UNFULFILLED'}
+                    ${fulfillmentStatus === 'fulfilled' ? '✅ FULFILLED' : '⏳ UNFULFILLED'}
                   </span>
-                  <span style="font-size: 12px; font-weight: 600; color: ${colors.textLight}; text-transform: uppercase;">Fulfillment Status</span>
+                  <span style="font-size: 12px; font-weight: 600; color: ${colors.textLight}; text-transform: uppercase;">FULFILLMENT STATUS</span>
                 </div>
                 <p style="margin: 0; font-size: 13px; color: ${colors.text}; line-height: 1.6;">
                   ${fulfillmentMessages[fulfillmentStatus]}
@@ -585,15 +591,15 @@ export const sendOrderStatusUpdateEmail = async (order, newStatus) => {
           </div>
         </div>
       `,
-        };
+    };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`✓ Order status update email sent to ${contactDetails.email} - Fulfillment: ${fulfillmentStatus}, Delivery: ${deliveryStatus}`);
-        return true;
-    } catch (error) {
-        console.error('Error sending order status update email:', error);
-        return false;
-    }
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ Order status update email sent to ${contactDetails.email} - Fulfillment: ${fulfillmentStatus}, Delivery: ${deliveryStatus}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending order status update email:', error);
+    return false;
+  }
 };
 
 /**
@@ -621,14 +627,20 @@ export const sendOrderStatusUpdateEmail = async (order, newStatus) => {
  * Note: PDF is generated server-side and attached as buffer (not as URL/link)
  */
 export const sendOrderWithPDF = async (order, pdfBuffer) => {
-    try {
-        const { contactDetails, orderId, fulfillmentStatus, deliveryStatus } = order;
+  try {
+    const { contactDetails, orderId, fulfillmentStatus, deliveryStatus } = order;
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-            to: contactDetails.email,
-            subject: `Order Invoice - ${orderId}`,
-            html: `
+    // Color scheme for fulfillment statuses
+    const fulfillmentColors = {
+      unfulfilled: '#FFA500', // Orange - being processed
+      fulfilled: '#4169E1',   // Blue - ready to ship
+    };
+
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: contactDetails.email,
+      subject: `Order Invoice - ${orderId}`,
+      html: `
         <div style="font-family: 'Outfit', Arial, sans-serif; max-width: 700px; margin: 0 auto; background-color: ${colors.cardBg};">
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid ${colors.primary}; padding: 40px 30px 20px; background-color: ${colors.cardBg};">
@@ -650,8 +662,8 @@ export const sendOrderWithPDF = async (order, pdfBuffer) => {
             <div style="margin-top: 20px;">
               <h2 style="font-size: 14px; font-weight: 700; color: ${colors.text}; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid ${colors.primary};">Current Status</h2>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; ${order.fulfillmentStatus === 'fulfilled' ? 'background-color: #d1ecf1; color: #0c5460;' : 'background-color: #e2e3e5; color: #383d41;'}">
-                  ${order.fulfillmentStatus === 'fulfilled' ? '✓ Fulfilled' : '⏳ Unfulfilled'}
+                <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background-color: ${fulfillmentColors[fulfillmentStatus]}; color: white;">
+                  ${fulfillmentStatus === 'fulfilled' ? '✅ FULFILLED' : '⏳ UNFULFILLED'}
                 </span>
                 ${deliveryStatus === 'delivered' ? `<span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background-color: #d4edda; color: #155724;">✓ Delivered</span>` : ''}
                 ${deliveryStatus === 'shipped' ? `<span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background-color: #fff3cd; color: #856404;">📦 Shipped</span>` : ''}
@@ -667,27 +679,27 @@ export const sendOrderWithPDF = async (order, pdfBuffer) => {
           </div>
         </div>
       `,
-            attachments: [
-                {
-                    filename: `Invoice_${orderId}.pdf`,
-                    content: pdfBuffer,
-                    contentType: 'application/pdf',
-                },
-            ],
-        };
+      attachments: [
+        {
+          filename: `Invoice_${orderId}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`✓ Order invoice PDF sent to ${contactDetails.email}`);
-        return true;
-    } catch (error) {
-        console.error('Error sending order PDF email:', error);
-        return false;
-    }
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ Order invoice PDF sent to ${contactDetails.email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending order PDF email:', error);
+    return false;
+  }
 };
 
 export default {
-    sendOrderConfirmationEmail,
-    sendOrderNotificationToAdmin,
-    sendOrderStatusUpdateEmail,
-    sendOrderWithPDF,
+  sendOrderConfirmationEmail,
+  sendOrderNotificationToAdmin,
+  sendOrderStatusUpdateEmail,
+  sendOrderWithPDF,
 };

@@ -461,7 +461,7 @@ const OrderDetailPage = () => {
           <div class="section status-section">
             <h2 class="section-title">Order Status</h2>
             <div class="badges">
-              ${order.status === 'completed' ? '<div class="badge completed">✓ Completed</div>' : '<div class="badge processing">⏳ Processing</div>'}
+              ${order.fulfillmentStatus === 'fulfilled' ? '<div class="badge completed">✅ Fulfilled</div>' : '<div class="badge processing">⏳ Unfulfilled</div>'}
               ${order.deliveryStatus === 'refunded' ? '<div class="badge refunded" style="background-color: #dc2626; color: white;">⚠️ Refunded</div>' : (order.deliveryStatus === 'delivered' ? '<div class="badge delivered">✓ Delivered</div>' : (order.deliveryStatus === 'shipped' ? '<div class="badge shipped">📦 Shipped</div>' : '<div class="badge processing">⏳ No Status</div>'))}
             </div>
           </div>
@@ -731,7 +731,7 @@ const OrderDetailPage = () => {
               <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
                 <p className="text-xs sm:text-sm mb-1 font-semibold text-[var(--color-text-light)]">Fulfillment</p>
                 <p className="font-bold text-sm sm:text-base text-[var(--color-text-primary)]">
-                  {order.status === 'completed' ? '✓ Fulfilled' : '⏳ Pending'}
+                  {order.fulfillmentStatus === 'fulfilled' ? '✅ Fulfilled' : '⏳ Unfulfilled'}
                 </p>
               </div>
               <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>

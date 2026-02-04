@@ -19,7 +19,7 @@ const Newsletter = ({ content = {} }) => {
   const bgColor = content.bgColor || 'var(--color-bg-section)';
   const accentColor = content.accentColor || 'var(--color-accent-primary)';
   const textColor = content.textColor || 'var(--color-text-primary)';
-  const padding = content.padding || 64;
+  const padding = content.padding || 10;
   const borderRadius = content.borderRadius || 16;
   const benefits = content.benefits || [
     { id: '1', title: 'No Spam', description: 'Only curated deals' },

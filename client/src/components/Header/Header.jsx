@@ -789,18 +789,18 @@ const Header = ({ hideMenu = false }) => {
                 />
 
                 {/* Centered Panel */}
-                <div className={`absolute left-1/2 top-20 transform -translate-x-1/2 w-11/12 max-w-xl bg-[var(--color-bg-primary)] rounded-lg shadow-2xl p-4 transition-all duration-200 ${mobileSearchOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-6'}`}>
-                    <div className="flex items-start gap-2">
+                <div className={`absolute left-1/2 top-16 transform -translate-x-1/2 w-[calc(100%-1rem)] sm:w-11/12 max-w-md bg-[var(--color-bg-primary)] rounded-lg shadow-2xl p-3 sm:p-4 transition-all duration-200 ${mobileSearchOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-6'}`}>
+                    <div className="flex items-stretch gap-1 sm:gap-2">
                         <form onSubmit={handleMobileSearchSubmit} className="flex-1 w-full">
                             <label id="mobile-search-title" className="sr-only">Search products</label>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2 w-full">
                                 <input
                                     ref={mobileSearchRef}
                                     type="text"
                                     value={mobileSearchQuery}
                                     onChange={(e) => setMobileSearchQuery(e.target.value)}
-                                    placeholder="Search products, brands..."
-                                    className="flex-1 h-12 px-4 rounded-l-full border border-[var(--color-border-light)] placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] text-sm"
+                                    placeholder="Search products..."
+                                    className="flex-1 h-10 sm:h-12 px-3 sm:px-4 rounded-l-full border border-[var(--color-border-light)] placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] text-xs sm:text-sm"
                                 />
 
                                 {mobileSearchQuery.length > 0 && (
@@ -808,7 +808,7 @@ const Header = ({ hideMenu = false }) => {
                                         type="button"
                                         onClick={() => { setMobileSearchQuery(''); if (mobileSearchRef.current) mobileSearchRef.current.focus(); }}
                                         aria-label="Clear search"
-                                        className="text-[var(--color-text-primary)] hover:text-[var(--color-text-light)] p-2 hidden sm:block"
+                                        className="text-[var(--color-text-primary)] hover:text-[var(--color-text-light)] p-1 sm:p-2 flex-shrink-0"
                                     >
                                         ✕
                                     </button>
@@ -817,19 +817,19 @@ const Header = ({ hideMenu = false }) => {
                                 <button
                                     type="button"
                                     onClick={() => startVoiceSearch(true)}
-                                    className={`h-12 px-3 flex items-center justify-center transition duration-300 rounded-full ${isMobileListening ? 'bg-[var(--color-error)] text-white' : 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)] hover:bg-[var(--color-border)]'}`}
+                                    className={`h-10 sm:h-12 px-2 sm:px-3 flex items-center justify-center transition duration-300 rounded-full flex-shrink-0 ${isMobileListening ? 'bg-[var(--color-error)] text-white' : 'bg-[var(--color-bg-section)] text-[var(--color-text-primary)] hover:bg-[var(--color-border)]'}`}
                                     title="Voice Search"
                                     aria-label="Voice search"
                                 >
-                                    <FaMicrophone />
+                                    <FaMicrophone className="text-sm sm:text-base" />
                                 </button>
 
-                                <button type="submit" className="h-12 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-4 rounded-r-full flex items-center justify-center">
-                                    <FaSearch />
+                                <button type="submit" className="h-10 sm:h-12 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-2 sm:px-4 rounded-r-full flex items-center justify-center flex-shrink-0">
+                                    <FaSearch className="text-sm sm:text-base" />
                                 </button>
                             </div>
                         </form>
-                        <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-2xl text-[var(--color-text-light)] p-2 hover:bg-[var(--color-bg-section)] rounded-md">
+                        <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-xl sm:text-2xl text-[var(--color-text-light)] p-1 sm:p-2 hover:bg-[var(--color-bg-section)] rounded-md flex-shrink-0">
                             <FaTimes />
                         </button>
                     </div>

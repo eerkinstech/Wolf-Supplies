@@ -112,7 +112,7 @@ const CheckoutPage = () => {
     }
   }, []);
 
-  // Initialize Stripe Elements (client-side only)
+  // Initialize Stripe Payment Element (client-side only) - supports Apple Pay, Google Pay, Card, etc.
   useEffect(() => {
     const setupStripe = async () => {
       try {
@@ -121,17 +121,35 @@ const CheckoutPage = () => {
         const stripe = await getStripe();
         stripeRef.current = stripe;
         // create elements from the existing stripe instance
-        const elements = stripeRef.current.elements();
+        const elements = stripeRef.current.elements({
+          locale: 'en',
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#000000',
+              colorBackground: '#ffffff',
+              colorText: '#000000',
+              colorDanger: '#EF4444',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              spacingUnit: '4px',
+              borderRadius: '6px',
+            }
+          }
+        });
         elementsRef.current = elements;
         if (!cardMountedRef.current) {
-          const card = elements.create('card', { hidePostalCode: true });
-          card.mount('#card-element');
-          cardRef.current = card;
+          // Use Payment Element instead of Card Element for Apple Pay, Google Pay support
+          const payment = elements.create('payment');
+          payment.mount('#card-element');
+          cardRef.current = payment;
           cardMountedRef.current = true;
           // display real-time validation errors
-          card.on('change', (e) => {
+          payment.on('change', (e) => {
             const display = document.getElementById('card-errors');
-            if (display) display.textContent = e.error ? e.error.message : '';
+            if (display) {
+              display.textContent = e.error ? e.error.message : '';
+              display.style.display = e.error ? 'block' : 'none';
+            }
           });
         }
       } catch (err) {
@@ -151,20 +169,37 @@ const CheckoutPage = () => {
     const pk = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
     if (!pk) return false;
     try {
-      // If stripe is already loaded but card not mounted, create elements from same stripe instance
+      // If stripe is already loaded but payment not mounted, create elements from same stripe instance
       // use singleton getStripe to avoid creating multiple instances
       const stripe = await getStripe();
       stripeRef.current = stripe;
       if (!cardRef.current) {
-        const elements = stripeRef.current.elements();
+        const elements = stripeRef.current.elements({
+          locale: 'en',
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#000000',
+              colorBackground: '#ffffff',
+              colorText: '#000000',
+              colorDanger: '#EF4444',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              spacingUnit: '4px',
+              borderRadius: '6px',
+            }
+          }
+        });
         elementsRef.current = elements;
-        const card = elements.create('card', { hidePostalCode: true });
-        card.mount('#card-element');
-        cardRef.current = card;
+        const payment = elements.create('payment');
+        payment.mount('#card-element');
+        cardRef.current = payment;
         cardMountedRef.current = true;
-        card.on('change', (e) => {
+        payment.on('change', (e) => {
           const display = document.getElementById('card-errors');
-          if (display) display.textContent = e.error ? e.error.message : '';
+          if (display) {
+            display.textContent = e.error ? e.error.message : '';
+            display.style.display = e.error ? 'block' : 'none';
+          }
         });
       }
       return true;
@@ -316,32 +351,53 @@ const CheckoutPage = () => {
       // verify singleton stripe instance before confirming
       const singletonStripe = await getStripe();
       if (!stripeRef.current || stripeRef.current !== singletonStripe) {
-        // unmount existing card if present
+        // unmount existing payment element if present
         try { if (cardRef.current) { cardRef.current.unmount(); cardRef.current = null; cardMountedRef.current = false; } } catch (e) { }
         stripeRef.current = singletonStripe;
-        const elements = stripeRef.current.elements();
+        const elements = stripeRef.current.elements({ 
+          locale: 'en',
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#000000',
+              colorBackground: '#ffffff',
+              colorText: '#000000',
+              colorDanger: '#EF4444',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              spacingUnit: '4px',
+              borderRadius: '6px',
+            }
+          }
+        });
         elementsRef.current = elements;
-        const card = elements.create('card', { hidePostalCode: true });
-        card.mount('#card-element');
-        cardRef.current = card;
+        const payment = elements.create('payment');
+        payment.mount('#card-element');
+        cardRef.current = payment;
         cardMountedRef.current = true;
-        card.on('change', (e) => {
+        payment.on('change', (e) => {
           const display = document.getElementById('card-errors');
-          if (display) display.textContent = e.error ? e.error.message : '';
+          if (display) {
+            display.textContent = e.error ? e.error.message : '';
+            display.style.display = e.error ? 'block' : 'none';
+          }
         });
       }
       const stripe = stripeRef.current;
-      const card = cardRef.current;
-      if (!stripe || !card) throw new Error('Stripe Elements not initialized');
+      const payment = cardRef.current;
+      if (!stripe || !payment) throw new Error('Stripe Payment Element not initialized');
 
-      const billingName = nameOnCard || `${firstName} ${lastName}`.trim();
-      const confirmResult = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: card,
-          billing_details: {
-            name: billingName || undefined,
-            email: email || undefined,
-            phone: phone || undefined,
+      // Use confirmPayment for Payment Element (supports Apple Pay, Google Pay, Cards, etc.)
+      const confirmResult = await stripe.confirmPayment({
+        elements: elementsRef.current,
+        clientSecret: clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/order-confirmation`,
+          payment_method_data: {
+            billing_details: {
+              name: `${firstName} ${lastName}`.trim() || undefined,
+              email: email || undefined,
+              phone: phone || undefined,
+            },
           },
         },
       });
@@ -350,18 +406,28 @@ const CheckoutPage = () => {
         throw new Error(confirmResult.error.message || 'Payment confirmation failed');
       }
 
-      if (confirmResult.paymentIntent && confirmResult.paymentIntent.status === 'succeeded') {
-        // Payment succeeded; clear cart, show thank you, then navigate to order page
-        const orderId = data.orderId;
-        dispatch(clearCart());
-        // show a friendly message before redirect
-        setShowThankYou(true);
-        setTimeout(() => {
-          toast.success('Payment successful');
-          navigate(`/order/${orderId}`);
-        }, 1800);
+      // For Payment Element, confirmPayment redirects to return_url for certain payment methods (Apple Pay, Google Pay)
+      // For cards, it returns here with paymentIntent in status
+      if (confirmResult.paymentIntent) {
+        if (confirmResult.paymentIntent.status === 'succeeded') {
+          // Payment succeeded; clear cart, show thank you, then navigate to order page
+          const orderId = data.orderId;
+          dispatch(clearCart());
+          // show a friendly message before redirect
+          setShowThankYou(true);
+          setTimeout(() => {
+            toast.success('Payment successful');
+            navigate(`/order/${orderId}`);
+          }, 1800);
+        } else if (confirmResult.paymentIntent.status === 'requires_action') {
+          // Additional authentication required (3D Secure, etc.)
+          throw new Error('Payment requires additional authentication. Please complete the verification.');
+        } else {
+          throw new Error('Payment not completed. Status: ' + confirmResult.paymentIntent.status);
+        }
       } else {
-        throw new Error('Payment not completed');
+        // This shouldn't happen with confirmPayment, but handle it just in case
+        throw new Error('No payment intent returned');
       }
     } catch (err) {
       toast.error(err.message || 'Error creating Stripe session');
@@ -421,14 +487,15 @@ const CheckoutPage = () => {
             )}
             <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Payment</h2>
             <div className="space-y-4">
+              <p className="text-sm text-[var(--color-text-light)]">💳 Apple Pay • 🔵 Google Pay • 💰 Credit Card</p>
               <div className="">
                 <input placeholder="Name on card" value={nameOnCard} onChange={(e) => setNameOnCard(e.target.value)} className="border border-[var(--color-border-light)] p-3 w-full rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
               </div>
 
               <div className="mt-4">
                 <label className="block text-sm font-medium text-[var(--color-text-light)] mb-2">Card details</label>
-                <div id="card-element" className="border border-[var(--color-border-light)] p-3 rounded bg-[var(--color-bg-primary)]"></div>
-                <div id="card-errors" role="alert" className="text-[var(--color-error)] text-sm mt-2"></div>
+                <div id="card-element" className="border-2 border-[var(--color-border-light)] p-4 rounded-lg bg-[var(--color-bg-primary)] min-h-12 focus-within:border-[var(--color-accent-primary)] focus-within:ring-2 focus-within:ring-[var(--color-accent-primary)] focus-within:ring-opacity-30 transition-all duration-200"></div>
+                <div id="card-errors" role="alert" className="text-red-500 text-sm mt-2 font-medium"></div>
               </div>
               <div className="flex items-center gap-3">
                 <input id="saveDetails" type="checkbox" checked={saveDetails} onChange={(e) => setSaveDetails(e.target.checked)} />

@@ -15,7 +15,8 @@ const Layout = ({ children, showMenuSlider = false }) => {
         items.forEach((item, idx) => {
             const itemPath = `${path}[${idx}]`;
             const hasLink = item.url || item.link;
-            const linkValue = item.url || item.link;// Recursively check submenu items
+            const linkValue = item.url || item.link;
+            // Recursively check submenu items
             const submenuItems = item.submenu || item.sub || [];
             if (submenuItems.length > 0) {
                 validateMenuLinks(submenuItems, itemPath);
@@ -31,9 +32,12 @@ const Layout = ({ children, showMenuSlider = false }) => {
                 const res = await fetch(`${API}/api/settings/menu`);
                 if (!res.ok) return;
                 const data = await res.json();
-                if (data && Array.isArray(data.browseMenu)) {validateMenuLinks(data.browseMenu);setMenuItems(data.browseMenu);
+                if (data && Array.isArray(data.browseMenu)) {
+                    validateMenuLinks(data.browseMenu);
+                    setMenuItems(data.browseMenu);
                 }
-            } catch (err) {}
+            } catch (err) {
+            }
         };
         loadMenu();
     }, []);
@@ -297,8 +301,8 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                     {/* Slide Content */}
                                     <div className="flex items-center justify-between h-full px-6 relative">
                                         {/* Left Content */}
-                                        <div className="flex-1 text-white z-10">
-                                            <div className="text-6xl mb-4">{slide.icon}</div>
+                                        <div className="flex-1 text-white z-10 sm:ml-12 ml-4">
+                                            {/* <div className="text-6xl mb-4">{slide.icon}</div> */}
                                             <h2 className="text-4xl font-bold mb-4">{slide.title}</h2>
                                             <p className="text-lg mb-8 leading-relaxed max-w-md">{slide.description}</p>
                                             <Link
@@ -316,22 +320,22 @@ const Layout = ({ children, showMenuSlider = false }) => {
                             {/* Navigation Arrows */}
                             <button
                                 onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-3 rounded-full z-20 transition duration-300"
+                                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-2 rounded-full z-20 transition duration-300"
                                 aria-label="Previous slide"
                             >
-                                <FaChevronLeft className="text-xl" />
+                                <FaChevronLeft className="sm:text-lg text-sm"/>
                             </button>
 
                             <button
                                 onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-3 rounded-full z-20 transition duration-300"
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-2 rounded-full z-20 transition duration-300"
                                 aria-label="Next slide"
                             >
-                                <FaChevronRight className="text-xl" />
+                                <FaChevronRight className="sm:text-lg text-sm"/>
                             </button>
 
                             {/* Slide Dots */}
-                            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+                            {/* <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
                                 {slides.map((_, idx) => (
                                     <button
                                         key={idx}
@@ -343,7 +347,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                         aria-label={`Go to slide ${idx + 1}`}
                                     />
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
 
                     </div>
