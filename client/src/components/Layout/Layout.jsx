@@ -289,7 +289,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                             {slides.map((slide, idx) => (
                                 <div
                                     key={slide.id}
-                                    className={`absolute inset-0 transition-transform duration-700 ease-in-out ${idx === currentSlide 
+                                    className={`absolute inset-0 transition-transform duration-500 ease-in-out ${idx === currentSlide 
                                         ? 'translate-x-0' 
                                         : idx < currentSlide 
                                         ? '-translate-x-full'
