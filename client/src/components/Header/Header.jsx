@@ -310,7 +310,7 @@ const Header = ({ hideMenu = false }) => {
                                 About Us
                             </Link>
                             <a href="tel:+447398998101" className="hover:text-[var(--color-bg-section)]  sm:hidden flex items-center gap-1.5 transition duration-300 font-semibold whitespace-nowrap">
-                              <FaPhone/> +447398998101
+                                <FaPhone /> +447398998101
                             </a>
                             <div className="hidden sm:block text-white text-opacity-60">|</div>
                             <Link to="/policies/shipping" className="hidden sm:block hover:text-[var(--color-bg-section)] transition duration-300 font-semibold">
@@ -385,7 +385,7 @@ const Header = ({ hideMenu = false }) => {
                                         type="text"
                                         value={desktopSearchQuery}
                                         onChange={(e) => setDesktopSearchQuery(e.target.value)}
-                                        placeholder="Search for a product or brand"
+                                        placeholder={isListening ? "Speak..." : "Search for a product or brand"}
                                         className="w-full h-12 md:h-14 px-6 rounded-l-full border border-[var(--color-border-light)] placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] transition duration-200 bg-[var(--color-bg-primary)]"
                                     />
                                     <button
@@ -799,7 +799,7 @@ const Header = ({ hideMenu = false }) => {
                                     type="text"
                                     value={mobileSearchQuery}
                                     onChange={(e) => setMobileSearchQuery(e.target.value)}
-                                    placeholder="Search products..."
+                                    placeholder={isMobileListening ? "Speak..." : "Search products..."}
                                     className="flex-1 h-10 sm:h-12 px-3 sm:px-4 rounded-l-full border border-[var(--color-border-light)] placeholder-[var(--color-text-muted)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] text-xs sm:text-sm"
                                 />
 

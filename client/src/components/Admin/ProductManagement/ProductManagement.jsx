@@ -22,6 +22,7 @@ const ProductManagement = () => {
   const [localProducts, setLocalProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('active'); // 'active' | 'draft'
   const [searchQuery, setSearchQuery] = useState(''); // Search query state
+  const [failedImages, setFailedImages] = useState(new Set()); // Track failed image loads
 
   // categories removed — no longer fetching category list here
 
@@ -256,8 +257,8 @@ const ProductManagement = () => {
 
         const categoryStr = getFieldValue('category');
         // Split categories by " | " if there are multiple
-        const categories = categoryStr && categoryStr.trim() 
-          ? categoryStr.split('|').map(cat => cat.trim()).filter(Boolean) 
+        const categories = categoryStr && categoryStr.trim()
+          ? categoryStr.split('|').map(cat => cat.trim()).filter(Boolean)
           : [];
 
         const productData = {
@@ -742,16 +743,19 @@ const ProductManagement = () => {
                       </td>
                       <td className="px-6 py-4 w-96 text-sm text-gray-900 font-semibold">
                         <div className="flex items-center">
-                          {imgSrc ? (
+                          {imgSrc && !failedImages.has(product._id) ? (
                             <img
                               src={imgSrc}
                               alt={product.name}
                               loading="lazy"
                               className="w-12 h-12 rounded-md object-cover mr-4"
-                              onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }}
+                              onError={(e) => { 
+                                e.target.style.display = 'none';
+                                setFailedImages(prev => new Set([...prev, product._id]));
+                              }}
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-gray-100 rounded-md mr-4 flex items-center justify-center text-sm text-gray-400">🖼️</div>
+                            <div className="w-12 h-12 bg-gray-200 rounded-md mr-4 flex items-center justify-center text-center text-xs font-semibold text-gray-600">No Image</div>
                           )}
                           <div className=" w-64 flex items-center gap-2">
                             <span className="">{product.name}</span>

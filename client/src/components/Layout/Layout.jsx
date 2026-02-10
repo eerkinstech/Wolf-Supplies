@@ -58,7 +58,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
             title: 'Professional Tools & Gear',
             description: 'Everything you need for your professional work with durability and reliability.',
             buttonText: 'Explore Tools',
-            buttonLink: '/products?category=tools',
+            buttonLink: '/products',
             bgImage: 'https://images.unsplash.com/photo-1761062176693-74ea7c9f1278?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             icon: '🔧'
         },
@@ -67,7 +67,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
             title: 'Protective Clothing',
             description: 'Stay safe with our comprehensive collection of protective wear and apparel.',
             buttonText: 'View Collection',
-            buttonLink: '/products?category=clothing',
+            buttonLink: '/products',
             bgImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&h=600&fit=crop',
             icon: '👔'
         },

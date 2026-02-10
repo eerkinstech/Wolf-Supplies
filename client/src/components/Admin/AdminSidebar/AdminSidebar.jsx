@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup, FaHeadset, FaTicketAlt } from 'react-icons/fa';
+import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup, FaHeadset, FaTicketAlt, FaList, FaChartLine, FaUserTie } from 'react-icons/fa';
 import { useAuth } from '../../../context/AuthContext';
 
 const AdminSidebar = ({ activeTab }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
+
+  // Disable automatic scroll restoration on page navigation
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    // Prevent scroll to top on location change
+    const unlisten = () => {
+      window.scrollTo(0, 0);
+    };
+
+    return unlisten;
+  }, []);
 
   const menuItems = [
     { icon: FaHome, label: 'Dashboard', id: 'dashboard', path: '/admin/dashboard' },
@@ -15,8 +29,8 @@ const AdminSidebar = ({ activeTab }) => {
     { icon: FaClipboardList, label: 'Orders', id: 'orders', path: '/admin/orders' },
     { icon: FaComments, label: 'Reviews', id: 'reviews', path: '/admin/reviews' },
     { icon: FaHeadset, label: 'Chat', id: 'chat', path: '/admin/chat' },
-    { icon: FaChartBar, label: 'Menu', id: 'menu', path: '/admin/menu' },
-    { icon: FaChartBar, label: 'Analytics', id: 'analytics', path: '/admin/analytics' },
+    { icon: FaList, label: 'Menu', id: 'menu', path: '/admin/menu' },
+    { icon: FaChartLine, label: 'Analytics', id: 'analytics', path: '/admin/analytics' },
     { icon: FaLayerGroup, label: 'Collections', id: 'collections', path: '/admin/collections' },
     { icon: FaTicketAlt, label: 'Coupons', id: 'coupons', path: '/admin/coupons' },
   ];
@@ -48,22 +62,21 @@ const AdminSidebar = ({ activeTab }) => {
     <div className="w-64 text-white h-screen flex flex-col fixed left-0 top-0 z-40" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
       {/* Header */}
       <div className="p-6 border-b border-opacity-30" style={{ borderColor: 'white' }}>
-        <Link to="/admin" className="flex justify-center items-center gap-3">
-
+        <Link to="/admin" className="flex px-4 justify-left items-center gap-3">
+          <FaUserTie className="text-xl" />
           <div>
             <h1 className="text-xl font-bold">Admin Panel</h1>
-            <p className="text-xs opacity-75">Management</p>
           </div>
         </Link>
       </div>
 
       {/* Menu Items */}
-      <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
+      <nav className="flex-1 gap-1 px-6 py-8 space-y-2 overflow-hidden">
         {menuItems.map((item) => (
           <Link
             key={item.id}
             to={item.path}
-            className={`flex items-center gap-4 px-4 py-3 rounded-lg transition duration-300 ${currentActiveTab === item.id
+            className={`flex items-center gap-4 mb-[3px] px-4 py-2 rounded-lg transition duration-300 ${currentActiveTab === item.id
               ? 'text-white'
               : 'text-white opacity-75 hover:opacity-100'
               }`}

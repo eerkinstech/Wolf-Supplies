@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout';
-import { FaBox, FaDollarSign, FaShoppingCart, FaUsers, FaChartLine, FaArrowUp, FaArrowDown, FaEuroSign, FaPoundSign } from 'react-icons/fa';
+import { FaBox, FaShoppingCart, FaUsers, FaChartLine, FaArrowUp, FaArrowDown, FaTags, FaChartBar, FaCalendar } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProducts } from '../../redux/slices/productSlice';
 import { fetchCategories } from '../../redux/slices/categorySlice';
@@ -175,21 +175,21 @@ const AdminDashboardPage = () => {
   }, [products, categories, orders, dateFrom, dateTo]);
 
   const StatCard = ({ icon: Icon, label, value, trend, trendUp }) => (
-    <div className="rounded-lg shadow p-4 hover:shadow-md transition" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-xs font-semibold opacity-70" style={{ color: 'var(--color-text-light)' }}>{label}</p>
-          <p className="text-2xl font-bold mt-1.5" style={{ color: 'var(--color-accent-primary)' }}>{value}</p>
-          {trend && (
-            <p className={`text-xs font-medium mt-1.5 flex items-center gap-1`} style={{ color: trendUp ? '#22c55e' : '#dc2626' }}>
-              {trendUp ? <FaArrowUp size={9} /> : <FaArrowDown size={9} />}
-              {trend}
-            </p>
-          )}
+    <div className="rounded-lg shadow p-5 hover:shadow-lg transition hover:scale-105 flex flex-col justify-between" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
+      <div className="flex justify-center mb-2">
+        <div className="p-3 rounded-full" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
+          <Icon className="text-2xl" style={{ color: 'white' }} />
         </div>
-        <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-bg-section)' }}>
-          <Icon className="text-lg" style={{ color: 'var(--color-accent-primary)' }} />
-        </div>
+      </div>
+      <div className="text-center flex-1 flex flex-col justify-center">
+        <p className="text-xs font-semibold opacity-70 mb-1" style={{ color: 'var(--color-text-light)' }}>{label}</p>
+        <p className="text-2xl font-bold mb-2" style={{ color: 'var(--color-accent-primary)' }}>{value}</p>
+        {trend && (
+          <p className={`text-xs font-medium flex items-center justify-center gap-1`} style={{ color: trendUp ? '#22c55e' : '#dc2626' }}>
+            {trendUp ? <FaArrowUp size={10} /> : <FaArrowDown size={10} />}
+            <span>{trend}</span>
+          </p>
+        )}
       </div>
     </div>
   );
@@ -210,7 +210,7 @@ const AdminDashboardPage = () => {
             className="text-sm font-semibold px-3 py-1.5 rounded"
             style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
           >
-            📅 {showDatePicker ? 'Hide' : 'Show'} Date Filter
+            <FaCalendar className="mr-1 inline"/> {showDatePicker ? 'Hide' : 'Show'} Date Filter
           </button>
 
           {showDatePicker && (
@@ -293,7 +293,7 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
           <StatCard
             icon={FaBox}
             label="Products"
@@ -310,7 +310,7 @@ const AdminDashboardPage = () => {
           />
           <StatCard
             icon={FaChartLine}
-            label="Revenue"
+            label="Total Sale"
             value={`£${stats.revenue}`}
             trend="Gross"
             trendUp={true}
@@ -326,38 +326,43 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* Quick Actions & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 p-6" style={{ backgroundColor: 'var(--color-bg-section)' }}>
         {/* Quick Actions */}
         <div className="lg:col-span-2 rounded-lg shadow p-5" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
           <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Actions</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <button
               onClick={() => navigate('/admin/products')}
-              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              className="text-white rounded h-20 text-xs font-semibold   flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              📦 Products
+              <FaBox className="text-2xl mb-1" />
+              <span className="text-xs">Products</span>
             </button>
             <button
               onClick={() => navigate('/admin/orders')}
-              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              className="text-white rounded h-20 text-xs font-semibold   flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              📋 Orders
+              <FaShoppingCart className="text-2xl mb-1" />
+              <span className="text-xs">Orders</span>
             </button>
             <button
               onClick={() => navigate('/admin/categories')}
-              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              className="text-white rounded h-20 text-xs font-semibold   flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              🏷️ Categories
+              <FaTags className="text-2xl mb-1" />
+              <span className="text-xs">Categories</span>
             </button>
             <button
               onClick={() => navigate('/admin/analytics')}
-              className="text-white py-2.5 px-3 rounded text-xs font-semibold"
+              className="text-white rounded text-xs font-semibold   flex flex-col items-center justify-center h-20 hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              📊 Analytics
+              <FaChartBar className="text-2xl mb-1" />
+              <span className="text-xs">Analytics</span>
             </button>
           </div>
         </div>
@@ -379,6 +384,7 @@ const AdminDashboardPage = () => {
           </div>
         </div>
       </div>
+
     </AdminLayout>
   );
 };

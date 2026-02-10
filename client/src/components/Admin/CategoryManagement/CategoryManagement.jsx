@@ -56,7 +56,7 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                                         className="w-32 h-32 object-cover rounded-lg border-2 shadow-md"
                                         style={{ borderColor: 'var(--color-accent-primary)' }}
                                         onError={(e) => {
-e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
+                                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
                                         }}
                                     />
                                     <button
@@ -192,7 +192,7 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                                         className="w-32 h-32 object-cover rounded-lg border-2 shadow-md"
                                         style={{ borderColor: 'var(--color-accent-primary)' }}
                                         onError={(e) => {
-e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
+                                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23999%22%3EFailed to load%3C/text%3E%3C/svg%3E';
                                         }}
                                     />
                                     <button
@@ -290,7 +290,9 @@ const NestedCategoryRows = ({
     onDelete,
     onAddSubcategory,
     onEditMain,
-    parentId = null
+    parentId = null,
+    failedImages = new Set(),
+    setFailedImages = () => { }
 }) => {
     const indent = depth * 32;
     const colorSchemes = [
@@ -335,18 +337,19 @@ const NestedCategoryRows = ({
                         >
                             {category.expandedSubcategories ? <FaChevronDown /> : <FaChevronRight />}
                         </button>
-                        {category.image ? (
+                        {category.image && !failedImages.has(category._id) ? (
                             <img
                                 src={category.image.startsWith('http') ? category.image : `${API}${category.image}`}
                                 alt={category.name}
                                 className="w-10 h-10 object-cover rounded-lg border-2 border-gray-300"
                                 onError={(e) => {
-e.target.style.display = 'none';
+                                    e.target.style.display = 'none';
+                                    setFailedImages(prev => new Set([...prev, category._id]));
                                 }}
                             />
                         ) : (
-                            <div className={`w-10 h-10 bg-gradient-to-br ${colors.gradient} rounded-lg flex items-center justify-center text-white font-bold text-sm`}>
-                                {category.name.charAt(0)}
+                            <div className="w-10 h-10 bg-gray-200 rounded-lg flex text-center items-center justify-center text-xs font-semibold text-gray-600 border-2 border-gray-300">
+                                No Image
                             </div>
                         )}
                         <div>
@@ -355,9 +358,6 @@ e.target.style.display = 'none';
                                 {depth > 0 && <FaBox className="text-xs" style={{ color: 'var(--color-text-primary)' }} />}
                                 {category.name}
                             </h4>
-                            {category.description && (
-                                <p className="text-xs mt-1" style={{ color: 'var(--color-text-light)' }}>{category.description}</p>
-                            )}
                         </div>
                     </div>
                 </td>
@@ -399,6 +399,8 @@ e.target.style.display = 'none';
                         onAddSubcategory={onAddSubcategory}
                         onEditMain={onEditMain}
                         parentId={category._id}
+                        failedImages={failedImages}
+                        setFailedImages={setFailedImages}
                     />
                 ))
             )}
@@ -436,6 +438,7 @@ const CategoryManagement = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('name-asc'); // name-asc, name-desc, date-newest, date-oldest, products-max, products-min
     const [viewMode, setViewMode] = useState('menu'); // 'plain' or 'menu'
+    const [failedImages, setFailedImages] = useState(new Set()); // Track failed image loads
 
     // Sync categories from Redux
     useEffect(() => {
@@ -733,7 +736,7 @@ const CategoryManagement = () => {
                 });
                 toast.success('Image uploaded successfully');
             } catch (err) {
-toast.error('Failed to upload image. Please try again.');
+                toast.error('Failed to upload image. Please try again.');
             }
         }
     };
@@ -1101,19 +1104,20 @@ toast.error('Failed to upload image. Please try again.');
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <div className="flex items-center gap-3">
-                                                                {category.image ? (
+                                                                {category.image && !failedImages.has(category._id) ? (
                                                                     <img
                                                                         src={category.image.startsWith('http') ? category.image : `${API}${category.image}`}
                                                                         alt={category.name}
                                                                         className="w-10 h-10 object-cover rounded-lg border-2"
                                                                         style={{ borderColor: 'var(--color-accent-primary)' }}
                                                                         onError={(e) => {
-e.target.style.display = 'none';
+                                                                            e.target.style.display = 'none';
+                                                                            setFailedImages(prev => new Set([...prev, category._id]));
                                                                         }}
                                                                     />
                                                                 ) : (
-                                                                    <div className="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
-                                                                        {category.name.charAt(0)}
+                                                                    <div className="w-10 h-10 bg-gray-200 rounded-lg flex text-center items-center justify-center text-xs font-semibold text-gray-600 border-2" style={{ borderColor: 'var(--color-border-light)' }}>
+                                                                        No Image
                                                                     </div>
                                                                 )}
                                                                 <div className="flex-1">
@@ -1125,9 +1129,6 @@ e.target.style.display = 'none';
                                                                             {colors.tag}
                                                                         </span>
                                                                     </div>
-                                                                    {category.description && (
-                                                                        <p className="text-xs mt-1" style={{ color: 'var(--color-text-light)' }}>{category.description}</p>
-                                                                    )}
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -1177,6 +1178,8 @@ e.target.style.display = 'none';
                                                     onDelete={handleDeleteSubcategory}
                                                     onAddSubcategory={openAddSubcategoryModal}
                                                     onEditMain={handleEditCategory}
+                                                    failedImages={failedImages}
+                                                    setFailedImages={setFailedImages}
                                                 />
                                             ))
                                         )}
