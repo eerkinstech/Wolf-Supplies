@@ -8,11 +8,11 @@
  *   DELETE /api/media/:id      - Delete asset (soft delete)
  */
 
-import express from 'express';
-import multer from 'multer';
-import path from 'path';
-import * as mediaController from '../controllers/mediaController.js';
-import { ensureUploadsDir, generateFilename } from '../utils/mediaUtils.js';
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const mediaController = require('../controllers/mediaController.js');
+const { ensureUploadsDir, generateFilename } = require('../utils/mediaUtils.js');
 
 const router = express.Router();
 
@@ -119,5 +119,5 @@ router.use((error, req, res, next) => {
     next();
 });
 
-export default router;
+module.exports = router;
 

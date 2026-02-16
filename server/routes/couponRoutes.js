@@ -1,5 +1,5 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getAllCoupons,
   getCouponById,
   createCoupon,
@@ -9,8 +9,8 @@ import {
   incrementCouponUsage,
   incrementCouponUsageByCode,
   getCouponStatusByCode
-} from '../controllers/couponController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/couponController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -31,4 +31,4 @@ router.delete('/:id', protect, admin, deleteCoupon);
 // Increment usage (can be called during checkout)
 router.post('/:id/increment-usage', incrementCouponUsage);
 
-export default router;
+module.exports = router;

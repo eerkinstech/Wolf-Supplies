@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaQuestionCircle, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
+
 import { useMetaTags } from '../../hooks/useMetaTags';
 
 const PoliciesFAQPage = () => {
@@ -155,10 +155,10 @@ const PoliciesFAQPage = () => {
       <div className="bg-[var(--color-accent-primary)] text-white py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-100 w-fit">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <div className="flex items-center gap-4 mb-4">
-            <FaQuestionCircle className="text-4xl" />
+            <i className="fas fa-question-circle text-4xl"></i>
             <h1 className="text-4xl md:text-5xl font-bold">Frequently Asked Questions</h1>
           </div>
           <p className="text-gray-100 text-lg">Your Complete Guide to Shopping with Wolf Supplies</p>
@@ -196,8 +196,8 @@ const PoliciesFAQPage = () => {
             Our support team at Wolf Supplies Ltd is here to help with any questions or concerns you may have.
           </p>
           <div className="space-y-2 text-[var(--color-text-light)] mb-6">
-            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
-            <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
+            <p><i className="fas fa-envelope inline mr-2" style={{ color: 'var(--color-accent-primary)' }}></i> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
+            <p><i className="fas fa-phone inline mr-2" style={{ color: 'var(--color-accent-primary)' }}></i> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>
           <div className="bg-[var(--color-bg-primary)] p-4 rounded border border-[var(--color-border-light)]">

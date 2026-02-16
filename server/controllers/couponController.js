@@ -1,7 +1,7 @@
-import Coupon from '../models/Coupon.js';
+const Coupon = require('../models/Coupon');
 
 // Get all coupons
-export const getAllCoupons = async (req, res) => {
+const getAllCoupons = async (req, res) => {
     try {
         const coupons = await Coupon.find()
             .populate('productId', 'name')
@@ -14,7 +14,7 @@ export const getAllCoupons = async (req, res) => {
 };
 
 // Get single coupon
-export const getCouponById = async (req, res) => {
+const getCouponById = async (req, res) => {
     try {
         const coupon = await Coupon.findById(req.params.id)
             .populate('productId', 'name')
@@ -29,7 +29,7 @@ export const getCouponById = async (req, res) => {
 };
 
 // Create new coupon
-export const createCoupon = async (req, res) => {
+const createCoupon = async (req, res) => {
     try {
         const {
             code,
@@ -89,7 +89,7 @@ export const createCoupon = async (req, res) => {
 };
 
 // Update coupon
-export const updateCoupon = async (req, res) => {
+const updateCoupon = async (req, res) => {
     try {
         const {
             code,
@@ -144,7 +144,7 @@ export const updateCoupon = async (req, res) => {
 };
 
 // Delete coupon
-export const deleteCoupon = async (req, res) => {
+const deleteCoupon = async (req, res) => {
     try {
         const coupon = await Coupon.findByIdAndDelete(req.params.id);
         if (!coupon) {
@@ -157,7 +157,7 @@ export const deleteCoupon = async (req, res) => {
 };
 
 // Validate coupon (for checkout)
-export const validateCoupon = async (req, res) => {
+const validateCoupon = async (req, res) => {
     try {
         const { code, orderTotal, productId, productIds, cartItems } = req.body;
 
@@ -284,7 +284,7 @@ export const validateCoupon = async (req, res) => {
 };
 
 // Increment coupon usage
-export const incrementCouponUsage = async (req, res) => {
+const incrementCouponUsage = async (req, res) => {
     try {
         const { couponId } = req.body;
 
@@ -311,7 +311,7 @@ export const incrementCouponUsage = async (req, res) => {
 };
 
 // Increment coupon usage by code
-export const incrementCouponUsageByCode = async (req, res) => {
+const incrementCouponUsageByCode = async (req, res) => {
     try {
         const { code } = req.body;
 
@@ -341,7 +341,7 @@ export const incrementCouponUsageByCode = async (req, res) => {
 };
 
 // Get coupon status by code (for debugging)
-export const getCouponStatusByCode = async (req, res) => {
+const getCouponStatusByCode = async (req, res) => {
     try {
         const { code } = req.query;
 
@@ -374,4 +374,16 @@ export const getCouponStatusByCode = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+module.exports = {
+  getAllCoupons,
+  getCouponById,
+  createCoupon,
+  updateCoupon,
+  deleteCoupon,
+  validateCoupon,
+  incrementCouponUsage,
+  incrementCouponUsageByCode,
+  getCouponStatusByCode
 };

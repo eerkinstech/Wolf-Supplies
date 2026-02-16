@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useMetaTags from '../../hooks/useMetaTags';
-import { FaTruck, FaClock, FaGlobeEurope, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
+
 
 const PoliciesShippingPage = () => {
   // Set up meta tags for SEO
@@ -18,10 +18,10 @@ const PoliciesShippingPage = () => {
       <div className="bg-[var(--color-accent-primary)] text-white py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-200 w-fit">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <div className="flex items-center gap-4 mb-4">
-            <FaTruck className="text-4xl" />
+            <i className="fas fa-truck text-4xl"></i>
             <h1 className="text-4xl md:text-5xl font-bold">Shipping Policy</h1>
           </div>
           <p className="text-gray-100 text-lg">Wolf Supplies LTD - Fast & Reliable Delivery</p>
@@ -33,7 +33,7 @@ const PoliciesShippingPage = () => {
         {/* Overview */}
         <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <FaClock className="text-[var(--color-accent-primary)] text-2xl" />
+            <i className="fas fa-clock" style={{ color: 'var(--color-accent-primary)', fontSize: '24px' }}></i>
             <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Delivery Timeframe</h2>
           </div>
           <p className="text-[var(--color-text-light)] mb-4 leading-relaxed">
@@ -56,7 +56,7 @@ const PoliciesShippingPage = () => {
         {/* Shipping Methods */}
         <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
           <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Shipping Methods & Costs</h2>
-          
+
           <div className="space-y-6">
             {/* Standard Shipping */}
             <div className="border-l-4 border-[var(--color-accent-primary)] pl-6 pb-6 border-b">
@@ -74,7 +74,7 @@ const PoliciesShippingPage = () => {
               <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">International Shipping</h3>
               <ul className="text-[var(--color-text-light)] space-y-2">
                 <li>🌍 <strong>International Orders:</strong> We currently deliver within the United Kingdom only. International shipping is not available through our online checkout.
-</li>
+                </li>
                 <li>📧 <strong>Contact Us:</strong> Please <Link to="/contact" className="text-[var(--color-accent-primary)] hover:underline font-semibold">contact our team</Link> for international shipping inquiries, custom quotes, and delivery timelines.</li>
                 <li>💷 <strong>Cost:</strong> Shipping costs vary based on destination and will be confirmed via email after your inquiry.</li>
               </ul>
@@ -107,8 +107,8 @@ const PoliciesShippingPage = () => {
             Our customer support team is here to help. Contact us at:
           </p>
           <div className="space-y-2 text-[var(--color-text-light)]">
-            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
-            <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
+            <p><i className="fas fa-envelope" style={{ marginRight: '8px', color: 'var(--color-accent-primary)' }}></i> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
+            <p><i className="fas fa-phone" style={{ marginRight: '8px', color: 'var(--color-accent-primary)' }}></i> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>
         </div>

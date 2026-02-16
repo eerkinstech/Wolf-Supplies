@@ -4,11 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useAuth } from '../../context/AuthContext';
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 import wolfLogo from '../../assets/Wolf Supplies LTD.png';
-import {
-    FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt,
-    FaChevronDown, FaSearch, FaPhone, FaHeart,
-    FaList, FaUserShield, FaCog, FaEdit, FaEnvelope, FaMicrophone, FaBox
-} from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const Header = ({ hideMenu = false }) => {
@@ -236,7 +231,7 @@ const Header = ({ hideMenu = false }) => {
                                     } ${hasSubmenu ? 'flex items-center justify-between' : ''}`}
                             >
                                 {item.label || item.name}
-                                {hasSubmenu && level === 0 && <FaChevronDown className="text-xs ml-2" />}
+                                {hasSubmenu && level === 0 && <i className="fas fa-chevron-down text-xs ml-2"></i>}
                             </Link>
 
                             {/* Dropdown submenu - only visible on hover */}
@@ -310,7 +305,7 @@ const Header = ({ hideMenu = false }) => {
                                 About Us
                             </Link>
                             <a href="tel:+447398998101" className="hover:text-[var(--color-bg-section)]  sm:hidden flex items-center gap-1.5 transition duration-300 font-semibold whitespace-nowrap">
-                                <FaPhone /> +447398998101
+                                <i className="fas fa-phone"></i> +447398998101
                             </a>
                             <div className="hidden sm:block text-white text-opacity-60">|</div>
                             <Link to="/policies/shipping" className="hidden sm:block hover:text-[var(--color-bg-section)] transition duration-300 font-semibold">
@@ -323,13 +318,13 @@ const Header = ({ hideMenu = false }) => {
                         </div>
                         <div className="flex items-center gap-3 sm:gap-5">
                             <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold whitespace-nowrap flex items-center gap-1.5">
-                                <FaEnvelope /> sales@wolfsuppliesltd.co.uk
+                                <i className="fas fa-envelope"></i> sales@wolfsuppliesltd.co.uk
                             </a>
                             {isAuthenticated ? (
                                 <div className="flex items-center gap-3">
                                     <div className="relative group hidden sm:block">
                                         <button className="hover:text-[var(--color-bg-section)] transition duration-300 font-semibold flex items-center gap-1.5 whitespace-nowrap">
-                                            <FaUser /> {user?.name || 'User'} <FaChevronDown className="text-xs" />
+                                            <i className="fas fa-user"></i> {user?.name || 'User'} <i className="fas fa-chevron-down text-xs"></i>
                                         </button>
                                         <div className="absolute right-0 mt-1 w-48 bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300 z-50">
                                             <div className="px-4 py-2.5 border-b border-[var(--color-border-light)] text-xs text-[var(--color-text-light)]">
@@ -338,7 +333,7 @@ const Header = ({ hideMenu = false }) => {
                                             {isAdmin && (
                                                 <>
                                                     <Link to="/admin/dashboard" className="px-4 py-2.5 hover:bg-[var(--color-bg-section)] text-sm flex items-center gap-2">
-                                                        <FaUserShield className="text-[var(--color-accent-primary)]" /> Admin Dashboard
+                                                        <i className="fas fa-user-shield" style={{ color: 'var(--color-accent-primary)' }}></i> Admin Dashboard
                                                     </Link>
                                                     <div className="border-b border-[var(--color-border-light)]"></div>
                                                 </>
@@ -347,7 +342,7 @@ const Header = ({ hideMenu = false }) => {
                                                 onClick={handleLogout}
                                                 className="w-full text-left px-4 py-2.5 hover:bg-[var(--color-border-light)] text-sm rounded-b-lg flex items-center gap-2 text-[var(--color-text-primary)] font-semibold"
                                             >
-                                                <FaSignOutAlt /> Logout
+                                                <i className="fas fa-sign-out-alt"></i> Logout
                                             </button>
                                         </div>
                                     </div>
@@ -369,7 +364,7 @@ const Header = ({ hideMenu = false }) => {
                                 className="md:hidden text-2xl text-gray-700 ml-2 hover:text-gray-400 transition duration-300 flex-shrink-0"
                                 aria-label="Toggle menu"
                             >
-                                {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+                                {mobileMenuOpen ? <i className="fas fa-times"></i> : <i className="fas fa-bars"></i>}
                             </button>
 
                             {/* Logo - Center on Mobile, Left on Desktop */}
@@ -395,12 +390,12 @@ const Header = ({ hideMenu = false }) => {
                                         title="Voice Search"
                                         aria-label="Voice search"
                                     >
-                                        <FaMicrophone className="text-lg" />
+                                        <i className="fas fa-microphone text-lg"></i>
                                     </button>
                                     <button
                                         type="submit"
                                         className="h-12 md:h-14 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-5 rounded-r-full flex items-center justify-center shadow-md transition duration-300">
-                                        <FaSearch className="text-lg md:text-xl" />
+                                        <i className="fas fa-magnifying-glass text-lg md:text-xl"></i>
                                     </button>
                                 </form>
                             </div>
@@ -413,7 +408,7 @@ const Header = ({ hideMenu = false }) => {
                                     className="md:hidden ml-2 text-lg text-gray-700 hover:text-gray-400 transition duration-300"
                                     aria-label="Open search"
                                 >
-                                    <FaSearch />
+                                    <i className="fas fa-magnifying-glass"></i>
                                 </button>
 
                                 {/* Edit Page Button - Only for Admin/Editor
@@ -423,13 +418,13 @@ const Header = ({ hideMenu = false }) => {
                                         className="text-gray-700 hover:text-gray-900 transition duration-300 p-2 hover:bg-gray-200 rounded-lg"
                                         title="Edit Page"
                                     >
-                                        <FaEdit className="text-lg md:text-xl" />
+                                        <i className="fas fa-pen text-lg md:text-xl"></i>
                                     </button>
                                 )} */}
 
                                 {/* Wishlist */}
                                 <Link to="/wishlist" className="relative text-[var(--color-text-light)] hidden lg:block hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg">
-                                    <FaHeart className="text-lg  md:text-xl" />
+                                    <i className="fas fa-heart text-lg md:text-xl"></i>
                                     {wishlistCount > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-[var(--color-error)] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                             {wishlistCount}
@@ -439,12 +434,12 @@ const Header = ({ hideMenu = false }) => {
 
                                 {/* Order Lookup */}
                                 <Link to="/order-lookup" className="text-[var(--color-text-light)] hidden lg:block hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg" title="Order Lookup">
-                                    <FaBox className="text-lg md:text-xl" />
+                                    <i className="fas fa-box text-lg md:text-xl"></i>
                                 </Link>
 
                                 {/* Cart */}
                                 <Link to="/cart" className="relative text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300 p-2 hover:bg-[var(--color-bg-section)] rounded-lg">
-                                    <FaShoppingCart className="text-lg md:text-xl" />
+                                    <i className="fas fa-shopping-cart text-lg md:text-xl"></i>
                                     {totalQuantity > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-[var(--color-error)] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                             {totalQuantity}
@@ -454,7 +449,7 @@ const Header = ({ hideMenu = false }) => {
 
                                 {/* Phone - Hidden on Mobile */}
                                 <div className="hidden md:flex items-center gap-2 bg-[var(--color-accent-primary)] text-white px-3 md:px-4 py-2 rounded-lg whitespace-nowrap">
-                                    <FaPhone className="text-base md:text-lg" />
+                                    <i className="fas fa-phone text-base md:text-lg"></i>
                                     <span className="font-bold text-sm md:text-base">
                                         <a href="tel:+447398998101">
                                             +447398998101
@@ -564,7 +559,7 @@ const Header = ({ hideMenu = false }) => {
                                                     >
                                                         <span>{item.label || item.name || 'Menu Item'}</span>
                                                         {hasSubmenu && (
-                                                            <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                            <i className="fas fa-chevron-down" style={{ fontSize: 'inherit', color: 'var(--color-text-light)' }}></i>
                                                         )}
                                                     </Link>
                                                 );
@@ -603,7 +598,7 @@ const Header = ({ hideMenu = false }) => {
                                                                         >
                                                                             <span>{item.label || item.name}</span>
                                                                             {hasSubmenu && (
-                                                                                <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                                                <i className="fas fa-chevron-down text-xs" style={{ color: 'var(--color-text-light)' }}></i>
                                                                             )}
                                                                         </Link>
                                                                     );
@@ -641,7 +636,7 @@ const Header = ({ hideMenu = false }) => {
                                                                         >
                                                                             <span>{item.label || item.name}</span>
                                                                             {hasSubmenu && (
-                                                                                <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                                                <i className="fas fa-chevron-down text-xs" style={{ color: 'var(--color-text-light)' }}></i>
                                                                             )}
                                                                         </Link>
                                                                     );
@@ -683,7 +678,7 @@ const Header = ({ hideMenu = false }) => {
                                 <img src={wolfLogo} alt="Wolf Supplies" className="h-10 w-auto" />
                             </Link>
                             <button onClick={() => setMobileMenuOpen(false)} className="text-2xl p-2 rounded-md hover:bg-[var(--color-bg-section)]">
-                                <FaTimes />
+                                <i className="fas fa-times"></i>
                             </button>
                         </div>
 
@@ -697,7 +692,7 @@ const Header = ({ hideMenu = false }) => {
                                 className="font-bold text-[var(--color-text-primary)] mb-3 text-sm flex items-center gap-2 px-3 py-2 hover:bg-[var(--color-bg-section)] hover:text-[var(--color-accent-primary)] rounded-lg"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <FaList className="text-[var(--color-accent-primary)]" /> Browse All Categories
+                                <i className="fas fa-list" style={{ color: 'var(--color-accent-primary)' }}></i> Browse All Categories
                             </Link>
 
                             {/* Recursive Nested Mobile Menu */}
@@ -739,7 +734,7 @@ const Header = ({ hideMenu = false }) => {
                                 className="block px-3 py-2 text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm flex items-center gap-2"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <FaBox className="text-[var(--color-accent-primary)]" /> Order Lookup
+                                <i className="fas fa-box" style={{ color: 'var(--color-accent-primary)' }}></i> Order Lookup
                             </Link>
                             {isAdmin && (
                                 <Link
@@ -747,7 +742,7 @@ const Header = ({ hideMenu = false }) => {
                                     className="px-3 py-2 text-white bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] rounded-lg font-semibold text-sm flex items-center gap-2"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    <FaUserShield /> Admin Panel
+                                    <i className="fas fa-user-shield"></i> Admin Panel
                                 </Link>
                             )}
                         </div>
@@ -756,7 +751,7 @@ const Header = ({ hideMenu = false }) => {
                             {isAuthenticated ? (
                                 <>
                                     <div className="flex items-center gap-2 text-[var(--color-text-primary)] font-semibold py-2 px-3 text-sm">
-                                        <FaUser className="text-[var(--color-accent-primary)]" />
+                                        <i className="fas fa-user" style={{ color: 'var(--color-accent-primary)' }}></i>
                                         <span>{user?.name || 'User'}</span>
                                     </div>
                                     <p className="text-xs text-[var(--color-text-light)] px-3 py-1">{user?.email}</p>
@@ -764,7 +759,7 @@ const Header = ({ hideMenu = false }) => {
                                         onClick={handleLogout}
                                         className="w-full text-left px-3 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-section)] rounded-lg font-semibold text-sm mt-2 flex items-center gap-2"
                                     >
-                                        <FaSignOutAlt /> Logout
+                                        <i className="fas fa-sign-out-alt"></i> Logout
                                     </button>
                                 </>
                             ) : null}
@@ -821,16 +816,16 @@ const Header = ({ hideMenu = false }) => {
                                     title="Voice Search"
                                     aria-label="Voice search"
                                 >
-                                    <FaMicrophone className="text-sm sm:text-base" />
+                                    <i className="fas fa-microphone" style={{ fontSize: 'inherit' }}></i>
                                 </button>
 
                                 <button type="submit" className="h-10 sm:h-12 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-2 sm:px-4 rounded-r-full flex items-center justify-center flex-shrink-0">
-                                    <FaSearch className="text-sm sm:text-base" />
+                                    <i className="fas fa-search" style={{ fontSize: 'inherit' }}></i>
                                 </button>
                             </div>
                         </form>
                         <button onClick={() => setMobileSearchOpen(false)} aria-label="Close search" className="text-2xl text-[var(--color-text-light)] p-2 hover:bg-[var(--color-bg-section)] rounded-md">
-                            <FaTimes />
+                            <i className="fas fa-times text-2xl"></i>
                         </button>
                     </div>
                 </div>

@@ -1,10 +1,11 @@
-import Order from '../models/Order.js';
-import crypto from 'crypto';
-import { sendOrderStatusUpdateEmail, sendOrderWithPDF } from '../utils/emailService.js';
-import { generateOrderPDF } from '../utils/pdfGenerator.js';
+const Order = require('../models/Order');
+const crypto = require('crypto');
+const { sendOrderStatusUpdateEmail, sendOrderWithPDF } = require('../utils/emailService');
+const { generateOrderPDF } = require('../utils/pdfGenerator');
+const EventLog = require('../models/EventLog');
 
 // Get all orders (admin only)
-export const getAllOrders = async (req, res) => {
+const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate('user', 'name email')
@@ -17,7 +18,7 @@ export const getAllOrders = async (req, res) => {
 };
 
 // Get user's orders
-export const getUserOrders = async (req, res) => {
+const getUserOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user.id })
       .populate('orderItems.product', 'name price image')
@@ -29,7 +30,7 @@ export const getUserOrders = async (req, res) => {
 };
 
 // Get orders by guestId (for order history without login)
-export const getOrdersByGuestId = async (req, res) => {
+const getOrdersByGuestId = async (req, res) => {
   try {
     const guestId = req.guestId;
 
@@ -44,7 +45,7 @@ export const getOrdersByGuestId = async (req, res) => {
 };
 
 // Get single order (anyone can view any order)
-export const getOrderById = async (req, res) => {
+const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
     let order = null;
@@ -74,7 +75,7 @@ export const getOrderById = async (req, res) => {
 };
 
 // Create new order (guest or authenticated users)
-export const createOrder = async (req, res) => {
+const createOrder = async (req, res) => {
   const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalAmount, billingAddress, couponCode, discountAmount } = req.body;
 
   try {
@@ -187,7 +188,7 @@ export const createOrder = async (req, res) => {
 };
 
 // Update order status (admin only)
-export const updateOrderStatus = async (req, res) => {
+const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
@@ -217,7 +218,7 @@ export const updateOrderStatus = async (req, res) => {
 };
 
 // Update order payment status (admin only)
-export const updateOrderPayment = async (req, res) => {
+const updateOrderPayment = async (req, res) => {
   try {
     const { isPaid, paidAt } = req.body;
 
@@ -238,7 +239,7 @@ export const updateOrderPayment = async (req, res) => {
 };
 
 // Update order delivery status (admin only)
-export const updateOrderDelivery = async (req, res) => {
+const updateOrderDelivery = async (req, res) => {
   try {
     const { deliveryStatus } = req.body;
 
@@ -271,7 +272,7 @@ export const updateOrderDelivery = async (req, res) => {
 };
 
 // Update order refund status (admin only)
-export const updateOrderRefund = async (req, res) => {
+const updateOrderRefund = async (req, res) => {
   try {
     const { deliveryStatus } = req.body;
 
@@ -299,7 +300,7 @@ export const updateOrderRefund = async (req, res) => {
 };
 
 // Update order fulfillment status (admin only)
-export const updateOrderFulfillment = async (req, res) => {
+const updateOrderFulfillment = async (req, res) => {
   try {
     const { fulfillmentStatus } = req.body;
 
@@ -329,7 +330,7 @@ export const updateOrderFulfillment = async (req, res) => {
 };
 
 // Delete order (admin only)
-export const deleteOrder = async (req, res) => {
+const deleteOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
 
@@ -344,7 +345,7 @@ export const deleteOrder = async (req, res) => {
 };
 
 // Update order remarks (admin only)
-export const updateOrderRemarks = async (req, res) => {
+const updateOrderRemarks = async (req, res) => {
   try {
     const { remarks } = req.body;
 
@@ -365,7 +366,7 @@ export const updateOrderRemarks = async (req, res) => {
 };
 
 // Update contact details (admin only)
-export const updateOrderContact = async (req, res) => {
+const updateOrderContact = async (req, res) => {
   try {
     const { contactDetails } = req.body;
 
@@ -386,7 +387,7 @@ export const updateOrderContact = async (req, res) => {
 };
 
 // Update shipping address (admin only)
-export const updateOrderShipping = async (req, res) => {
+const updateOrderShipping = async (req, res) => {
   try {
     const { shippingAddress } = req.body;
 
@@ -407,7 +408,7 @@ export const updateOrderShipping = async (req, res) => {
 };
 
 // Update billing address (admin only)
-export const updateOrderBilling = async (req, res) => {
+const updateOrderBilling = async (req, res) => {
   try {
     const { billingAddress } = req.body;
 
@@ -428,7 +429,7 @@ export const updateOrderBilling = async (req, res) => {
 };
 
 // Resend order invoice PDF to customer (admin only)
-export const resendOrderPDF = async (req, res) => {
+const resendOrderPDF = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 
@@ -444,5 +445,24 @@ export const resendOrderPDF = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getAllOrders,
+  getUserOrders,
+  getOrdersByGuestId,
+  getOrderById,
+  createOrder,
+  updateOrderStatus,
+  updateOrderPayment,
+  updateOrderDelivery,
+  updateOrderRefund,
+  updateOrderFulfillment,
+  deleteOrder,
+  updateOrderRemarks,
+  updateOrderContact,
+  updateOrderShipping,
+  updateOrderBilling,
+  resendOrderPDF
 };
 

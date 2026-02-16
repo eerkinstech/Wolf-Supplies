@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronLeft, FaChevronRight, FaImage } from 'react-icons/fa';
 /**
  * Professional Hero Slider Component
  * Design: Text on left, image on right
@@ -194,7 +193,7 @@ const Slider = ({ slides = null }) => {
                     className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 bg-white hover:bg-gray-100 text-gray-800 p-3 rounded-full shadow-lg transition-all hover:scale-110 duration-200"
                     aria-label="Previous slide"
                 >
-                    <FaChevronLeft size={24} />
+                    <i className="fas fa-chevron-left" style={{ fontSize: '24px' }}></i>
                 </button>
 
                 {/* Navigation Arrows - Right */}
@@ -203,7 +202,7 @@ const Slider = ({ slides = null }) => {
                     className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 bg-white hover:bg-gray-100 text-gray-800 p-3 rounded-full shadow-lg transition-all hover:scale-110 duration-200"
                     aria-label="Next slide"
                 >
-                    <FaChevronRight size={24} />
+                    <i className="fas fa-chevron-right" style={{ fontSize: '24px' }}></i>
                 </button>
 
                 {/* Dot Navigation */}
@@ -221,8 +220,8 @@ const Slider = ({ slides = null }) => {
                     ))}
                 </div>
             </div>
-            </>
-        );
+        </>
+    );
 };
 
 export default Slider;

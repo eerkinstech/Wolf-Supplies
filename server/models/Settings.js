@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 // Define a recursive submenu schema
 const submenuSchema = new mongoose.Schema(
@@ -71,5 +71,5 @@ const settingsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Settings', settingsSchema);
+module.exports = mongoose.model('Settings', settingsSchema);
 

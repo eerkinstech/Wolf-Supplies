@@ -1,7 +1,7 @@
-import Page from '../models/Page.js';
+const Page = require('../models/Page.js');
 
 // Get all pages
-export const getAllPages = async (req, res) => {
+const getAllPages = async (req, res) => {
     try {
         const pages = await Page.find({ isPublished: true }).select('_id title slug description');
         res.status(200).json({ pages, success: true });
@@ -11,7 +11,7 @@ export const getAllPages = async (req, res) => {
 };
 
 // Get single page
-export const getPage = async (req, res) => {
+const getPage = async (req, res) => {
     try {
         const { slug } = req.params;
         const page = await Page.findOne({ slug });
@@ -23,7 +23,7 @@ export const getPage = async (req, res) => {
 };
 
 // Create page (admin)
-export const createPage = async (req, res) => {
+const createPage = async (req, res) => {
     try {
         const { title, slug, description, content, metaTitle, metaDescription, metaKeywords } = req.body;
         
@@ -45,7 +45,7 @@ export const createPage = async (req, res) => {
 };
 
 // Update page (admin)
-export const updatePage = async (req, res) => {
+const updatePage = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
@@ -60,7 +60,7 @@ export const updatePage = async (req, res) => {
 };
 
 // Delete page (admin)
-export const deletePage = async (req, res) => {
+const deletePage = async (req, res) => {
     try {
         const { id } = req.params;
         const page = await Page.findByIdAndDelete(id);
@@ -70,5 +70,13 @@ export const deletePage = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Error deleting page', error: err.message });
     }
+};
+
+module.exports = {
+    getAllPages,
+    getPage,
+    createPage,
+    updatePage,
+    deletePage
 };
 

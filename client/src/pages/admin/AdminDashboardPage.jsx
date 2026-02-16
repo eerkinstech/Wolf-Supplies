@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout';
-import { FaBox, FaShoppingCart, FaUsers, FaChartLine, FaArrowUp, FaArrowDown, FaTags, FaChartBar, FaCalendar } from 'react-icons/fa';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProducts } from '../../redux/slices/productSlice';
 import { fetchCategories } from '../../redux/slices/categorySlice';
@@ -174,11 +174,11 @@ const AdminDashboardPage = () => {
     }
   }, [products, categories, orders, dateFrom, dateTo]);
 
-  const StatCard = ({ icon: Icon, label, value, trend, trendUp }) => (
+  const StatCard = ({ icon, label, value, trend, trendUp }) => (
     <div className="rounded-lg shadow p-5 hover:shadow-lg transition hover:scale-105 flex flex-col justify-between" style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border-light)', borderWidth: '1px' }}>
       <div className="flex justify-center mb-2">
         <div className="p-3 rounded-full" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
-          <Icon className="text-2xl" style={{ color: 'white' }} />
+          <i className={`${icon} text-2xl`} style={{ color: 'white' }}></i>
         </div>
       </div>
       <div className="text-center flex-1 flex flex-col justify-center">
@@ -186,7 +186,7 @@ const AdminDashboardPage = () => {
         <p className="text-2xl font-bold mb-2" style={{ color: 'var(--color-accent-primary)' }}>{value}</p>
         {trend && (
           <p className={`text-xs font-medium flex items-center justify-center gap-1`} style={{ color: trendUp ? '#22c55e' : '#dc2626' }}>
-            {trendUp ? <FaArrowUp size={10} /> : <FaArrowDown size={10} />}
+            {trendUp ? <i className="fas fa-arrow-up" style={{ fontSize: '10px' }}></i> : <i className="fas fa-arrow-down" style={{ fontSize: '10px' }}></i>}
             <span>{trend}</span>
           </p>
         )}
@@ -210,7 +210,7 @@ const AdminDashboardPage = () => {
             className="text-sm font-semibold px-3 py-1.5 rounded"
             style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
           >
-            <FaCalendar className="mr-1 inline"/> {showDatePicker ? 'Hide' : 'Show'} Date Filter
+            <i className="fas fa-calendar mr-1"></i> {showDatePicker ? 'Hide' : 'Show'} Date Filter
           </button>
 
           {showDatePicker && (
@@ -295,28 +295,28 @@ const AdminDashboardPage = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
           <StatCard
-            icon={FaBox}
+            icon="fas fa-box"
             label="Products"
             value={stats.products}
             trend="Active"
             trendUp={true}
           />
           <StatCard
-            icon={FaShoppingCart}
+            icon="fas fa-shopping-cart"
             label="Orders"
             value={stats.orders}
             trend="Total"
             trendUp={false}
           />
           <StatCard
-            icon={FaChartLine}
+            icon="fas fa-chart-line"
             label="Total Sale"
             value={`£${stats.revenue}`}
             trend="Gross"
             trendUp={true}
           />
           <StatCard
-            icon={FaUsers}
+            icon="fas fa-users"
             label="System"
             value="Online"
             trend="Active"
@@ -337,7 +337,7 @@ const AdminDashboardPage = () => {
               className="text-white rounded h-20 text-xs font-semibold   flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              <FaBox className="text-2xl mb-1" />
+              <i className="fas fa-box text-2xl mb-1" style={{ display: 'block' }}></i>
               <span className="text-xs">Products</span>
             </button>
             <button
@@ -345,7 +345,7 @@ const AdminDashboardPage = () => {
               className="text-white rounded h-20 text-xs font-semibold   flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              <FaShoppingCart className="text-2xl mb-1" />
+              <i className="fas fa-shopping-cart text-2xl mb-1" style={{ display: 'block' }}></i>
               <span className="text-xs">Orders</span>
             </button>
             <button
@@ -353,7 +353,7 @@ const AdminDashboardPage = () => {
               className="text-white rounded h-20 text-xs font-semibold   flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              <FaTags className="text-2xl mb-1" />
+              <i className="fas fa-tags text-2xl mb-1" style={{ display: 'block' }}></i>
               <span className="text-xs">Categories</span>
             </button>
             <button
@@ -361,7 +361,7 @@ const AdminDashboardPage = () => {
               className="text-white rounded text-xs font-semibold   flex flex-col items-center justify-center h-20 hover:shadow-md hover:scale-105 transition"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              <FaChartBar className="text-2xl mb-1" />
+              <i className="fas fa-chart-bar text-2xl mb-1" style={{ display: 'block' }}></i>
               <span className="text-xs">Analytics</span>
             </button>
           </div>

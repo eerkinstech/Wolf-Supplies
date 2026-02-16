@@ -1,8 +1,8 @@
-import express from 'express';
-import { getSettings, updateSettings } from '../controllers/settingsController.js';
-import { getMenu, saveMenu } from '../controllers/settingsController.js';
-import { getFeaturedCollections, saveFeaturedCollections } from '../controllers/settingsController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+const express = require('express');
+const { getSettings, updateSettings } = require('../controllers/settingsController.js');
+const { getMenu, saveMenu } = require('../controllers/settingsController.js');
+const { getFeaturedCollections, saveFeaturedCollections } = require('../controllers/settingsController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -17,5 +17,4 @@ router.post('/menu', protect, admin, saveMenu);
 router.get('/featured-collections', getFeaturedCollections);
 router.post('/featured-collections', protect, admin, saveFeaturedCollections);
 
-export default router;
-
+module.exports = router;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUserShield } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
@@ -51,7 +51,7 @@ const LoginPage = () => {
 
           {/* Admin Login Link */}
           <div className="bg-gray-100 border-l-4 border-gray-400 p-4 rounded-lg flex items-center gap-3">
-            <FaUserShield className="text-xl text-purple-600 flex-shrink-0" />
+            <i className="fas fa-user-shield text-xl text-purple-600 flex-shrink-0"></i>
             <div>
               <p className="text-sm text-purple-900 font-bold">Admin Access?</p>
               <p className="text-xs text-purple-700">
@@ -68,7 +68,7 @@ const LoginPage = () => {
             <div className="space-y-3">
               <label className="block text-sm font-bold text-gray-900">Email Address</label>
               <div className="relative">
-                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg" />
+                <i className="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg"></i>
                 <input
                   type="email"
                   name="email"
@@ -84,7 +84,7 @@ const LoginPage = () => {
             <div className="space-y-3">
               <label className="block text-sm font-bold text-gray-900">Password</label>
               <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg" />
+                <i className="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg"></i>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -98,7 +98,7 @@ const LoginPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 text-lg"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                 </button>
               </div>
             </div>

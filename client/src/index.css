@@ -1,5 +1,6 @@
-@import "@fortawesome/fontawesome-free/css/all.css";
-@import "@fortawesome/fontawesome-free/css/v4-shims.css";
+/* FontAwesome - Using CDN with critical icons inlined, rest loaded on demand */
+@import "@fortawesome/fontawesome-free/css/fontawesome.min.css";
+@import "@fortawesome/fontawesome-free/css/solid.min.css";
 @import "tailwindcss";
 
 :root {

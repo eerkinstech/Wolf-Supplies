@@ -9,6 +9,7 @@ import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout.jsx';
 const AdminCollectionsPage = () => {
     const dispatch = useDispatch();
     const { categories } = useSelector((s) => s.category);
+    const API_URL = import.meta.env.VITE_API_URL ;
 
     const [allCategories, setAllCategories] = useState([]);
     const [activeTab, setActiveTab] = useState('categories'); // 'categories' or 'products'
@@ -54,7 +55,7 @@ const AdminCollectionsPage = () => {
     useEffect(() => {
         const loadFeaturedCollections = async () => {
             try {
-                const response = await fetch('/api/settings/featured-collections');
+                const response = await fetch(`${API_URL}/api/settings/featured-collections`);
                 const data = await response.json();
                 if (data.featuredCategories) {
                     setFeaturedCategoryNames(data.featuredCategories.categoryNames || []);
@@ -79,7 +80,7 @@ const AdminCollectionsPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/settings/featured-collections', {
+            const response = await fetch(`${API_URL}/api/settings/featured-collections`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -118,7 +119,7 @@ const AdminCollectionsPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/settings/featured-collections', {
+            const response = await fetch(`${API_URL}/api/settings/featured-collections`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

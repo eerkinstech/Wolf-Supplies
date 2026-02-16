@@ -94,7 +94,7 @@ export const removeNode = (root: Node, nodeId: string): Node => {
     throw new Error('Cannot remove root node');
   }
 
-  return updateNodeDeep(root, nodeId, (node) => {
+  return updateNodeDeep(root, nodeId, (_removeNode) => {
     // Find parent and remove this node
     // But we're at the node level, so return null to signal parent to remove it
     return null;

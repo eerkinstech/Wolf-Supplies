@@ -1,14 +1,16 @@
-import Cart from '../models/Cart.js';
-import asyncHandler from 'express-async-handler';
-import mongoose from 'mongoose';
-import EventLog from '../models/EventLog.js';
+const Cart = require('../models/Cart');
+const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
+const EventLog = require('../models/EventLog');
 
 // GET /api/cart - get cart by guestId (or user if authenticated)
-export const getCart = asyncHandler(async (req, res) => {
+const getCart = asyncHandler(async (req, res) => {
 
   try {
     const guestId = req.guestId;
     const userId = req.user?._id;
+
+    console.log('[Cart Controller] getCart - guestId:', guestId, 'userId:', userId);
 
     // Try to find cart by user ID first (if authenticated), then by guestId
     let cart = null;
@@ -22,21 +24,38 @@ export const getCart = asyncHandler(async (req, res) => {
     }
 
     if (cart) {
-
+      console.log('[Cart Controller] Found cart with', cart.items.length, 'items');
+    } else {
+      console.log('[Cart Controller] No cart found, returning empty cart');
     }
-    res.json(cart || { items: [] });
-  } catch (err) {
 
+    // Build response with guestId so client can sync localStorage
+    const cartData = cart ? {
+      _id: cart._id,
+      user: cart.user || undefined,
+      guestId: cart.guestId,
+      items: cart.items,
+      updatedAt: cart.updatedAt
+    } : { items: [] };
+
+    res.json({
+      ...cartData,
+      _guestId: guestId
+    });
+  } catch (err) {
+    console.error('[Cart Controller] Error fetching cart:', err.message);
     throw err;
   }
 });
 
 // POST /api/cart - update/create cart for guestId or user
-export const updateCart = asyncHandler(async (req, res) => {
+const updateCart = asyncHandler(async (req, res) => {
 
   const guestId = req.guestId;
   const userId = req.user?._id;
   const { items } = req.body;
+
+  console.log('[Cart Controller] updateCart - guestId:', guestId, 'userId:', userId, 'items count:', items?.length);
 
   if (!Array.isArray(items)) {
 
@@ -59,8 +78,10 @@ export const updateCart = asyncHandler(async (req, res) => {
   } else if (guestId) {
     cart = await Cart.findOne({ guestId });
     if (!cart) {
-
+      console.log('[Cart Controller] Creating new cart for guestId:', guestId);
       cart = new Cart({ guestId, items: [] });
+    } else {
+      console.log('[Cart Controller] Found existing cart for guestId:', guestId, 'with', cart.items.length, 'items');
     }
   } else {
 
@@ -75,7 +96,7 @@ export const updateCart = asyncHandler(async (req, res) => {
 
       continue;
     }
-    
+
     let productId = incoming.product;
     if (productId && typeof productId === 'string' && mongoose.Types.ObjectId.isValid(productId)) {
       productId = new mongoose.Types.ObjectId(productId);
@@ -93,19 +114,32 @@ export const updateCart = asyncHandler(async (req, res) => {
     });
   }
 
-  cart.items = serverItems;try {
+  cart.items = serverItems;
+  cart.updatedAt = new Date();
+  try {
+    const saved = await cart.save();
+    await saved.populate('items.product', 'name price image');
 
-    const saved = await cart.save();await saved.populate('items.product', 'name price image');
+    console.log('[Cart Controller] Saved cart with', saved.items.length, 'items for guestId:', guestId);
 
-    res.json(saved);
+    const response = {
+      _id: saved._id,
+      user: saved.user || undefined,
+      guestId: saved.guestId,
+      items: saved.items,
+      updatedAt: saved.updatedAt,
+      _guestId: guestId
+    };
+
+    res.json(response);
   } catch (err) {
-
+    console.error('[Cart Controller] Error saving cart:', err.message);
     throw err;
   }
 });
 
 // DELETE /api/cart - clear cart (by guestId or user)
-export const clearCart = asyncHandler(async (req, res) => {
+const clearCart = asyncHandler(async (req, res) => {
   const guestId = req.guestId;
   const userId = req.user?._id;
 
@@ -119,4 +153,10 @@ export const clearCart = asyncHandler(async (req, res) => {
   const cart = await Cart.findOneAndUpdate(query, { items: [] }, { new: true });
   res.json(cart || { items: [] });
 });
+
+module.exports = {
+  getCart,
+  updateCart,
+  clearCart
+};
 

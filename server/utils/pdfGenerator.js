@@ -1,7 +1,7 @@
-import puppeteer from 'puppeteer';
+const puppeteer = require('puppeteer');
 
 // Generate order invoice PDF matching frontend design
-export const generateOrderPDF = async (order) => {
+const generateOrderPDF = async (order) => {
     try {
         const orderId = order.orderId || `ORD-${order._id}`;
         const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
@@ -404,4 +404,4 @@ export const generateOrderPDF = async (order) => {
     }
 };
 
-export default { generateOrderPDF };
+module.exports = { generateOrderPDF };

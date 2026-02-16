@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useMetaTags from '../../hooks/useMetaTags';
-import { FaUndoAlt, FaMoneyBillWave, FaClock, FaArrowLeft, FaEnvelope, FaPhone, FaComments } from 'react-icons/fa';
+
 
 const PoliciesReturnsPage = () => {
   // Set up meta tags for SEO
@@ -18,10 +18,10 @@ const PoliciesReturnsPage = () => {
       <div className="bg-[var(--color-accent-primary)] text-white py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:text-gray-100 w-fit">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <div className="flex items-center gap-4 mb-4">
-            <FaUndoAlt className="text-4xl" />
+            <i className="fas fa-undo-alt text-4xl"></i>
             <h1 className="text-4xl md:text-5xl font-bold">Return & Refunds Policy</h1>
           </div>
           <p className="text-gray-100 text-lg">31 Days Return & Refund - UK</p>
@@ -33,7 +33,7 @@ const PoliciesReturnsPage = () => {
         {/* Overview */}
         <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <FaClock className="text-[var(--color-accent-primary)] text-2xl" />
+            <i className="fas fa-clock text-[var(--color-accent-primary)] text-2xl" style={{ display: 'block' }}></i>
             <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">31 Days Return & Refund Window</h2>
           </div>
           <p className="text-[var(--color-text-light)] mb-4 leading-relaxed">
@@ -123,21 +123,21 @@ const PoliciesReturnsPage = () => {
             <div className="space-y-4">
               <div className="bg-[var(--color-bg-section)] p-4 rounded border-l-4 border-[var(--color-accent-primary)]">
                 <div className="flex items-center gap-2 mb-2">
-                  <FaComments className="text-[var(--color-accent-primary)] text-xl" />
+                  <i className="fas fa-comments" style={{ color: 'var(--color-accent-primary)', fontSize: '20px', display: 'block' }}></i>
                   <h3 className="font-bold text-[var(--color-text-primary)]">Chat Bubble</h3>
                 </div>
                 <p className="text-[var(--color-text-light)] text-sm">Use the chat bubble on our website to instantly message our support team during business hours.</p>
               </div>
               <div className="bg-[var(--color-bg-section)] p-4 rounded border-l-4 border-[var(--color-accent-primary)]">
                 <div className="flex items-center gap-2 mb-2">
-                  <FaEnvelope className="text-[var(--color-accent-primary)] text-xl" />
+                  <i className="fas fa-envelope" style={{ color: 'var(--color-accent-primary)', fontSize: '20px', display: 'block' }}></i>
                   <h3 className="font-bold text-[var(--color-text-primary)]">Email</h3>
                 </div>
                 <p className="text-[var(--color-text-light)] text-sm"><a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline font-semibold">sales@wolfsuppliesltd.co.uk</a> - We'll respond within 24 hours</p>
               </div>
               <div className="bg-[var(--color-bg-section)] p-4 rounded border-l-4 border-[var(--color-accent-primary)]">
                 <div className="flex items-center gap-2 mb-2">
-                  <FaPhone className="text-[var(--color-accent-primary)] text-xl" />
+                  <i className="fas fa-phone" style={{ color: 'var(--color-accent-primary)', fontSize: '20px', display: 'block' }}></i>
                   <h3 className="font-bold text-[var(--color-text-primary)]">Phone</h3>
                 </div>
                 <p className="text-[var(--color-text-light)] text-sm"><a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline font-semibold">+44 7398 998101</a> - Mon-Fri, 9 AM - 6 PM GMT</p>
@@ -179,7 +179,7 @@ const PoliciesReturnsPage = () => {
         {/* Refund Details */}
         <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <FaMoneyBillWave className="text-[var(--color-accent-primary)] text-2xl" />
+            <i className="fas fa-money-bill-wave" style={{ color: 'var(--color-accent-primary)', fontSize: '24px' }}></i>
             <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Refund Details</h2>
           </div>
 
@@ -213,8 +213,8 @@ const PoliciesReturnsPage = () => {
             Our support team is ready to assist you:
           </p>
           <div className="space-y-2 text-[var(--color-text-light)]">
-            <p><FaEnvelope className="inline mr-2 text-[var(--color-accent-primary)]" /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
-            <p><FaPhone className="inline mr-2 text-[var(--color-accent-primary)]" /> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
+            <p><i className="fas fa-envelope inline mr-2" style={{ color: 'var(--color-accent-primary)' }}></i> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="text-[var(--color-accent-primary)] hover:underline">sales@wolfsuppliesltd.co.uk</a></p>
+            <p><i className="fas fa-phone inline mr-2" style={{ color: 'var(--color-accent-primary)' }}></i> Phone: <a href="tel:+447398998101" className="text-[var(--color-accent-primary)] hover:underline">+44 7398 998101</a></p>
             <p>⏰ Hours: Monday - Friday, 9 AM - 6 PM GMT</p>
           </div>
         </div>

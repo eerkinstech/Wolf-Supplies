@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock, FaCheck } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
@@ -74,7 +74,7 @@ const RegisterPage = () => {
             <div className="space-y-3">
               <label className="block text-sm font-bold text-gray-900">Full Name</label>
               <div className="relative">
-                <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg" />
+                <i className="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg"></i>
                 <input
                   type="text"
                   name="name"
@@ -90,7 +90,7 @@ const RegisterPage = () => {
             <div className="space-y-3">
               <label className="block text-sm font-bold text-gray-900">Email Address</label>
               <div className="relative">
-                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg" />
+                <i className="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg"></i>
                 <input
                   type="email"
                   name="email"
@@ -106,7 +106,7 @@ const RegisterPage = () => {
             <div className="space-y-3">
               <label className="block text-sm font-bold text-gray-900">Password</label>
               <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg" />
+                <i className="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg"></i>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -120,7 +120,7 @@ const RegisterPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 text-lg"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                 </button>
               </div>
             </div>
@@ -129,7 +129,7 @@ const RegisterPage = () => {
             <div className="space-y-3">
               <label className="block text-sm font-bold text-gray-900">Confirm Password</label>
               <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg" />
+                <i className="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg"></i>
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
@@ -143,7 +143,7 @@ const RegisterPage = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 text-lg"
                 >
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showConfirmPassword ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                 </button>
               </div>
             </div>
@@ -153,7 +153,7 @@ const RegisterPage = () => {
               <p className="text-xs font-bold text-gray-900">Password Requirements:</p>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-xs text-gray-800">
-                  <FaCheck className={formData.password.length >= 6 ? 'text-gray-400' : 'text-gray-400'} />
+                  <i className={`fas fa-check ${formData.password.length >= 6 ? 'text-gray-400' : 'text-gray-400'}`}></i>
                   At least 6 characters
                 </div>
               </div>

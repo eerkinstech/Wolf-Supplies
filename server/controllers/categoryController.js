@@ -1,7 +1,7 @@
-import Category from '../models/Category.js';
-import Product from '../models/Product.js';
+const Category = require('../models/Category');
+const Product = require('../models/Product');
 
-export const getCategories = async (req, res) => {
+const getCategories = async (req, res) => {
   try {
     // Get all categories (both main and subcategories) based on query param
     const allCategories = req.query.all === 'true';
@@ -54,7 +54,7 @@ export const getCategories = async (req, res) => {
   }
 };
 
-export const createCategory = async (req, res) => {
+const createCategory = async (req, res) => {
   try {
     const { name, slug, description, parent, image, color, metaTitle, metaDescription, metaKeywords } = req.body;
 
@@ -89,7 +89,7 @@ export const createCategory = async (req, res) => {
   }
 };
 
-export const getCategoryById = async (req, res) => {
+const getCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id)
       .populate({
@@ -129,7 +129,7 @@ export const getCategoryById = async (req, res) => {
   }
 };
 
-export const getCategoryBySlug = async (req, res) => {
+const getCategoryBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
     const category = await Category.findOne({ slug })
@@ -170,7 +170,7 @@ export const getCategoryBySlug = async (req, res) => {
   }
 };
 
-export const updateCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id)
       .populate({
@@ -222,7 +222,7 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-export const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) return res.status(404).json({ message: 'Category not found' });
@@ -242,5 +242,14 @@ export const deleteCategory = async (req, res) => {
 
     res.status(500).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getCategories,
+  createCategory,
+  getCategoryById,
+  getCategoryBySlug,
+  updateCategory,
+  deleteCategory
 };
 

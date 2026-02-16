@@ -1,7 +1,7 @@
-import Settings from '../models/Settings.js';
+const Settings = require('../models/Settings.js');
 
 // GET global settings
-export const getSettings = async (req, res) => {
+const getSettings = async (req, res) => {
   try {
     let settings = await Settings.findOne();
     if (!settings) {
@@ -16,7 +16,7 @@ export const getSettings = async (req, res) => {
 };
 
 // UPDATE global settings
-export const updateSettings = async (req, res) => {
+const updateSettings = async (req, res) => {
   try {
     const { requireReviewApproval, defaultAssistantModel } = req.body;
     let settings = await Settings.findOne();
@@ -38,7 +38,7 @@ export const updateSettings = async (req, res) => {
 };
 
 // GET featured collections (categories and products)
-export const getFeaturedCollections = async (req, res) => {
+const getFeaturedCollections = async (req, res) => {
   try {
     let settings = await Settings.findOne();
     if (!settings) {
@@ -56,7 +56,7 @@ export const getFeaturedCollections = async (req, res) => {
 };
 
 // SAVE featured collections (admin only)
-export const saveFeaturedCollections = async (req, res) => {
+const saveFeaturedCollections = async (req, res) => {
   try {
     const { featuredCategories, featuredProducts } = req.body;
 
@@ -82,7 +82,7 @@ export const saveFeaturedCollections = async (req, res) => {
 };
 
 // GET browse menu
-export const getMenu = async (req, res) => {
+const getMenu = async (req, res) => {
   try {
     let settings = await Settings.findOne();
     if (!settings) {
@@ -97,7 +97,7 @@ export const getMenu = async (req, res) => {
 };
 
 // Save or update browse menu (admin only)
-export const saveMenu = async (req, res) => {
+const saveMenu = async (req, res) => {
   try {
     const { browseMenu } = req.body;
     if (!Array.isArray(browseMenu)) {
@@ -112,5 +112,14 @@ export const saveMenu = async (req, res) => {
 
     res.status(500).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getSettings,
+  updateSettings,
+  getMenu,
+  saveMenu,
+  getFeaturedCollections,
+  saveFeaturedCollections,
 };
 

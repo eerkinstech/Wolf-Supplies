@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaChevronDown, FaChevronRight, FaTrash, FaCopy, FaEye, FaEyeSlash } from 'react-icons/fa';
+
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 import { findNode } from '../../utils/nodeSchema';
 
@@ -88,7 +88,7 @@ const LayersPanel = () => {
               }}
               className="w-5 h-5 flex items-center justify-center text-gray-900 hover:text-gray-700"
             >
-              {isExpanded ? <FaChevronDown size={14} /> : <FaChevronRight size={14} />}
+              {isExpanded ? <i className="fas fa-chevron-down" style={{ fontSize: '14px' }}></i> : <i className="fas fa-chevron-right" style={{ fontSize: '14px' }}></i>}
             </button>
           ) : (
             <div className="w-5" />
@@ -105,7 +105,7 @@ const LayersPanel = () => {
             className="p-1 text-gray-400 hover:text-gray-600 transition"
             title={isVisible ? 'Hide' : 'Show'}
           >
-            {isVisible ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
+            {isVisible ? <i className="fas fa-eye" style={{ fontSize: '14px' }}></i> : <i className="fas fa-eye-slash" style={{ fontSize: '14px' }}></i>}
           </button>
 
           {/* Duplicate */}
@@ -114,7 +114,7 @@ const LayersPanel = () => {
             className="p-1 text-gray-400 hover:text-gray-700 transition"
             title="Duplicate"
           >
-            <FaCopy size={14} />
+            <i className="fas fa-copy" style={{ fontSize: '14px' }}></i>
           </button>
 
           {/* Delete */}
@@ -124,7 +124,7 @@ const LayersPanel = () => {
               className="p-1 text-gray-400 hover:text-black transition"
               title="Delete"
             >
-              <FaTrash size={14} />
+              <i className="fas fa-trash" style={{ fontSize: '14px' }}></i>
             </button>
           )}
         </div>

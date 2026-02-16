@@ -7,7 +7,7 @@ import { fetchProducts, setFilter } from '../redux/slices/productSlice';
 import ProductCard from '../components/Products/ProductCard/ProductCard';
 import ProductFilter from '../components/Products/ProductFilter/ProductFilter';
 import CategoryCard from '../components/Categories/CategoryCard/CategoryCard';
-import { FaSpinner, FaArrowLeft } from 'react-icons/fa';
+
 
 const CategoryDetailPage = () => {
   const { slug } = useParams();
@@ -159,7 +159,7 @@ const CategoryDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-black-100 py-16 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
         <div className="text-center">
-          <FaSpinner className="text-6xl text-gray-400 animate-spin mx-auto mb-4" />
+          <i className="fas fa-spinner animate-spin" style={{ fontSize: '64px', color: '#9ca3af', display: 'block', marginBottom: '16px' }}></i>
           <p className="text-xl text-gray-600">Loading category...</p>
         </div>
       </div>
@@ -174,7 +174,7 @@ const CategoryDetailPage = () => {
             onClick={() => navigate('/categories')}
             className="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-semibold mb-8 transition duration-300"
           >
-            <FaArrowLeft /> Back to Categories
+            <i className="fas fa-arrow-left"></i> Back to Categories
           </button>
           <div className="text-center py-24 bg-white rounded-2xl shadow-lg">
             <div className="text-6xl mb-6">⚠️</div>
@@ -217,7 +217,7 @@ const CategoryDetailPage = () => {
             onClick={() => navigate('/categories')}
             className="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-semibold transition duration-300 transform hover:-translate-x-1"
           >
-            <FaArrowLeft /> Back to Categories
+            <i className="fas fa-arrow-left"></i> Back to Categories
           </button>
         </div>
       </div>
@@ -285,7 +285,7 @@ const CategoryDetailPage = () => {
                   onClick={() => navigate('/categories')}
                   className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-700 font-semibold transition duration-300"
                 >
-                  <FaArrowLeft /> Back to Categories
+                  <i className="fas fa-arrow-left"></i> Back to Categories
                 </button>
               </div>
             )}

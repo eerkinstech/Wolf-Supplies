@@ -1,36 +1,32 @@
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import authRoutes from './routes/authRoutes.js';
-import categoryRoutes from './routes/categoryRoutes.js';
-import productRoutes from './routes/productRoutes.js';
-import uploadRoutes from './routes/uploadRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
-import cartRoutes from './routes/cartRoutes.js';
-import Cart from './models/Cart.js';
-import Wishlist from './models/Wishlist.js';
-import User from './models/User.js';
-import settingsRoutes from './routes/settingsRoutes.js';
-import wishlistRoutes from './routes/wishlistRoutes.js';
-import paymentRoutes from './routes/paymentRoutes.js';
-import pageConfigRoutes from './routes/pageConfigRoutes.js';
-import pageRoutes from './routes/pageRoutes.js';
-import policyRoutes from './routes/policyRoutes.js';
-import mediaRoutes from './routes/mediaRoutes.js';
-import formRoutes from './routes/formRoutes.js';
-import newsletterRoutes from './routes/newsletterRoutes.js';
-import couponRoutes from './routes/couponRoutes.js';
-import { submitChatMessage } from './controllers/formController.js';
-import paymentController from './controllers/paymentController.js';
-import { guestIdMiddleware } from './middleware/guestIdMiddleware.js';
-
-dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
+const path = require('path');
+const authRoutes = require('./routes/authRoutes.js');
+const categoryRoutes = require('./routes/categoryRoutes.js');
+const productRoutes = require('./routes/productRoutes.js');
+const uploadRoutes = require('./routes/uploadRoutes.js');
+const orderRoutes = require('./routes/orderRoutes.js');
+const cartRoutes = require('./routes/cartRoutes.js');
+const Cart = require('./models/Cart.js');
+const Wishlist = require('./models/Wishlist.js');
+const User = require('./models/User.js');
+const settingsRoutes = require('./routes/settingsRoutes.js');
+const wishlistRoutes = require('./routes/wishlistRoutes.js');
+const paymentRoutes = require('./routes/paymentRoutes.js');
+const pageConfigRoutes = require('./routes/pageConfigRoutes.js');
+const pageRoutes = require('./routes/pageRoutes.js');
+const policyRoutes = require('./routes/policyRoutes.js');
+const mediaRoutes = require('./routes/mediaRoutes.js');
+const formRoutes = require('./routes/formRoutes.js');
+const newsletterRoutes = require('./routes/newsletterRoutes.js');
+const couponRoutes = require('./routes/couponRoutes.js');
+const gmcFeedRoutes = require('./routes/gmcFeedRoutes.js');
+const sitemapRoutes = require('./routes/sitemapRoutes.js');
+const { submitChatMessage } = require('./controllers/formController.js');
+const paymentController = require('./controllers/paymentController.js');
+const { initializeMiddleware } = require('./middleware/guestIdMiddleware.js');
 
 const app = express();
 
@@ -43,27 +39,65 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[Unhandled Rejection]', reason);
 });
 
-// Middleware - CORS with credentials support
-// When credentials are enabled, wildcard origin is not allowed
-// Must specify exact origin(s) that can send credentials
+// Middleware - CORS configuration
+// Handle both development and production origins
+const allowedOrigins = [
+  'http://localhost:5173',      // Local development (Vite)
+  'http://localhost:5000',      // Local backend
+  'http://localhost:3000',      // Alternative local dev
+  'https://wolfsupplies.co.uk', // Production domain
+  process.env.CLIENT_URL,       // Environment variable
+].filter(Boolean); // Remove undefined values
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173', // Frontend URL
-  credentials: true, // Allow cookies to be sent with requests
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Guest-ID'],
+  exposedHeaders: ['X-Guest-ID', 'Content-Type', 'Set-Cookie'],
+  credentials: true, // Allow credentials (cookies, auth headers)
+  optionsSuccessStatus: 200,
+  maxAge: 3600 // Cache preflight for 1 hour
 };
 
 app.use(cors(corsOptions));
+
+// Middleware to ensure X-Guest-ID header is always set in responses
+app.use((req, res, next) => {
+  // Wrap res.json and res.send to ensure X-Guest-ID is set
+  const originalJson = res.json;
+  const originalSend = res.send;
+  
+  res.json = function(data) {
+    if (req.guestId) {
+      res.setHeader('X-Guest-ID', req.guestId);
+    }
+    return originalJson.call(this, data);
+  };
+  
+  res.send = function(data) {
+    if (req.guestId) {
+      res.setHeader('X-Guest-ID', req.guestId);
+    }
+    return originalSend.call(this, data);
+  };
+  
+  next();
+});
 
 // Stripe webhook endpoint requires raw body so mount before express.json
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paymentController.webhookHandler);
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// Guest ID middleware - applies to all routes
-app.use(guestIdMiddleware);
 
 // Serve static files from uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -92,128 +126,131 @@ const connectDB = async () => {
   }
 };
 
-// Connect to database
-connectDB().catch(err => {
-  console.error('[Database Connection Unhandled Error]', err.message);
-}).finally(() => {
-  console.log('[Server] Database initialization complete, proceeding with route setup');
-});
+// Initialize middleware and database synchronously
+let guestIdMiddleware;
 
-// Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to E-Commerce API' });
-});
-
-// API routes
-try {
-  console.log('[Server] Setting up routes...');
-  app.use('/api/users', authRoutes);
-  console.log('[Server] Users route mounted');
-  app.use('/api/categories', categoryRoutes);
-  console.log('[Server] Categories route mounted');
-  app.use('/api/products', productRoutes);
-  console.log('[Server] Products route mounted');
-  app.use('/api/upload', uploadRoutes);
-  console.log('[Server] Upload route mounted');
-  app.use('/api/orders', orderRoutes);
-  console.log('[Server] Orders route mounted');
-  app.use('/api/settings', settingsRoutes);
-  console.log('[Server] Settings route mounted');
-  app.use('/api/cart', cartRoutes);
-  console.log('[Server] Cart route mounted');
-  app.use('/api/wishlist', wishlistRoutes);
-  console.log('[Server] Wishlist route mounted');
-  app.use('/api/payments', paymentRoutes);
-  console.log('[Server] Payments route mounted');
-  app.use('/api/page-config', pageConfigRoutes);
-  console.log('[Server] Page config route mounted');
-  app.use('/api/pages', pageRoutes);
-  console.log('[Server] Pages route mounted');
-  app.use('/api/policies', policyRoutes);
-  console.log('[Server] Policies route mounted');
-  app.use('/api/media', mediaRoutes);
-  console.log('[Server] Media route mounted');
-  app.use('/api/forms', formRoutes);
-  console.log('[Server] Forms route mounted');
-  app.use('/api/newsletter', newsletterRoutes);
-  console.log('[Server] Newsletter route mounted');
-  app.use('/api/coupons', couponRoutes);
-  console.log('[Server] Coupons route mounted');
-
-  // Chat button endpoint (separate from forms)
-  app.post('/api/chat', submitChatMessage);
-  console.log('[Server] Chat route mounted');
-  console.log('[Server] All routes mounted successfully');
-} catch (routeErr) {
-  console.error('[Routes Setup Error]', routeErr.message, routeErr.stack);
-}
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running' });
-});
-
-// Debug endpoint to check database
-app.get('/api/debug/carts', async (req, res) => {
+const initializeApp = async () => {
   try {
-    const carts = await Cart.find({}).lean();
-
-    res.json({ carts, count: carts.length });
+    // Initialize guest ID middleware FIRST
+    guestIdMiddleware = await initializeMiddleware();
+    
+    app.use(guestIdMiddleware);
+    
+    // Now register all routes AFTER middleware is applied
+    registerRoutes();
+    
+    // Connect to database
+    await connectDB();
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/debug/wishlists', async (req, res) => {
-  try {
-    const wishlists = await Wishlist.find({}).lean();
-
-    res.json({ wishlists, count: wishlists.length });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/debug/users', async (req, res) => {
-  try {
-    const users = await User.find({}).select('-password').lean();
-
-    res.json({ users, count: users.length });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-// Start server
-const PORT = process.env.PORT || 5000;
-
-try {
-  const server = app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-  
-  server.on('error', (err) => {
-    console.error('[Server Error]', err.message);
+    console.error('[Initialization Error]', err.message, err.stack);
     process.exit(1);
-  });
-  
-  // Keep server alive
-  process.on('exit', () => {
-    console.log('[Server] Shutting down gracefully');
-  });
-} catch (err) {
-  console.error('[Server Startup Error]', err.message);
-  process.exit(1);
-}
+  }
+};
 
+// Function to register all routes
+const registerRoutes = () => {
+  // Routes
+  app.get('/', (req, res) => {
+    res.json({ message: 'Welcome to E-Commerce API' });
+  });
+
+  // API routes
+  try {
+    app.use('/api/users', authRoutes);
+    app.use('/api/categories', categoryRoutes);
+    app.use('/api/products', productRoutes);
+    app.use('/api/upload', uploadRoutes);
+    app.use('/api/orders', orderRoutes);
+    app.use('/api/settings', settingsRoutes);
+    app.use('/api/cart', cartRoutes);
+    app.use('/api/wishlist', wishlistRoutes);
+    app.use('/api/payments', paymentRoutes);
+    app.use('/api/page-config', pageConfigRoutes);
+    app.use('/api/pages', pageRoutes);
+    app.use('/api/policies', policyRoutes);
+    app.use('/api/media', mediaRoutes);
+    app.use('/api/forms', formRoutes);
+    app.use('/api/newsletter', newsletterRoutes);
+    app.use('/api/coupons', couponRoutes);
+    app.use('/api', gmcFeedRoutes);
+    app.use('/api', sitemapRoutes);
+
+    // Chat button endpoint (separate from forms)
+    app.post('/api/chat', submitChatMessage);
+  } catch (routeErr) {
+    console.error('[Routes Setup Error]', routeErr.message, routeErr.stack);
+  }
+
+  // Health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'Server is running' });
+  });
+
+  // Debug endpoint to check database
+  app.get('/api/debug/carts', async (req, res) => {
+    try {
+      const carts = await Cart.find({}).lean();
+
+      res.json({ carts, count: carts.length });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/debug/wishlists', async (req, res) => {
+    try {
+      const wishlists = await Wishlist.find({}).lean();
+
+      res.json({ wishlists, count: wishlists.length });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/debug/users', async (req, res) => {
+    try {
+      const users = await User.find({}).select('-password').lean();
+
+      res.json({ users, count: users.length });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Error handling middleware
+  app.use((err, req, res, next) => {
+    console.error('[Express Error Handler]', err.message);
+    res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  });
+
+  // 404 handler
+  app.use((req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+  });
+};
+
+// Start initialization
+(async () => {
+  await initializeApp();
+  
+  // Start server AFTER initialization is complete
+  const PORT = process.env.PORT || 5000;
+  try {
+    const server = app.listen(PORT, () => {
+      console.log(`[Server] Running on port ${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      console.error('[Server Error]', err.message);
+      process.exit(1);
+    });
+
+    // Keep server alive
+    process.on('exit', () => {
+      console.log('[Server] Shutting down gracefully');
+    });
+  } catch (err) {
+    console.error('[Server Startup Error]', err.message);
+    process.exit(1);
+  }
+})();

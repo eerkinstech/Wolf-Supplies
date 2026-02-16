@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaChevronDown, FaChevronLeft, FaChevronRight, FaHamburger } from 'react-icons/fa';
+
 
 const Layout = ({ children, showMenuSlider = false }) => {
     const navigate = useNavigate();
@@ -110,7 +110,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                     } ${hasSubmenu ? 'flex items-center justify-between' : ''}`}
                             >
                                 {item.label || item.name}
-                                {hasSubmenu && level === 0 && <FaChevronDown className="text-xs ml-2" />}
+                                {hasSubmenu && level === 0 && <i className="fas fa-chevron-down text-xs ml-2"></i>}
                             </Link>
 
                             {/* Dropdown submenu - only visible on hover */}
@@ -141,7 +141,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
             <div className="w-full hidden md:block bg-[var(--color-bg-primary)] border-b border-[var(--color-border-light)] sticky top-0 z-30">
                 <div className="flex items-center gap-4 px-4 py-2 overflow-x-auto">
                     <div className="flex items-center gap-2 font-bold text-[var(--color-text-primary)] text-lg whitespace-nowrap">
-                        <FaHamburger /> Shop By Category
+                        <i className="fas fa-burger" style={{ marginRight: '0.5rem' }}></i> Shop By Category
                     </div>
                     <div className="h-6 w-px bg-[var(--color-border-light)]"></div>
                     <Link to="/" className="px-4 py-2 hover:text-[var(--color-accent-primary)] font-semibold text-[var(--color-text-light)] whitespace-nowrap">
@@ -184,7 +184,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                     >
                                         <span>{item.label || item.name || 'Menu Item'}</span>
                                         {hasSubmenu && (
-                                            <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                            <i className="fas fa-chevron-down text-xs" style={{ color: 'var(--color-text-light)' }}></i>
                                         )}
                                     </Link>
                                 );
@@ -226,7 +226,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                                                 >
                                                                     <span>{item.label || item.name}</span>
                                                                     {hasSubmenu && (
-                                                                        <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                                        <i className="fas fa-chevron-down text-xs" style={{ color: 'var(--color-text-light)' }}></i>
                                                                     )}
                                                                 </Link>
                                                             );
@@ -264,7 +264,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                                                 >
                                                                     <span>{item.label || item.name}</span>
                                                                     {hasSubmenu && (
-                                                                        <FaChevronDown className="text-xs text-[var(--color-text-light)]" />
+                                                                        <i className="fas fa-chevron-down text-xs" style={{ color: 'var(--color-text-light)' }}></i>
                                                                     )}
                                                                 </Link>
                                                             );
@@ -289,11 +289,11 @@ const Layout = ({ children, showMenuSlider = false }) => {
                             {slides.map((slide, idx) => (
                                 <div
                                     key={slide.id}
-                                    className={`absolute inset-0 transition-transform duration-500 ease-in-out ${idx === currentSlide 
-                                        ? 'translate-x-0' 
-                                        : idx < currentSlide 
-                                        ? '-translate-x-full'
-                                        : 'translate-x-full'
+                                    className={`absolute inset-0 transition-transform duration-500 ease-in-out ${idx === currentSlide
+                                        ? 'translate-x-0'
+                                        : idx < currentSlide
+                                            ? '-translate-x-full'
+                                            : 'translate-x-full'
                                         }`}
                                     style={{
                                         backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${slide.bgImage}')`,
@@ -327,7 +327,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                 className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-2 rounded-full z-20 transition duration-300"
                                 aria-label="Previous slide"
                             >
-                                <FaChevronLeft className="sm:text-lg text-sm"/>
+                                <i className="fas fa-chevron-left sm:text-lg text-sm"></i>
                             </button>
 
                             <button
@@ -335,7 +335,7 @@ const Layout = ({ children, showMenuSlider = false }) => {
                                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-bg-primary)] bg-opacity-70 hover:bg-opacity-100 text-[var(--color-accent-primary)] p-2 rounded-full z-20 transition duration-300"
                                 aria-label="Next slide"
                             >
-                                <FaChevronRight className="sm:text-lg text-sm"/>
+                                <i className="fas fa-chevron-right sm:text-lg text-sm"></i>
                             </button>
 
                             {/* Slide Dots */}

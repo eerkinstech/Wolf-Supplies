@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
 
 const Reviews = ({
@@ -22,11 +22,11 @@ const Reviews = ({
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (rating >= i) {
-        stars.push(<FaStar key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`fas fa-star ${sizeClass} text-yellow-400`}></i>);
       } else if (rating >= i - 0.5) {
-        stars.push(<FaStarHalfAlt key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`fas fa-star-half-alt ${sizeClass} text-yellow-400`}></i>);
       } else {
-        stars.push(<FaRegStar key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`far fa-star ${sizeClass} text-yellow-400`}></i>);
       }
     }
     return stars;
@@ -53,7 +53,8 @@ const Reviews = ({
       setReviewComment('');
       setShowThanks(true);
       setTimeout(() => setShowThanks(false), 3500);
-    } catch (err) {toast.error(err.message || 'Failed to submit review');
+    } catch (err) {
+toast.error(err.message || 'Failed to submit review');
     }
   };
 
@@ -177,7 +178,7 @@ const Reviews = ({
                         aria-label={`${i} star${i > 1 ? 's' : ''}`}
                         className={`focus:outline-none ${filled ? 'text-gray-800' : 'text-gray-300'} text-2xl transition cursor-pointer`}
                       >
-                        {filled ? <FaStar /> : <FaRegStar />}
+                        {filled ? <i className="fas fa-star"></i> : <i className="far fa-star"></i>}
                       </button>
                     );
                   })}

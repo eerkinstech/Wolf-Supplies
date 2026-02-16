@@ -14,6 +14,7 @@ import { fetchCategories } from '../redux/slices/categorySlice';
 const HomePage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const [featuredCategoriesConfig, setFeaturedCategoriesConfig] = useState(null);
   const [featuredProductsConfig, setFeaturedProductsConfig] = useState([]);
@@ -41,14 +42,14 @@ const HomePage = () => {
   useEffect(() => {
     const loadFeaturedCollections = async () => {
       try {
-        const response = await fetch('/api/settings/featured-collections');
+        const response = await fetch(`${API_URL}/api/settings/featured-collections`);
         const data = await response.json();
         setFeaturedCategoriesConfig(data?.featuredCategories || null);
         setFeaturedProductsConfig(
           Array.isArray(data?.featuredProducts) ? data.featuredProducts : []
         );
       } catch (error) {
-}
+      }
     };
 
     loadFeaturedCollections();
@@ -57,7 +58,7 @@ const HomePage = () => {
   return (
     <Layout showMenuSlider={true}>
       <div className="w-full bg-white">
-       
+
 
         {/* Features Section */}
         <FeaturesSection />
@@ -80,7 +81,7 @@ const HomePage = () => {
           </section>
         )}
 
-   
+
 
         {/* Newsletter */}
         <section className="py-4 px-4">
@@ -92,7 +93,7 @@ const HomePage = () => {
           <AboutSection />
         </section>
 
-       
+
 
       </div>
     </Layout>

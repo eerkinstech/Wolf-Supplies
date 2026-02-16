@@ -86,10 +86,13 @@ const CheckoutPage = () => {
   const [saveDetails, setSaveDetails] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [loading, setLoading] = useState(false);
+  const [paymentRequest, setPaymentRequest] = useState(null);
+  const [walletAvailable, setWalletAvailable] = useState(false);
   const stripeRef = useRef(null);
   const elementsRef = useRef(null);
   const cardRef = useRef(null);
   const cardMountedRef = useRef(false);
+  const paymentRequestButtonRef = useRef(null);
 
   // Load saved details from localStorage
   useEffect(() => {
@@ -178,6 +181,181 @@ const CheckoutPage = () => {
       } catch (e) { }
     };
   }, []);
+
+  // Initialize Payment Request API for Google Pay and Apple Pay
+  useEffect(() => {
+    const initPaymentRequest = async () => {
+      if (!stripeRef.current || items.length === 0) return;
+
+      try {
+        const paymentRequest = stripeRef.current.paymentRequest({
+          country: 'GB',
+          currency: 'gbp',
+          total: {
+            label: 'Total',
+            amount: Math.round(finalTotal * 100),
+          },
+          displayItems: items.map((item) => ({
+            label: item.name,
+            amount: Math.round(item.price * item.quantity * 100),
+          })),
+          requestPayerName: true,
+          requestPayerEmail: true,
+          requestPayerPhone: true,
+          requestShipping: true,
+          shippingOptions: [
+            {
+              id: 'free',
+              label: 'Free Shipping',
+              detail: '2-4 business days',
+              amount: 0,
+            },
+          ],
+        });
+
+        // Check if Payment Request is available
+        const canMakePayment = await paymentRequest.canMakePayment();
+        if (canMakePayment) {
+          setPaymentRequest(paymentRequest);
+          setWalletAvailable(true);
+
+          // Handle payment method selection
+          paymentRequest.on('paymentmethod', async (event) => {
+            try {
+              setLoading(true);
+
+              // Auto-fill form with wallet data
+              if (event.payerName) {
+                const nameParts = event.payerName.split(' ');
+                setFirstName(nameParts[0] || '');
+                setLastName(nameParts.slice(1).join(' ') || '');
+              }
+              if (event.payerEmail) setEmail(event.payerEmail);
+              if (event.payerPhone) setPhone(event.payerPhone);
+
+              if (event.shippingAddress) {
+                setAddress(event.shippingAddress.addressLine[0] || '');
+                setCity(event.shippingAddress.city || '');
+                setStateRegion(event.shippingAddress.region || '');
+                setPostalCode(event.shippingAddress.postalCode || '');
+                setCountry(event.shippingAddress.country || '');
+              }
+
+              // Create order payload
+              const payload = {
+                orderItems: items.map((i) => ({
+                  name: i.name,
+                  price: i.price,
+                  qty: i.quantity,
+                  product: i.product || i._id,
+                  image: i.image,
+                  variantImage: i.variantImage || null,
+                  selectedVariants: i.selectedVariants || null,
+                  selectedSize: i.selectedSize || null,
+                  selectedColor: i.selectedColor || null,
+                  colorCode: i.colorCode || null,
+                  variant: i.variant || null,
+                  sku: i.sku || null,
+                  variantId: i.variantId || i.snapshot?.variantId || null,
+                })),
+                shippingAddress: {
+                  firstName: event.payerName?.split(' ')[0] || firstName,
+                  lastName: event.payerName?.split(' ').slice(1).join(' ') || lastName,
+                  email: event.payerEmail || email,
+                  phone: event.payerPhone || phone,
+                  address: event.shippingAddress?.addressLine[0] || address,
+                  apartment: '',
+                  city: event.shippingAddress?.city || city,
+                  state: event.shippingAddress?.region || stateRegion,
+                  postalCode: event.shippingAddress?.postalCode || postalCode,
+                  country: event.shippingAddress?.country || country,
+                },
+                paymentMethod: 'digital_wallet',
+                itemsPrice: totalPrice,
+                taxPrice: 0,
+                shippingPrice: 0,
+                totalAmount: Number(finalTotal.toFixed(2)),
+                couponCode: appliedCoupon?.code || null,
+                discountAmount: discountAmount || 0,
+              };
+
+              const token = localStorage.getItem('token');
+              const res = await fetch(`${API}/api/payments/create-payment-intent`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                credentials: 'include',
+                body: JSON.stringify(payload),
+              });
+
+              const data = await res.json();
+              if (!res.ok) {
+                event.complete('fail');
+                throw new Error(data.error || data.message || 'Failed to create payment intent');
+              }
+
+              const clientSecret = data.clientSecret;
+              const stripe = stripeRef.current;
+
+              const confirmResult = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: event.paymentMethod.id,
+              });
+
+              if (confirmResult.error) {
+                event.complete('fail');
+                throw new Error(confirmResult.error.message || 'Payment confirmation failed');
+              }
+
+              if (confirmResult.paymentIntent?.status === 'succeeded') {
+                event.complete('success');
+                const orderId = data.orderId;
+                dispatch(clearCart());
+                setShowThankYou(true);
+                setTimeout(() => {
+                  toast.success('Payment successful');
+                  navigate(`/order/${orderId}`);
+                }, 1800);
+              } else {
+                event.complete('fail');
+                throw new Error('Payment not completed');
+              }
+            } catch (err) {
+              event.complete('fail');
+              toast.error(err.message || 'Payment failed');
+              setLoading(false);
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Payment Request initialization error:', err);
+      }
+    };
+
+    if (stripeRef.current) {
+      initPaymentRequest();
+    }
+  }, [items, finalTotal, appliedCoupon, discountAmount, dispatch, navigate]);
+
+  // Mount Payment Request Button
+  useEffect(() => {
+    if (!paymentRequest || !walletAvailable || !elementsRef.current) return;
+
+    try {
+      const prButton = elementsRef.current.create('paymentRequestButton', {
+        paymentRequest: paymentRequest,
+      });
+
+      const container = document.getElementById('payment-request-button');
+      if (container && container.children.length === 0) {
+        prButton.mount(container);
+        paymentRequestButtonRef.current = prButton;
+      }
+    } catch (err) {
+      console.error('Payment Request Button mount error:', err);
+    }
+  }, [paymentRequest, walletAvailable]);
 
   // Ensure Stripe Elements are initialized
   const ensureStripeReady = async () => {
@@ -468,7 +646,22 @@ const CheckoutPage = () => {
             )}
             <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Payment</h2>
             <div className="space-y-4">
-              <p className="text-sm text-[var(--color-text-light)]">💳 Apple Pay • 🔵 Google Pay • 💰 Credit Card</p>
+              {walletAvailable && (
+                <div className="p-4 border-2 border-[var(--color-border-light)] rounded-lg bg-[var(--color-bg-section)]">
+                  <p className="text-sm text-[var(--color-text-light)] mb-3">Express Checkout</p>
+                  <div id="payment-request-button"></div>
+                </div>
+              )}
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-[var(--color-border-light)]"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-[var(--color-bg-primary)] text-[var(--color-text-light)]">Or pay with card</span>
+                </div>
+              </div>
+
               <div className="">
                 <input placeholder="Name on card" value={nameOnCard} onChange={(e) => setNameOnCard(e.target.value)} className="border border-[var(--color-border-light)] p-3 w-full rounded bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]" />
               </div>

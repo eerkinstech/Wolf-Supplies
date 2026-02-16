@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
     sender: {
@@ -120,5 +120,5 @@ contactSubmissionSchema.index({ assignedTo: 1, status: 1 });
 contactSubmissionSchema.index({ createdAt: -1 });
 
 const ContactSubmission = mongoose.model('ContactSubmission', contactSubmissionSchema);
-export default ContactSubmission;
+module.exports = ContactSubmission;
 

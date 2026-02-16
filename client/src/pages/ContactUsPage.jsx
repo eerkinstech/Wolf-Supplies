@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useMetaTags from '../hooks/useMetaTags';
-import { FaArrowLeft, FaPhone, FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaClock, FaHeadset } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
+
+const API = import.meta.env.VITE_API_URL || '';
 
 const ContactUsPage = () => {
   // Set up meta tags for SEO
@@ -36,7 +38,7 @@ const ContactUsPage = () => {
     }
 
     try {
-      const response = await fetch('/api/forms/contact', {
+      const response = await fetch(`${API}/api/forms/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +56,7 @@ const ContactUsPage = () => {
       toast.success('Message sent successfully! We will get back to you soon.');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
-toast.error('Failed to send message. Please try again.');
+      toast.error('Failed to send message. Please try again.');
     }
   };
 
@@ -64,7 +66,7 @@ toast.error('Failed to send message. Please try again.');
       <div className="text-white py-12 md:py-16" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }} >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 w-fit transition duration-300">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Contact Us</h1>
           <p className="text-xl text-white">We're Here to Help - Get in Touch</p>
@@ -76,7 +78,7 @@ toast.error('Failed to send message. Please try again.');
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {/* Contact Info Cards */}
           <div className="rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}  >
-            <FaPhone className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+            <i className="fas fa-phone" style={{ fontSize: '48px', color: 'var(--color-accent-primary, #a5632a)', display: 'block', marginBottom: '16px' }}></i>
             <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Call Us</h3>
             <p className="mb-2" style={{ color: 'var(--color-text-light, #6B6B6B)' }}>
               <a href="tel:+447398998101" className="hover:opacity-75 transition duration-300" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
@@ -87,7 +89,7 @@ toast.error('Failed to send message. Please try again.');
           </div>
 
           <div className="rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}  >
-            <FaEnvelope className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+            <i className="fas fa-envelope" style={{ fontSize: '48px', color: 'var(--color-accent-primary, #a5632a)', display: 'block', marginBottom: '16px' }}></i>
             <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Email Us</h3>
             <p className="mb-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
               <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:opacity-75 transition duration-300" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>
@@ -98,7 +100,7 @@ toast.error('Failed to send message. Please try again.');
           </div>
 
           <div className="rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}  >
-            <FaMapMarkerAlt className="text-4xl mx-auto mb-4" style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+            <i className="fas fa-map-marker-alt" style={{ fontSize: '48px', color: 'var(--color-accent-primary, #a5632a)', display: 'block', marginBottom: '16px' }}></i>
             <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary, #000000)' }}>Visit Us</h3>
             <p className="mb-2 font-semibold" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Unit 4 Atlas Estates</p>
             <p className="mb-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>Colebrook Road, Birmingham</p>
@@ -111,7 +113,7 @@ toast.error('Failed to send message. Please try again.');
           {/* Contact Form */}
           <div className="rounded-lg shadow-lg p-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
             <h2 className="text-3xl font-bold mb-8 flex items-center gap-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
-              <FaPaperPlane style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+              <i className="fas fa-paper-plane" style={{ color: 'var(--color-accent-primary, #a5632a)' }}></i>
               Send us a Message
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -192,7 +194,7 @@ toast.error('Failed to send message. Please try again.');
                 className="w-full text-white font-bold py-3 rounded-lg transition duration-300 flex items-center justify-center gap-2 shadow-lg hover:opacity-90"
                 style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}
               >
-                <FaPaperPlane /> Send Message
+                <i className="fas fa-paper-plane"></i> Send Message
               </button>
             </form>
           </div>
@@ -202,7 +204,7 @@ toast.error('Failed to send message. Please try again.');
             {/* Support Hours */}
             <div className="rounded-lg shadow-lg p-8" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)' }}>
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
-                <FaClock style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+                <i className="fas fa-clock" style={{ color: 'var(--color-accent-primary, #a5632a)' }}></i>
                 Support Hours
               </h2>
               <div className="space-y-4">
@@ -224,7 +226,7 @@ toast.error('Failed to send message. Please try again.');
             {/* Quick Support */}
             <div className="rounded-lg shadow-lg p-8 border-2" style={{ backgroundColor: 'var(--color-bg-section, #e5e5e5)', borderColor: 'var(--color-border-light, #e5e5e5)' }}>
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: 'var(--color-text-primary, #000000)' }}>
-                <FaHeadset style={{ color: 'var(--color-accent-primary, #a5632a)' }} />
+                <i className="fas fa-headset" style={{ color: 'var(--color-accent-primary, #a5632a)' }}></i>
                 Quick Support
               </h2>
               <div className="space-y-3">
@@ -264,7 +266,7 @@ toast.error('Failed to send message. Please try again.');
         {/* Business Information Section - Google Merchant Center Compliance */}
         <div className="mt-12 bg-blue-50 rounded-lg p-8 border border-blue-200">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">About Wolf Supplies LTD</h2>
-          
+
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Business Details */}
             <div className="bg-white p-6 rounded-lg shadow">
@@ -297,22 +299,22 @@ toast.error('Failed to send message. Please try again.');
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="font-bold text-xl text-gray-900 mb-6">Our Policies</h3>
             <div className="grid md:grid-cols-3 gap-4">
-              <Link 
-                to="/policies/shipping" 
+              <Link
+                to="/policies/shipping"
                 className="p-4 border-2 border-blue-600 rounded-lg hover:bg-blue-50 transition text-center"
               >
                 <div className="font-bold text-blue-600 mb-2">📦 Shipping Policy</div>
                 <p className="text-sm text-gray-600">2-4 business day delivery, free UK shipping</p>
               </Link>
-              <Link 
-                to="/policies/returns-refund" 
+              <Link
+                to="/policies/returns-refund"
                 className="p-4 border-2 border-green-600 rounded-lg hover:bg-green-50 transition text-center"
               >
                 <div className="font-bold text-green-600 mb-2">🔄 Returns & Refunds</div>
                 <p className="text-sm text-gray-600">31-day returns, full refund guarantee</p>
               </Link>
-              <Link 
-                to="/payment-options" 
+              <Link
+                to="/payment-options"
                 className="p-4 border-2 border-purple-600 rounded-lg hover:bg-purple-50 transition text-center"
               >
                 <div className="font-bold text-purple-600 mb-2">💳 Payment Options</div>
@@ -320,22 +322,22 @@ toast.error('Failed to send message. Please try again.');
               </Link>
             </div>
             <div className="grid md:grid-cols-3 gap-4 mt-4">
-              <Link 
-                to="/policies/privacy" 
+              <Link
+                to="/policies/privacy"
                 className="p-4 border-2 border-red-600 rounded-lg hover:bg-red-50 transition text-center"
               >
                 <div className="font-bold text-red-600 mb-2">🔒 Privacy Policy</div>
                 <p className="text-sm text-gray-600">GDPR compliant, data protection assured</p>
               </Link>
-              <Link 
-                to="/policies/terms" 
+              <Link
+                to="/policies/terms"
                 className="p-4 border-2 border-orange-600 rounded-lg hover:bg-orange-50 transition text-center"
               >
                 <div className="font-bold text-orange-600 mb-2">📋 Terms of Service</div>
                 <p className="text-sm text-gray-600">Legal terms and conditions</p>
               </Link>
-              <Link 
-                to="/policies/faq" 
+              <Link
+                to="/policies/faq"
                 className="p-4 border-2 border-cyan-600 rounded-lg hover:bg-cyan-50 transition text-center"
               >
                 <div className="font-bold text-cyan-600 mb-2">❓ FAQ</div>

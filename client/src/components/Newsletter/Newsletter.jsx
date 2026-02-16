@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { FaEnvelope, FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
+
+const API = import.meta.env.VITE_API_URL || '';
 
 const Newsletter = ({ content = {} }) => {
   const [email, setEmail] = useState('');
@@ -39,7 +41,7 @@ const Newsletter = ({ content = {} }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/newsletter/subscribe', {
+      const response = await fetch(`${API}/api/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,21 +52,46 @@ const Newsletter = ({ content = {} }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message || 'Failed to subscribe');
+        // Check if email is already subscribed (409 Conflict or message contains "already")
+        const isAlreadySubscribed =
+          response.status === 409 ||
+          data.message?.toLowerCase().includes('already') ||
+          data.message?.toLowerCase().includes('exists');
+
+        if (isAlreadySubscribed) {
+          toast.success('This email is already subscribed to our newsletter');
+        } else {
+          toast.error(data.message || 'Failed to subscribe');
+        }
         setIsLoading(false);
         return;
       }
 
       setIsLoading(false);
-      setIsSubscribed(true);
-      setEmail('');
-      toast.success('Successfully subscribed to our newsletter!');
 
-      setTimeout(() => {
-        setIsSubscribed(false);
-      }, 3000);
+      // Check if email was already subscribed or newly subscribed
+      const isAlreadySubscribed = data.message?.toLowerCase().includes('already');
+      const isResubscribed = data.message?.toLowerCase().includes('resubscribed');
+
+      if (isAlreadySubscribed) {
+        toast.success('This email is already subscribed to our newsletter');
+      } else if (isResubscribed) {
+        toast.success('Welcome back! You have been resubscribed to our newsletter');
+        setIsSubscribed(true);
+      } else {
+        toast.success('Successfully subscribed to our newsletter!');
+        setIsSubscribed(true);
+      }
+
+      setEmail('');
+
+      if (!isAlreadySubscribed) {
+        setTimeout(() => {
+          setIsSubscribed(false);
+        }, 3000);
+      }
     } catch (error) {
-setIsLoading(false);
+      setIsLoading(false);
       toast.error('Failed to subscribe. Please try again.');
     }
   };
@@ -81,7 +108,7 @@ setIsLoading(false);
           <div className="text-center mb-10">
             <div className="flex justify-center mb-4">
               <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '16px', borderRadius: '9999px' }}>
-                <FaEnvelope style={{ fontSize: '36px', color: 'var(--color-accent-primary)' }} />
+                <i className="fas fa-envelope" style={{ fontSize: '36px', color: 'var(--color-accent-primary)' }}></i>
               </div>
             </div>
 
@@ -134,7 +161,7 @@ setIsLoading(false);
                     disabled={isLoading}
                     className="w-full sm:w-auto"
                     style={{
-                      
+
                       backgroundColor: 'var(--color-accent-primary)',
                       color: 'white',
                       padding: '12px 24px',
@@ -157,7 +184,7 @@ setIsLoading(false);
                       </>
                     ) : (
                       <>
-                        <FaPaperPlane />
+                        <i className="fas fa-paper-plane"></i>
                         {buttonText}
                       </>
                     )}
@@ -168,7 +195,7 @@ setIsLoading(false);
                   {benefits.map((benefit) => (
                     <div key={benefit.id} className="flex items-center gap-3">
                       <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '9999px' }}>
-                        <FaCheckCircle style={{ color: 'var(--color-accent-primary)', fontSize: '18px' }} />
+                        <i className="fas fa-check-circle" style={{ color: 'var(--color-accent-primary)', fontSize: '18px' }}></i>
                       </div>
                       <div>
                         <p style={{ fontWeight: '600', color: 'var(--color-text-primary)' }}>{benefit.title}</p>
@@ -182,7 +209,7 @@ setIsLoading(false);
               <div className="text-center py-8">
                 <div className="mb-4 flex justify-center">
                   <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '9999px' }}>
-                    <FaCheckCircle style={{ fontSize: '32px', color: 'var(--color-success)' }} />
+                    <i className="fas fa-check-circle" style={{ fontSize: '32px', color: 'var(--color-success)' }}></i>
                   </div>
                 </div>
                 <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
@@ -193,7 +220,7 @@ setIsLoading(false);
             )}
           </div>
 
-       
+
         </div>
       </section>
     );
@@ -244,7 +271,7 @@ setIsLoading(false);
                       width: '100%'
                     }}
                     onError={(e) => {
-}}
+                    }}
                     onLoad={() => { }}
                   />
                 </>
@@ -342,7 +369,7 @@ setIsLoading(false);
                 <div style={{ textAlign: 'center', paddingTop: '12px' }}>
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
                     <div style={{ backgroundColor: `${accentColor}20`, padding: '10px', borderRadius: '9999px' }}>
-                      <FaCheckCircle style={{ fontSize: '24px', color: accentColor }} />
+                      <i className="fas fa-check-circle" style={{ fontSize: '24px', color: accentColor }}></i>
                     </div>
                   </div>
                   <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: textColor, margin: '0 0 4px 0' }}>
@@ -442,7 +469,7 @@ setIsLoading(false);
                     </>
                   ) : (
                     <>
-                      <FaPaperPlane />
+                      <i className="fas fa-paper-plane"></i>
                       {buttonText}
                     </>
                   )}
@@ -452,7 +479,7 @@ setIsLoading(false);
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <div className="mb-3 flex justify-center">
                   <div style={{ backgroundColor: `${accentColor}20`, padding: '12px', borderRadius: '9999px' }}>
-                    <FaCheckCircle style={{ fontSize: '28px', color: accentColor }} />
+                    <i className="fas fa-check-circle" style={{ fontSize: '28px', color: accentColor }}></i>
                   </div>
                 </div>
                 <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: textColor, marginBottom: '8px' }}>

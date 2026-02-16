@@ -11,11 +11,10 @@ interface BuilderLayoutProps {
     title?: string;
 }
 
-export const BuilderLayout: React.FC<BuilderLayoutProps> = ({
-    title = 'Page Builder'
-}) => {
+export const BuilderLayout: React.FC<BuilderLayoutProps> = ({}) => {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-    const { savePage, rootNode, saveStatus, currentDevice, setCurrentDevice } = useContext(ElementorBuilderContext) || {};
+    const context = useContext(ElementorBuilderContext) || {};
+    const { savePage, saveStatus, currentDevice, setCurrentDevice } = context as any;
 
     const handleSave = async () => {
         if (savePage) {

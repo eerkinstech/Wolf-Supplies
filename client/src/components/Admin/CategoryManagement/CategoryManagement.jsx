@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaChevronDown, FaChevronRight, FaCloudUploadAlt, FaTimes, FaBox, FaLayerGroup, FaSpinner } from 'react-icons/fa';
+
 import CategoryProducts from './CategoryProducts';
 import SEOMetaForm from '../SEOMetaForm/SEOMetaForm';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                         onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-border-light)'}
                         onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
-                        <FaTimes className="text-lg" />
+                        <i className="fas fa-times text-lg"></i>
                     </button>
                 </div>
 
@@ -41,7 +41,7 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                                 className="hidden"
                             />
                             <div className="flex flex-col items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}>
-                                <FaCloudUploadAlt className="text-3xl" style={{ color: 'var(--color-text-primary)' }} />
+                                <i className="fas fa-cloud-upload-alt text-3xl" style={{ color: 'var(--color-text-primary)' }}></i>
                                 <span className="text-sm font-semibold">Click to upload</span>
                                 <span className="text-xs" style={{ color: 'var(--color-text-light)' }}>PNG, JPG up to 10MB</span>
                             </div>
@@ -68,7 +68,7 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                                         onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
                                         title="Remove image"
                                     >
-                                        <FaTimes className="text-sm" />
+                                        <i className="fas fa-times text-sm"></i>
                                     </button>
                                 </div>
                             </div>
@@ -137,7 +137,7 @@ const CategoryModal = ({ showModal, onClose, title, formData, setFormData, handl
                         onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
                         onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
                     >
-                        <FaPlus /> {editingCategory ? 'Update' : 'Add'} Category
+                        <i className="fas fa-plus"></i> {editingCategory ? 'Update' : 'Add'} Category
                     </button>
                 </div>
             </div>
@@ -161,7 +161,7 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                         onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-border-light)'}
                         onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
-                        <FaTimes className="text-lg" />
+                        <i className="fas fa-times text-lg"></i>
                     </button>
                 </div>
 
@@ -177,7 +177,7 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                                 className="hidden"
                             />
                             <div className="flex flex-col items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}>
-                                <FaCloudUploadAlt className="text-3xl" style={{ color: 'var(--color-text-light)' }} />
+                                <i className="fas fa-cloud-upload-alt text-3xl" style={{ color: 'var(--color-text-light)' }}></i>
                                 <span className="text-sm font-semibold">Click to upload</span>
                                 <span className="text-xs" style={{ color: 'var(--color-text-light)' }}>PNG, JPG up to 10MB</span>
                             </div>
@@ -204,7 +204,7 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                                         onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
                                         title="Remove image"
                                     >
-                                        <FaTimes className="text-sm" />
+                                        <i className="fas fa-times text-sm"></i>
                                     </button>
                                 </div>
                             </div>
@@ -273,7 +273,7 @@ const SubcategoryModal = ({ showModal, onClose, title, formData, setFormData, ha
                         onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
                         onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
                     >
-                        <FaPlus /> {editingCategory ? 'Update' : 'Add'} Subcategory
+                        <i className="fas fa-plus"></i> {editingCategory ? 'Update' : 'Add'} Subcategory
                     </button>
                 </div>
             </div>
@@ -335,7 +335,7 @@ const NestedCategoryRows = ({
                             className={`${colors.text} hover:opacity-100 opacity-75 p-1 transition duration-300`}
                             title={category.expandedSubcategories ? 'Collapse' : 'Expand'}
                         >
-                            {category.expandedSubcategories ? <FaChevronDown /> : <FaChevronRight />}
+                            {category.expandedSubcategories ? <i className="fas fa-chevron-down"></i> : <i className="fas fa-chevron-right"></i>}
                         </button>
                         {category.image && !failedImages.has(category._id) ? (
                             <img
@@ -354,8 +354,8 @@ const NestedCategoryRows = ({
                         )}
                         <div>
                             <h4 className="font-semibold text-sm flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-                                {depth === 0 && <FaLayerGroup className="text-xs" style={{ color: 'var(--color-text-primary)' }} />}
-                                {depth > 0 && <FaBox className="text-xs" style={{ color: 'var(--color-text-primary)' }} />}
+                                {depth === 0 && <i className="fas fa-layer-group text-xs" style={{ color: 'var(--color-text-primary)' }}></i>}
+                                {depth > 0 && <i className="fas fa-box text-xs" style={{ color: 'var(--color-text-primary)' }}></i>}
                                 {category.name}
                             </h4>
                         </div>
@@ -373,14 +373,14 @@ const NestedCategoryRows = ({
                             className="bg-gray-800 hover:bg-black text-white p-2 rounded-lg transition duration-300 shadow-md hover:shadow-lg"
                             title="Edit"
                         >
-                            <FaEdit className="text-sm" />
+                            <i className="fas fa-edit text-sm"></i>
                         </button>
                         <button
                             onClick={() => onDelete(parentId, category._id)}
                             className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition duration-300 shadow-md hover:shadow-lg"
                             title="Delete"
                         >
-                            <FaTrash className="text-sm" />
+                            <i className="fas fa-trash text-sm"></i>
                         </button>
                     </div>
                 </td>
@@ -414,7 +414,7 @@ const NestedCategoryRows = ({
                             className={`w-full text-left px-4 py-2 ${colors.bg} hover:opacity-80 ${colors.text} rounded-lg font-semibold transition duration-300 flex items-center gap-2 justify-center`}
                             style={{ marginLeft: `${indent}px` }}
                         >
-                            <FaPlus /> Add Sub-Category to {category.name}
+                            <i className="fas fa-plus"></i> Add Sub-Category to {category.name}
                         </button>
                     </td>
                 </tr>
@@ -908,7 +908,7 @@ const CategoryManagement = () => {
                             onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
                             onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
                         >
-                            <FaPlus /> Add Category
+                            <i className="fas fa-plus"></i> Add Category
                         </button>
                     </div>
 
@@ -1036,7 +1036,7 @@ const CategoryManagement = () => {
                         <div className="overflow-x-auto">
                             {(viewMode === 'plain' ? flattenedCategories : filteredCategories).length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-16 px-6">
-                                    <FaLayerGroup className="text-6xl mb-4" style={{ color: 'var(--color-border-light)' }} />
+                                    <i className="fas fa-layer-group text-6xl mb-4" style={{ color: 'var(--color-border-light)' }}></i>
                                     <p className="text-lg mb-4" style={{ color: 'var(--color-text-primary)' }}>
                                         {searchQuery ? 'No categories match your search' : 'No categories yet'}
                                     </p>
@@ -1059,7 +1059,7 @@ const CategoryManagement = () => {
                                             onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-accent-light)'}
                                             onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-accent-primary)'}
                                         >
-                                            <FaPlus /> Create Your First Category
+                                            <i className="fas fa-plus"></i> Create Your First Category
                                         </button>
                                     )}
                                 </div>
@@ -1152,14 +1152,14 @@ const CategoryManagement = () => {
                                                                     className="bg-gray-800 hover:bg-black text-white p-2 rounded-lg transition duration-300 shadow-md hover:shadow-lg"
                                                                     title="Edit"
                                                                 >
-                                                                    <FaEdit className="text-sm" />
+                                                                    <i className="fas fa-edit text-sm"></i>
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleDeleteCategory(category._id)}
                                                                     className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition duration-300 shadow-md hover:shadow-lg"
                                                                     title="Delete"
                                                                 >
-                                                                    <FaTrash className="text-sm" />
+                                                                    <i className="fas fa-trash text-sm"></i>
                                                                 </button>
                                                             </div>
                                                         </td>

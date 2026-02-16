@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTimes, FaArrowLeft, FaBox, FaStar, FaEdit, FaTrash, FaImage, FaEye } from 'react-icons/fa';
+
 
 const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCount, onClose, onEditProduct }) => {
   // Mock products data - in a real app, fetch from API based on categoryId
@@ -118,7 +118,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
               className="text-gray-600 hover:text-gray-900 transition duration-300 p-2 hover:bg-gray-200 rounded-lg"
               title="Back"
             >
-              <FaArrowLeft className="text-xl" />
+              <i className="fas fa-arrow-left text-xl"></i>
             </button>
             
             <div className="flex items-center gap-3">
@@ -142,7 +142,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
             className="text-gray-900 hover:text-gray-700 transition duration-300 p-2 hover:bg-gray-200 rounded-lg"
             title="Close"
           >
-            <FaTimes className="text-2xl" />
+            <i className="fas fa-times text-2xl"></i>
           </button>
         </div>
 
@@ -181,7 +181,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
         <div className="overflow-y-auto flex-1 p-6">
           {sortedProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <FaBox className="text-6xl text-gray-300 mb-4" />
+              <i className="fas fa-box text-6xl text-gray-300 mb-4"></i>
               <p className="text-gray-900 text-lg">
                 {searchTerm ? 'No products found matching your search' : 'No products in this category'}
               </p>
@@ -206,7 +206,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
                           />
                         ) : (
                           <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-black-300 rounded-lg flex items-center justify-center text-gray-900">
-                            <FaImage className="text-2xl" />
+                            <i className="fas fa-image text-2xl"></i>
                           </div>
                         )}
                       </div>
@@ -227,7 +227,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
                         {/* Rating */}
                         {product.rating && (
                           <div className="flex items-center gap-2 mt-3">
-                            <FaStar className="text-yellow-400" />
+                            <i className="fas fa-star text-yellow-400"></i>
                             <span className="font-semibold text-gray-900">{product.rating}</span>
                             <span className="text-sm text-gray-600">({product.numReviews || product.reviews?.length || product.reviews} reviews)</span>
                           </div>
@@ -277,21 +277,21 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
                           className="bg-gray-800 hover:bg-black text-white p-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
                           title="View Details"
                         >
-                          <FaEye />
+                          <i className="fas fa-eye"></i>
                         </button>
                         <button
                           onClick={() => onEditProduct && onEditProduct(product)}
                           className="bg-gray-800 hover:bg-black text-white p-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
                           title="Edit Product"
                         >
-                          <FaEdit />
+                          <i className="fas fa-edit"></i>
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(product.id)}
                           className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
                           title="Delete Product"
                         >
-                          <FaTrash />
+                          <i className="fas fa-trash"></i>
                         </button>
                       </div>
                     </div>
@@ -323,7 +323,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
                 onClick={() => setSelectedProduct(null)}
                 className="text-gray-900 hover:text-gray-700 transition duration-300 p-1 hover:bg-gray-200 rounded-lg"
               >
-                <FaTimes className="text-lg" />
+                <i className="fas fa-times text-lg"></i>
               </button>
             </div>
 
@@ -365,7 +365,7 @@ const CategoryProducts = ({ categoryId, categoryName, categoryImage, productCoun
                 <div>
                   <p className="text-xs text-gray-600 uppercase font-semibold">Rating</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <FaStar className="text-yellow-400" />
+                    <i className="fas fa-star text-yellow-400"></i>
                     <span className="text-lg font-bold text-gray-900">{selectedProduct.rating}</span>
                     <span className="text-sm text-gray-600">({selectedProduct.numReviews || selectedProduct.reviews?.length || selectedProduct.reviews} reviews)</span>
                   </div>

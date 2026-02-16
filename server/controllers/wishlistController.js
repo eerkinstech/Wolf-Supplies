@@ -1,13 +1,13 @@
-import asyncHandler from 'express-async-handler';
-import mongoose from 'mongoose';
-import Wishlist from '../models/Wishlist.js';
-import Product from '../models/Product.js';
-import EventLog from '../models/EventLog.js';
+const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
+const Wishlist = require('../models/Wishlist.js');
+const Product = require('../models/Product.js');
+const EventLog = require('../models/EventLog.js');
 
 // @desc    Get wishlist by guestId or user
 // @route   GET /api/wishlist
 // @access  Public
-export const getWishlist = asyncHandler(async (req, res) => {
+const getWishlist = asyncHandler(async (req, res) => {
   const guestId = req.guestId;
   const userId = req.user?._id;
 
@@ -26,7 +26,8 @@ export const getWishlist = asyncHandler(async (req, res) => {
   }
 
   // return items including snapshot when present
-  const items = wishlist.items.map((it) => {return {
+  const items = wishlist.items.map((it) => {
+    return {
       product: it.product,
       snapshot: it.snapshot || null,
       addedAt: it.addedAt,
@@ -39,7 +40,7 @@ export const getWishlist = asyncHandler(async (req, res) => {
 // @desc    Add product to wishlist (by guestId or user)
 // @route   POST /api/wishlist
 // @access  Public
-export const addToWishlist = asyncHandler(async (req, res) => {
+const addToWishlist = asyncHandler(async (req, res) => {
 
   const guestId = req.guestId;
   const userId = req.user?._id;
@@ -73,7 +74,8 @@ export const addToWishlist = asyncHandler(async (req, res) => {
     } else {
       newWishlist.guestId = guestId;
     }
-    wishlist = new Wishlist(newWishlist);}
+    wishlist = new Wishlist(newWishlist);
+  }
 
   // Avoid duplicates. If snapshot provided and has variantId, check by variantId
   const exists = snapshot && snapshot.variantId
@@ -84,7 +86,9 @@ export const addToWishlist = asyncHandler(async (req, res) => {
     return res.status(200).json({ message: 'Already in wishlist' });
   }
 
-  wishlist.items.push({ product: product._id, snapshot: snapshot || null });await wishlist.save();await wishlist.populate('items.product');
+  wishlist.items.push({ product: product._id, snapshot: snapshot || null });
+  await wishlist.save();
+  await wishlist.populate('items.product');
 
   res.status(201).json({ items: wishlist.items });
 });
@@ -92,7 +96,7 @@ export const addToWishlist = asyncHandler(async (req, res) => {
 // @desc    Remove product from wishlist
 // @route   DELETE /api/wishlist/:productId
 // @access  Public
-export const removeFromWishlist = asyncHandler(async (req, res) => {
+const removeFromWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const { variantId } = req.query;
   const guestId = req.guestId;
@@ -164,7 +168,7 @@ export const removeFromWishlist = asyncHandler(async (req, res) => {
 // @desc    Clear wishlist
 // @route   DELETE /api/wishlist
 // @access  Public
-export const clearWishlist = asyncHandler(async (req, res) => {
+const clearWishlist = asyncHandler(async (req, res) => {
   const guestId = req.guestId;
   const userId = req.user?._id;
 
@@ -195,4 +199,11 @@ export const clearWishlist = asyncHandler(async (req, res) => {
     throw err;
   }
 });
+
+module.exports = {
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+  clearWishlist,
+};
 

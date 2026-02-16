@@ -1,12 +1,12 @@
-import User from '../models/User.js';
-import Cart from '../models/Cart.js';
-import Wishlist from '../models/Wishlist.js';
-import generateToken from '../utils/generateToken.js';
+const User = require('../models/User.js');
+const Cart = require('../models/Cart.js');
+const Wishlist = require('../models/Wishlist.js');
+const generateToken = require('../utils/generateToken.js');
 
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
-export const registerUser = async (req, res) => {
+const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
@@ -20,7 +20,8 @@ export const registerUser = async (req, res) => {
     }
 
     // Create user - pre-save hook will automatically hash password
-    const user = await User.create({ name, email, password, phone });res.status(201).json({
+    const user = await User.create({ name, email, password, phone });
+    res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -29,7 +30,6 @@ export const registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-
     res.status(400).json({ message: error.message || 'Registration failed' });
   }
 };
@@ -37,26 +37,24 @@ export const registerUser = async (req, res) => {
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
-export const authUser = async (req, res) => {
+const authUser = async (req, res) => {
   const { email, password } = req.body;
-  
+
   // Validate input
   if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
+    return res.status(401).json({ message: 'Email and password are required' });
   }
 
   try {
     const user = await User.findOne({ email });
     if (!user) {
-
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     // Compare password
     const isMatch = await user.matchPassword(password);
-    
-    if (!isMatch) {
 
+    if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -68,7 +66,6 @@ export const authUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-
     res.status(500).json({ message: 'Server error during login' });
   }
 };
@@ -76,7 +73,7 @@ export const authUser = async (req, res) => {
 // @desc    Get user profile
 // @route   GET /api/users/profile
 // @access  Private
-export const getUserProfile = async (req, res) => {
+const getUserProfile = async (req, res) => {
   const user = await User.findById(req.user._id).select('-password');
   if (user) {
     res.json(user);
@@ -88,7 +85,7 @@ export const getUserProfile = async (req, res) => {
 // @desc    Update user profile
 // @route   PUT /api/users/profile
 // @access  Private
-export const updateUserProfile = async (req, res) => {
+const updateUserProfile = async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
     user.name = req.body.name || user.name;
@@ -106,4 +103,6 @@ export const updateUserProfile = async (req, res) => {
     res.status(404).json({ message: 'User not found' });
   }
 };
+
+module.exports = { registerUser, authUser, getUserProfile, updateUserProfile };
 

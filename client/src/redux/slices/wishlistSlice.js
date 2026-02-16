@@ -21,16 +21,20 @@ export const fetchWishlist = createAsyncThunk('wishlist/fetchWishlist', async (_
     const res = await axios.get(`${API}/api/wishlist`, {
       headers,
     });
-    const data = res.data;// normalize items: prefer snapshot if present, otherwise product
+    const data = res.data;
+// normalize items: prefer snapshot if present, otherwise product
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
         // ensure snapshot has product id and keep populated product for availability checks
-        const pid = (it.product && it.product._id) || it.snapshot._id || null;return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
+        const pid = (it.product && it.product._id) || it.snapshot._id || null;
+return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
       }
-      if (it.product) {return { ...it.product, __isSnapshot: false };
+      if (it.product) {
+return { ...it.product, __isSnapshot: false };
       }
       return it;
-    });return items;
+    });
+return items;
   } catch (err) {
     return rejectWithValue(err.message);
   }
@@ -46,13 +50,16 @@ export const addItemToServer = createAsyncThunk('wishlist/addItemToServer', asyn
     else body = payload || {};
 
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await axios.post(`${API}/api/wishlist`, body, { headers });const data = res.data;
+    const res = await axios.post(`${API}/api/wishlist`, body, { headers });
+const data = res.data;
     // normalize return items like fetchWishlist
     const items = (data.items || []).map((it) => {
       if (it.snapshot) {
-        const pid = (it.product && it.product._id) || it.snapshot._id || null;return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
+        const pid = (it.product && it.product._id) || it.snapshot._id || null;
+return { ...it.snapshot, _id: pid || it.snapshot._id, __isSnapshot: true, product: it.product || null };
       }
-      if (it.product) {return { ...it.product, __isSnapshot: false };
+      if (it.product) {
+return { ...it.product, __isSnapshot: false };
       }
       return it;
     });
@@ -75,23 +82,31 @@ export const removeItemFromServer = createAsyncThunk('wishlist/removeItemFromSer
       variantId = payload.variantId;
     }
 
-    if (!productId) throw new Error('productId is required to remove wishlist item');let url = variantId ? `${API}/api/wishlist/${productId}?variantId=${encodeURIComponent(variantId)}` : `${API}/api/wishlist/${productId}`;const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await axios.delete(url, { headers });const data = res.data;
+    if (!productId) throw new Error('productId is required to remove wishlist item');
+let url = variantId ? `${API}/api/wishlist/${productId}?variantId=${encodeURIComponent(variantId)}` : `${API}/api/wishlist/${productId}`;
+const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await axios.delete(url, { headers });
+const data = res.data;
     // normalize items similar to fetchWishlist / addItemToServer
-    const items = (data.items || []).map((it) => {if (it.snapshot) {
+    const items = (data.items || []).map((it) => {
+if (it.snapshot) {
         // Get product ID from the product object reference
-        const pid = (it.product && it.product._id) || it.snapshot._id || null;return { 
+        const pid = (it.product && it.product._id) || it.snapshot._id || null;
+return { 
           ...it.snapshot, 
           _id: pid || it.snapshot._id, 
           __isSnapshot: true, 
           product: it.product || null 
         };
       }
-      if (it.product) {return { ...it.product, __isSnapshot: false };
+      if (it.product) {
+return { ...it.product, __isSnapshot: false };
       }
       return it;
-    });return items;
-  } catch (err) {return rejectWithValue(err.message);
+    });
+return items;
+  } catch (err) {
+return rejectWithValue(err.message);
   }
 });
 

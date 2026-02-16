@@ -1,7 +1,7 @@
-import PageConfig from '../models/PageConfig.js';
+const PageConfig = require('../models/PageConfig.js');
 
 // Get page configuration
-export const getPageConfig = async (req, res) => {
+const getPageConfig = async (req, res) => {
   try {
     const { pageName } = req.params;
 
@@ -62,7 +62,7 @@ export const getPageConfig = async (req, res) => {
 };
 
 // Save page configuration
-export const savePageConfig = async (req, res) => {
+const savePageConfig = async (req, res) => {
   try {
     const { pageName } = req.params;
     const { sections, meta } = req.body;
@@ -189,7 +189,8 @@ export const savePageConfig = async (req, res) => {
       message: 'Page configuration saved successfully',
       data: pageConfig
     });
-  } catch (error) {res.status(500).json({
+  } catch (error) {
+res.status(500).json({
       success: false,
       message: 'Error saving page configuration',
       error: error.message
@@ -198,7 +199,7 @@ export const savePageConfig = async (req, res) => {
 };
 
 // Get all page configurations
-export const getAllPageConfigs = async (req, res) => {
+const getAllPageConfigs = async (req, res) => {
   try {
     const configs = await PageConfig.find().select('pageName isPublished updatedAt');
     res.json(configs);
@@ -209,7 +210,7 @@ export const getAllPageConfigs = async (req, res) => {
 };
 
 // Update specific section
-export const updatePageSection = async (req, res) => {
+const updatePageSection = async (req, res) => {
   try {
     const { pageName, sectionId } = req.params;
     const { content, style } = req.body;
@@ -245,7 +246,7 @@ export const updatePageSection = async (req, res) => {
 };
 
 // Delete specific section
-export const deletePageSection = async (req, res) => {
+const deletePageSection = async (req, res) => {
   try {
     const { pageName, sectionId } = req.params;
 
@@ -268,7 +269,7 @@ export const deletePageSection = async (req, res) => {
 };
 
 // Publish/Unpublish page
-export const togglePagePublish = async (req, res) => {
+const togglePagePublish = async (req, res) => {
   try {
     const { pageName } = req.params;
 
@@ -289,5 +290,14 @@ export const togglePagePublish = async (req, res) => {
 
     res.status(500).json({ message: 'Error toggling publish status' });
   }
+};
+
+module.exports = {
+  getPageConfig,
+  savePageConfig,
+  getAllPageConfigs,
+  updatePageSection,
+  deletePageSection,
+  togglePagePublish
 };
 

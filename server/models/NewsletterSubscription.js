@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const newsletterSubscriptionSchema = new mongoose.Schema({
     email: {
@@ -31,5 +31,5 @@ const newsletterSubscriptionSchema = new mongoose.Schema({
 newsletterSubscriptionSchema.index({ status: 1 });
 
 const NewsletterSubscription = mongoose.model('NewsletterSubscription', newsletterSubscriptionSchema);
-export default NewsletterSubscription;
+module.exports = NewsletterSubscription;
 

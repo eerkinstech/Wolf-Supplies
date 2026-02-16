@@ -1,7 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt, FaGlobe } from 'react-icons/fa';
-import { SiVisa, SiMastercard, SiDiscover, SiApplepay, SiGooglepay } from 'react-icons/si';
 import wolfLogo from '../../assets/Wolf Supplies LTD.png';
 
 const Footer = () => {
@@ -20,16 +18,16 @@ const Footer = () => {
             <p className="text-[var(--color-text-primary)] text-sm mb-2"><strong>Company Number:</strong> <a href="https://find-and-update.company-information.service.gov.uk/company/16070029" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)]">16070029</a></p>
             <div className="flex gap-4">
               <a href="#" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300">
-                <FaFacebook className="text-lg text-[var(--color-text-light)]" />
+                <i className="fab fa-facebook text-lg text-[var(--color-text-light)]"></i>
               </a>
               <a href="#" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300">
-                <FaTwitter className="text-lg text-[var(--color-text-light)]" />
+                <i className="fab fa-twitter text-lg text-[var(--color-text-light)]"></i>
               </a>
               <a href="#" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300">
-                <FaInstagram className="text-lg text-[var(--color-text-light)]" />
+                <i className="fab fa-instagram text-lg text-[var(--color-text-light)]"></i>
               </a>
               <a href="#" className="text-[var(--color-text-light)] hover:text-[var(--color-accent-primary)] transition duration-300">
-                <FaLinkedin className="text-lg text-[var(--color-text-light)]" />
+                <i className="fab fa-linkedin text-lg text-[var(--color-text-light)]"></i>
               </a>
             </div>
           </div>
@@ -103,15 +101,15 @@ const Footer = () => {
             <h4 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">Contact Us</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-[var(--color-text-light)]">
-                <FaPhone className="text-black" />
+                <i className="fas fa-phone text-black"></i>
                 <a href="tel:+447398998101" className="hover:text-black">+44 7398 998101</a>
               </li>
               <li className="flex items-center gap-3 text-gray-700">
-                <FaEnvelope className="text-black" />
+                <i className="fas fa-envelope text-black"></i>
                 <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:text-black">sales@wolfsuppliesltd.co.uk</a>
               </li>
               <li className="flex items-start gap-3 text-gray-700">
-                <FaMapMarkerAlt className="text-black mt-1" />
+                <i className="fas fa-map-marker-alt text-black mt-1"></i>
                 <div>
                   <p>Unit 4 Atlas Estates</p>
                   <p>Colebrook Road, Birmingham</p>
@@ -120,7 +118,7 @@ const Footer = () => {
                 </div>
               </li>
               <li className="flex items-center gap-3 text-gray-700">
-                <FaGlobe className="text-black" />
+                <i className="fas fa-globe text-black"></i>
                 <a href='https://wolfsuppliesltd.co.uk' className="hover:text-black">wolfsuppliesltd.co.uk</a>
               </li>
             </ul>
@@ -132,24 +130,19 @@ const Footer = () => {
           <h4 className="text-lg font-bold mb-6 text-center">We Accept</h4>
           <div className="flex justify-center items-center gap-8 flex-wrap">
             <div className="flex items-center gap-2" title="Visa">
-              <SiVisa className="text-2xl text-blue-600" />
-              <span className="text-sm font-semibold text-gray-700">Visa</span>
+              <span className="text-2xl font-bold text-blue-600">Visa</span>
             </div>
             <div className="flex items-center gap-2" title="Mastercard">
-              <SiMastercard className="text-2xl text-red-600" />
-              <span className="text-sm font-semibold text-gray-700">Mastercard</span>
+              <span className="text-2xl font-bold text-red-600">Mastercard</span>
             </div>
             <div className="flex items-center gap-2" title="Discover">
-              <SiDiscover className="text-2xl text-orange-500" />
-              <span className="text-sm font-semibold text-gray-700">Discover</span>
+              <span className="text-2xl font-bold text-orange-500">Discover</span>
             </div>
             <div className="flex items-center gap-2" title="Apple Pay">
-              <SiApplepay className="text-2xl text-black" />
-              <span className="text-sm font-semibold text-gray-700">Apple Pay</span>
+              <span className="text-2xl font-bold text-black">Apple Pay</span>
             </div>
             <div className="flex items-center gap-2" title="Google Pay">
-              <SiGooglepay className="text-2xl text-blue-500" />
-              <span className="text-sm font-semibold text-gray-700">Google Pay</span>
+              <span className="text-2xl font-bold text-blue-500">Google Pay</span>
             </div>
           </div>
           <div className="text-center mt-4">

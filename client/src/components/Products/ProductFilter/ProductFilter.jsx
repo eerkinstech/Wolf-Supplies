@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
+
 
 const ProductFilter = ({ filters, onFilterChange, maxPrice = 100 }) => {
   const [availabilityOpen, setAvailabilityOpen] = useState(true);
@@ -47,7 +47,7 @@ const ProductFilter = ({ filters, onFilterChange, maxPrice = 100 }) => {
           className="w-full flex items-center justify-between py-4 hover:bg-gray-50 transition"
         >
           <h3 className="text-lg font-semibold text-gray-900">Availability</h3>
-          {availabilityOpen ? <FaChevronUp className="text-gray-600" /> : <FaChevronDown className="text-gray-600" />}
+          {availabilityOpen ? <i className="fas fa-chevron-up text-gray-600"></i> : <i className="fas fa-chevron-down text-gray-600"></i>}
         </button>
 
         {availabilityOpen && (
@@ -81,7 +81,7 @@ const ProductFilter = ({ filters, onFilterChange, maxPrice = 100 }) => {
           className="w-full flex items-center justify-between py-4 hover:bg-gray-50 transition"
         >
           <h3 className="text-lg font-semibold text-gray-900">Price</h3>
-          {priceOpen ? <FaChevronUp className="text-gray-600" /> : <FaChevronDown className="text-gray-600" />}
+          {priceOpen ? <i className="fas fa-chevron-up text-gray-600"></i> : <i className="fas fa-chevron-down text-gray-600"></i>}
         </button>
 
         {priceOpen && (

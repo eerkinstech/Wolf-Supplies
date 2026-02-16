@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const querySubmissionSchema = new mongoose.Schema({
     name: {
@@ -71,5 +71,5 @@ querySubmissionSchema.index({ priority: 1, status: 1 });
 querySubmissionSchema.index({ createdAt: -1 });
 
 const QuerySubmission = mongoose.model('QuerySubmission', querySubmissionSchema);
-export default QuerySubmission;
+module.exports = QuerySubmission;
 

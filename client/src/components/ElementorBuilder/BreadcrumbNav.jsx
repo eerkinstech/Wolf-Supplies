@@ -1,6 +1,6 @@
 import React from 'react';
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
-import { FaChevronRight } from 'react-icons/fa';
+
 
 /**
  * BreadcrumbNav - Shows path to selected node
@@ -23,7 +23,7 @@ const BreadcrumbNav = () => {
             <div className="flex items-center gap-2 text-sm">
                 {breadcrumb.map((node, index) => (
                     <React.Fragment key={node.id}>
-                        {index > 0 && <FaChevronRight className="text-gray-400" size={12} />}
+                        {index > 0 && <i className="fas fa-chevron-right text-gray-400" style={{ fontSize: '12px' }}></i>}
                         <button
                             onClick={() => selectNode(node.id)}
                             className={`px-3 py-1 rounded transition ${node.id === selectedNodeId

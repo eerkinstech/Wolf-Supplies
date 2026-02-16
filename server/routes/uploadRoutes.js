@@ -1,12 +1,10 @@
-import express from 'express';
-import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-import { protect, admin } from '../middleware/authMiddleware.js';
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// In CommonJS, __dirname and __filename are automatically available
 
 const router = express.Router();
 
@@ -75,7 +73,8 @@ router.get('/test', (req, res) => {
 router.post('/', protect, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      console.error('No file in request');
+      return res.status(400).json({ message: 'No file uploaded', success: false });
     }
 
     // Verify file exists
@@ -83,21 +82,22 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
     const fileExists = fs.existsSync(filePath);
 
     if (!fileExists) {
-
-      return res.status(500).json({ message: 'File was not saved properly' });
+      console.error('File not saved:', filePath);
+      return res.status(500).json({ message: 'File was not saved properly', success: false });
     }
 
     // Return the relative URL path for the uploaded file
     const fileUrl = `/uploads/${req.file.filename}`;
 
+    console.log('File uploaded successfully:', fileUrl);
     res.json({
       url: fileUrl,
       filename: req.file.filename,
       success: true
     });
   } catch (error) {
-
-    res.status(500).json({ message: 'Upload failed', error: error.message });
+    console.error('Upload error:', error);
+    res.status(500).json({ message: 'Upload failed: ' + error.message, success: false });
   }
 });
 
@@ -105,7 +105,8 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
 router.post('/public', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      console.error('No file in public upload request');
+      return res.status(400).json({ message: 'No file uploaded', success: false });
     }
 
     // Verify file exists
@@ -113,21 +114,22 @@ router.post('/public', upload.single('image'), async (req, res) => {
     const fileExists = fs.existsSync(filePath);
 
     if (!fileExists) {
-
-      return res.status(500).json({ message: 'File was not saved properly' });
+      console.error('File not saved in public upload:', filePath);
+      return res.status(500).json({ message: 'File was not saved properly', success: false });
     }
 
     // Return the relative URL path for the uploaded file
     const fileUrl = `/uploads/${req.file.filename}`;
 
+    console.log('Public file uploaded successfully:', fileUrl);
     res.json({
       url: fileUrl,
       filename: req.file.filename,
       success: true
     });
   } catch (error) {
-
-    res.status(500).json({ message: 'Upload failed', error: error.message });
+    console.error('Public upload error:', error);
+    res.status(500).json({ message: 'Upload failed: ' + error.message, success: false });
   }
 });
 
@@ -135,7 +137,8 @@ router.post('/public', upload.single('image'), async (req, res) => {
 router.post('/multiple', protect, upload.array('images', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: 'No files uploaded' });
+      console.error('No files in multiple upload request');
+      return res.status(400).json({ message: 'No files uploaded', success: false });
     }
 
     const urls = req.files.map(file => ({
@@ -143,11 +146,31 @@ router.post('/multiple', protect, upload.array('images', 10), async (req, res) =
       filename: file.filename,
     }));
 
-    res.json({ urls });
+    console.log('Multiple files uploaded successfully:', urls);
+    res.json({ urls, success: true });
   } catch (error) {
-    res.status(500).json({ message: 'Upload failed', error: error.message });
+    console.error('Multiple upload error:', error);
+    res.status(500).json({ message: 'Upload failed: ' + error.message, success: false });
   }
 });
 
-export default router;
+// Multer error handling middleware
+router.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    console.error('Multer error:', error.code, error.message);
+    if (error.code === 'FILE_TOO_LARGE') {
+      return res.status(400).json({ message: 'File size exceeds 5MB limit', success: false });
+    }
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ message: 'Too many files', success: false });
+    }
+    return res.status(400).json({ message: 'File upload error: ' + error.message, success: false });
+  } else if (error) {
+    console.error('Upload middleware error:', error.message);
+    return res.status(400).json({ message: error.message, success: false });
+  }
+  next();
+});
+
+module.exports = router;
 

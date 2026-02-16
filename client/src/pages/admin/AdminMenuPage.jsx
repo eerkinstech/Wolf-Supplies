@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+
 import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout';
 
 const AdminMenuPage = () => {

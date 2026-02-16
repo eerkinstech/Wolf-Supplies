@@ -1,12 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || '';
+// Use environment variable or fallback to current origin for API
+const API = import.meta.env.VITE_API_URL || window.location.origin;
 
-export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {const token = localStorage.getItem('token');try {
+export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) => {
+  const token = localStorage.getItem('token');
+  try {
     // Fetch from server with or without token (server handles both via guestId or userId)
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await axios.get(`${API}/api/cart`, { headers });const data = res.data;
+    const url = `${API}/api/cart`;
+    const res = await axios.get(url, { headers });
+    const data = res.data;
     const items = (data.items || []).map((it) => {
       const product = it.product || null;
       return {
@@ -26,7 +31,8 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, thunkAPI) 
       };
     });
     return items;
-  } catch (err) {return [];
+  } catch (err) {
+    return [];
   }
 });
 
@@ -79,8 +85,9 @@ export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI
 
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const payload = { items: serverItems };
+    const url = `${API}/api/cart`;
 
-    const res = await axios.post(`${API}/api/cart`, payload, { headers });
+    const res = await axios.post(url, payload, { headers });
     const data = res.data;
 
     // Normalize returned items to client shape
@@ -103,7 +110,8 @@ export const syncCart = createAsyncThunk('cart/syncCart', async (items, thunkAPI
       };
     });
     return returned;
-  } catch (err) {return items;
+  } catch (err) {
+    return items;
   }
 });
 
@@ -112,12 +120,71 @@ export const clearServerCart = createAsyncThunk('cart/clearServerCart', async (_
 
   try {
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await axios.delete(`${API}/api/cart`, {
+    const url = `${API}/api/cart`;
+    const res = await axios.delete(url, {
       headers
     });
     const data = res.data;
     return data.items || [];
-  } catch (err) {return [];
+  } catch (err) {
+    return [];
+  }
+});
+
+// Add item to cart on server immediately (similar to wishlist's addItemToServer)
+export const addItemToServer = createAsyncThunk('cart/addItemToServer', async (payload, { rejectWithValue }) => {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Get current cart from Redux state to send full cart
+    return payload; // Payload should contain the new item to add
+  } catch (err) {
+    return rejectWithValue(err.message);
+  }
+});
+
+// Remove item from cart on server immediately (similar to wishlist's removeItemFromServer)
+export const removeItemFromServer = createAsyncThunk('cart/removeItemFromServer', async (itemId, { rejectWithValue, getState }) => {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Get current cart state
+    const state = getState();
+    const currentItems = state.cart?.items || [];
+
+    // Filter out the item being removed
+    const updatedItems = currentItems.filter(item => item._id !== itemId);
+
+    // Send updated cart to server
+    const payload = { items: updatedItems };
+    const url = `${API}/api/cart`;
+    const res = await axios.post(url, payload, { headers });
+    const data = res.data;
+
+    // Normalize returned items
+    const returned = (data.items || []).map((it) => {
+      const product = it.product || null;
+      return {
+        _id: it._id || (product && (product._id || product.id)) || it.product || '',
+        product: (product && (product._id || product.id)) || it.product || '',
+        name: it.name || (product && product.name) || '',
+        price: Number(it.price ?? (product && product.price) ?? 0),
+        image: it.image || (product && (product.image || (product.images && product.images[0]))) || '',
+        variantImage: it.variantImage || null,
+        quantity: it.quantity || 1,
+        selectedVariants: it.selectedVariants || {},
+        selectedSize: it.selectedSize || null,
+        selectedColor: it.selectedColor || null,
+        variant: it.variant || null,
+        sku: it.sku || null,
+        colorCode: it.colorCode || null,
+      };
+    });
+    return returned;
+  } catch (err) {
+    return rejectWithValue(err.message);
   }
 });
 
@@ -203,6 +270,12 @@ const cartSlice = createSlice({
         state.totalPrice = state.items.reduce((acc, item) => acc + (Number(item.price) || 0) * item.quantity, 0);
       })
       .addCase(syncCart.fulfilled, (state, action) => {
+        const items = Array.isArray(action.payload) ? action.payload : [];
+        state.items = items.map((i) => ({ ...i, quantity: i.quantity || 1 }));
+        state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
+        state.totalPrice = state.items.reduce((acc, item) => acc + (Number(item.price) || 0) * item.quantity, 0);
+      })
+      .addCase(removeItemFromServer.fulfilled, (state, action) => {
         const items = Array.isArray(action.payload) ? action.payload : [];
         state.items = items.map((i) => ({ ...i, quantity: i.quantity || 1 }));
         state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);

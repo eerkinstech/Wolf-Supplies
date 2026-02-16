@@ -1,5 +1,5 @@
-import express from 'express';
-import { createCheckoutSession, webhookHandler, getStripeStatus, createPaymentIntent } from '../controllers/paymentController.js';
+const express = require('express');
+const { createCheckoutSession, webhookHandler, getStripeStatus, createPaymentIntent } = require('../controllers/paymentController.js');
 
 const router = express.Router();
 
@@ -14,5 +14,5 @@ router.post('/create-payment-intent', createPaymentIntent);
 
 // Note: webhook should be mounted with raw body - Server.js mounts the raw endpoint.
 
-export default router;
+module.exports = router;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaInfoCircle } from 'react-icons/fa';
+
 
 const SEOMetaForm = ({ metaTitle, metaDescription, metaKeywords, onChange, defaultTitle = '' }) => {
   const maxTitleLength = 60;
@@ -27,7 +27,7 @@ const SEOMetaForm = ({ metaTitle, metaDescription, metaKeywords, onChange, defau
   return (
     <div className="border-t pt-6 mt-6">
       <div className="flex items-center gap-2 mb-6">
-        <FaInfoCircle className="text-blue-500" />
+        <i className="fas fa-info-circle text-blue-500"></i>
         <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>SEO Meta Information</h3>
       </div>
 

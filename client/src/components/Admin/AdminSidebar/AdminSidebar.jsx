@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaBox, FaClipboardList, FaChartBar, FaSignOutAlt, FaTags, FaComments, FaLayerGroup, FaHeadset, FaTicketAlt, FaList, FaChartLine, FaUserTie } from 'react-icons/fa';
 import { useAuth } from '../../../context/AuthContext';
 
 const AdminSidebar = ({ activeTab }) => {
@@ -14,25 +13,21 @@ const AdminSidebar = ({ activeTab }) => {
       window.history.scrollRestoration = 'manual';
     }
 
-    // Prevent scroll to top on location change
-    const unlisten = () => {
-      window.scrollTo(0, 0);
-    };
-
-    return unlisten;
-  }, []);
+    // Scroll to top when location changes
+    window.scrollTo(0, 0);
+  }, [location]);
 
   const menuItems = [
-    { icon: FaHome, label: 'Dashboard', id: 'dashboard', path: '/admin/dashboard' },
-    { icon: FaBox, label: 'Products', id: 'products', path: '/admin/products' },
-    { icon: FaTags, label: 'Categories', id: 'categories', path: '/admin/categories' },
-    { icon: FaClipboardList, label: 'Orders', id: 'orders', path: '/admin/orders' },
-    { icon: FaComments, label: 'Reviews', id: 'reviews', path: '/admin/reviews' },
-    { icon: FaHeadset, label: 'Chat', id: 'chat', path: '/admin/chat' },
-    { icon: FaList, label: 'Menu', id: 'menu', path: '/admin/menu' },
-    { icon: FaChartLine, label: 'Analytics', id: 'analytics', path: '/admin/analytics' },
-    { icon: FaLayerGroup, label: 'Collections', id: 'collections', path: '/admin/collections' },
-    { icon: FaTicketAlt, label: 'Coupons', id: 'coupons', path: '/admin/coupons' },
+    { icon: 'fas fa-home', label: 'Dashboard', id: 'dashboard', path: '/admin/dashboard' },
+    { icon: 'fas fa-box', label: 'Products', id: 'products', path: '/admin/products' },
+    { icon: 'fas fa-tags', label: 'Categories', id: 'categories', path: '/admin/categories' },
+    { icon: 'fas fa-clipboard-list', label: 'Orders', id: 'orders', path: '/admin/orders' },
+    { icon: 'fas fa-comments', label: 'Reviews', id: 'reviews', path: '/admin/reviews' },
+    { icon: 'fas fa-headset', label: 'Chat', id: 'chat', path: '/admin/chat' },
+    { icon: 'fas fa-list', label: 'Menu', id: 'menu', path: '/admin/menu' },
+    { icon: 'fas fa-chart-line', label: 'Analytics', id: 'analytics', path: '/admin/analytics' },
+    { icon: 'fas fa-layer-group', label: 'Collections', id: 'collections', path: '/admin/collections' },
+    { icon: 'fas fa-ticket-alt', label: 'Coupons', id: 'coupons', path: '/admin/coupons' },
   ];
 
   const handleLogout = () => {
@@ -63,7 +58,7 @@ const AdminSidebar = ({ activeTab }) => {
       {/* Header */}
       <div className="p-6 border-b border-opacity-30" style={{ borderColor: 'white' }}>
         <Link to="/admin" className="flex px-4 justify-left items-center gap-3">
-          <FaUserTie className="text-xl" />
+          <i className="fas fa-user-tie text-xl"></i>
           <div>
             <h1 className="text-xl font-bold">Admin Panel</h1>
           </div>
@@ -82,7 +77,7 @@ const AdminSidebar = ({ activeTab }) => {
               }`}
             style={currentActiveTab === item.id ? { backgroundColor: 'var(--color-accent-light)' } : { backgroundColor: 'transparent' }}
           >
-            <item.icon className="text-lg" />
+            <i className={`${item.icon} text-lg`}></i>
             <span className="font-semibold">{item.label}</span>
           </Link>
         ))}
@@ -97,7 +92,7 @@ const AdminSidebar = ({ activeTab }) => {
           onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 0, 0, 1)'}
           onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 0, 0, 0.8)'}
         >
-          <FaSignOutAlt className="text-lg" />
+          <i className="fas fa-sign-out-alt text-lg"></i>
           <span>Logout</span>
         </button>
       </div>

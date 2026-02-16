@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout';
 import { fetchProducts } from '../../redux/slices/productSlice';
 import { fetchOrders } from '../../redux/slices/orderSlice';
-import { FaCalendar } from 'react-icons/fa';
+
 
 const AdminAnalyticsPage = () => {
   const dispatch = useDispatch();
@@ -330,7 +330,7 @@ const AdminAnalyticsPage = () => {
             className="text-sm font-semibold mb-3 px-3 py-1.5 rounded"
             style={{ backgroundColor: 'var(--color-bg-section)', color: 'var(--color-text-primary)' }}
           >
-            <FaCalendar className="mr-1 inline"/> {showDatePicker ? 'Hide' : 'Show'} Date Filter
+            <i className="fas fa-calendar mr-1 inline"></i> {showDatePicker ? 'Hide' : 'Show'} Date Filter
           </button>
 
           {showDatePicker && (

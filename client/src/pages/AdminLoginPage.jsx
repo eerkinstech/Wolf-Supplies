@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUserShield, FaArrowLeft } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const AdminLoginPage = () => {
@@ -51,7 +50,7 @@ const AdminLoginPage = () => {
           {/* Header */}
           <div className="text-center space-y-6">
             <div className="inline-block p-5 mb-0 rounded-full" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
-              <FaUserShield className="text-4xl" style={{ color: 'var(--color-accent-primary)' }} />
+              <i className="fas fa-shield-user text-4xl" style={{ color: 'var(--color-accent-primary)' }}></i>
             </div>
             <div>
               <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Admin Portal</h1>
@@ -67,7 +66,7 @@ const AdminLoginPage = () => {
             <div className="">
               <label className="block text-sm font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Admin Email</label>
               <div className="relative">
-                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: 'var(--color-text-light)' }} />
+                  <i className="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: 'var(--color-text-light)' }}></i>
                 <input
                   type="email"
                   name="email"
@@ -89,7 +88,7 @@ const AdminLoginPage = () => {
             <div className="">
               <label className="block text-sm font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Password</label>
               <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: 'var(--color-text-light)' }} />
+                  <i className="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: 'var(--color-text-light)' }}></i>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -111,7 +110,7 @@ const AdminLoginPage = () => {
                   style={{ color: 'var(--color-text-light)' }}
                   disabled={loading}
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                 </button>
               </div>
             </div>

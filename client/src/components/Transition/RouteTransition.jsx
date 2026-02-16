@@ -1,5 +1,4 @@
 // import React from 'react';
-// import { FaCircle } from 'react-icons/fa';
 // import transition from '../../assets/transition.png';
 
 // const RouteTransition = ({ visible }) => {

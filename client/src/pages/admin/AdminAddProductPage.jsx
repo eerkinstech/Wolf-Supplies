@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaTimes, FaCloudUploadAlt, FaCheck, FaSearch, FaChevronDown, FaArrowLeft, FaChevronRight, FaPlus, FaTrashAlt, FaMinus, FaTags } from 'react-icons/fa';
+
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -25,7 +25,7 @@ const AdminAddProductPage = () => {
     stock: '',
     categories: [],
     description: '',
-    benefitsHeading: 'Why Buy This Product',
+    benefitsHeading: '',
     benefitsText: '',
     images: [],
     options: [],
@@ -97,7 +97,7 @@ const AdminAddProductPage = () => {
           categories: prod.categories ? prod.categories.map((c) => (c._id ? c._id : c)) : [],
           description: prod.description || '',
           whyBuyText: prod.whyBuyText || '',
-          benefitsHeading: prod.benefitsHeading || 'Why Buy This Product',
+          benefitsHeading: prod.benefitsHeading || ' ',
           benefitsText: benefitsText,
           images: Array.isArray(prod.images) ? prod.images : (prod.images ? [prod.images] : []),
           options: prod.variants || [],
@@ -174,7 +174,7 @@ const AdminAddProductPage = () => {
       variantCombinations,
       categories: formData.categories || [],
       benefits: formData.benefitsText || '',
-      benefitsHeading: formData.benefitsHeading || 'Why Buy This Product',
+      benefitsHeading: formData.benefitsHeading || ' ',
     };
   };
 
@@ -505,7 +505,7 @@ const AdminAddProductPage = () => {
         variantCombinations,
         categories: formData.categories || [],
         benefits: formData.benefitsText || '',
-        benefitsHeading: formData.benefitsHeading || 'Why Buy This Product',
+        benefitsHeading: formData.benefitsHeading || ' ',
         metaTitle: formData.metaTitle || '',
         metaDescription: formData.metaDescription || '',
         metaKeywords: formData.metaKeywords || '',
@@ -540,7 +540,7 @@ const AdminAddProductPage = () => {
           categories: refreshedProd.categories ? refreshedProd.categories.map((c) => (c._id ? c._id : c)) : [],
           description: refreshedProd.description || '',
           benefitsText: refreshedBenefitsText,
-          benefitsHeading: refreshedProd.benefitsHeading || 'Why Buy This Product',
+          benefitsHeading: refreshedProd.benefitsHeading || ' ',
           images: Array.isArray(refreshedProd.images) ? refreshedProd.images : (refreshedProd.images ? [refreshedProd.images] : []),
           options: refreshedProd.variants || [],
           variants: (refreshedProd.variantCombinations || []).map((vc, idx) => ({
@@ -714,20 +714,79 @@ const AdminAddProductPage = () => {
   // Helper: Upload image to server and get URL
   const uploadImageToServer = async (file) => {
     try {
+      // Validate file
+      if (!file) {
+        toast.error('No file selected');
+        return null;
+      }
+
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size exceeds 5MB limit');
+        return null;
+      }
+
+      // Check file type
+      if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+        toast.error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.');
+        return null;
+      }
+
       const formData = new FormData();
       formData.append('image', file);
 
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await axios.post(`${API}/api/upload`, formData, {
-        headers: {
-          ...headers,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Try authenticated endpoint first (with token)
+      if (token) {
+        try {
+          const res = await axios.post(`${API}/api/upload`, formData, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          });
 
-      return res.data.url; // Returns /uploads/filename
+          if (res.data.success && res.data.url) {
+            toast.success('Image uploaded successfully');
+            return res.data.url;
+          }
+        } catch (authErr) {
+          console.error('Authenticated upload failed:', authErr.response?.data?.message || authErr.message);
+          
+          // If authentication fails, try public endpoint
+          if (authErr.response?.status === 401) {
+            console.log('Auth failed, trying public upload endpoint...');
+          } else {
+            // Log other errors but don't fall back
+            throw authErr;
+          }
+        }
+      }
+
+      // Fallback to public endpoint (no authentication required)
+      try {
+        const res = await axios.post(`${API}/api/upload/public`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (res.data.success && res.data.url) {
+          toast.success('Image uploaded successfully');
+          return res.data.url;
+        }
+      } catch (publicErr) {
+        console.error('Public upload failed:', publicErr.response?.data?.message || publicErr.message);
+        const errorMsg = publicErr.response?.data?.message || 'Failed to upload image. Please try again.';
+        toast.error(errorMsg);
+        setError(errorMsg);
+        return null;
+      }
+
     } catch (err) {
-      setError('Failed to upload image. Please try again.');
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to upload image';
+      console.error('Upload error:', errorMsg);
+      toast.error(errorMsg);
+      setError(errorMsg);
       return null;
     }
   };
@@ -821,7 +880,7 @@ const AdminAddProductPage = () => {
         <div className="bg-white rounded-lg shadow-xl w-[min(900px,95%)] max-h-[95vh] overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white py-3">
             <div className="flex items-center gap-3">
-              <FaTags className="text-xl text-gray-700" />
+              <i className="fas fa-tags text-xl text-gray-700"></i>
               <div>
                 <h3 className="text-lg font-semibold">Select Categories</h3>
                 <p className="text-xs text-gray-900">Choose which categories this product should belong to</p>
@@ -833,7 +892,7 @@ const AdminAddProductPage = () => {
                 className="text-gray-600 hover:text-gray-900 p-2 rounded-full hover:bg-gray-100"
                 aria-label="Close categories modal"
               >
-                <FaTimes className="text-lg" />
+                <i className="fas fa-times text-lg"></i>
               </button>
             </div>
           </div>
@@ -920,7 +979,7 @@ const AdminAddProductPage = () => {
               onClick={onClose}
               className="text-gray-600 hover:text-gray-900"
             >
-              <FaTimes className="text-xl" />
+              <i className="fas fa-times" style={{ fontSize: '20px' }}></i>
             </button>
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -951,7 +1010,7 @@ const AdminAddProductPage = () => {
                     className="absolute top-2 right-2 bg-gray-700 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
                     aria-label="Remove image"
                   >
-                    <FaTimes className="text-xs" />
+                    <i className="fas fa-times" style={{ fontSize: '12px' }}></i>
                   </button>
                 </div>
               );
@@ -986,7 +1045,7 @@ const AdminAddProductPage = () => {
               onClick={onClose}
               className="text-gray-600 hover:text-gray-900"
             >
-              <FaTimes className="text-xl" />
+              <i className="fas fa-times" style={{ fontSize: '20px' }}></i>
             </button>
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -1048,7 +1107,7 @@ const AdminAddProductPage = () => {
               onClick={onClose}
               className="text-gray-600 hover:text-gray-900"
             >
-              <FaTimes className="text-xl" />
+              <i className="fas fa-times" style={{ fontSize: '20px' }}></i>
             </button>
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -1107,7 +1166,7 @@ const AdminAddProductPage = () => {
               onClick={onClose}
               className="text-gray-600 hover:text-gray-900"
             >
-              <FaTimes className="text-xl" />
+              <i className="fas fa-times" style={{ fontSize: '20px' }}></i>
             </button>
           </div>
 
@@ -1179,7 +1238,7 @@ const AdminAddProductPage = () => {
             onClick={() => handleNavigation(() => navigate('/admin/products'))}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
-            <FaArrowLeft /> Back
+            <i className="fas fa-arrow-left"></i> Back
           </button>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 w-full">
             <h1 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Product' : 'Add New Product'}</h1>
@@ -1329,7 +1388,7 @@ const AdminAddProductPage = () => {
                     className="inline-flex items-center gap-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full border border-gray-300 shadow-sm hover:shadow"
                     aria-label="Select categories"
                   >
-                    <FaTags className="text-gray-700" />
+                    <i className="fas fa-tags text-gray-700"></i>
                     <span className="font-medium">Select Categories</span>
                   </button>
                 </div>
@@ -1357,7 +1416,7 @@ const AdminAddProductPage = () => {
                           className="text-gray-900 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition"
                           aria-label={`Remove category ${categoryName}`}
                         >
-                          <FaTimes className="text-xs" />
+                          <i className="fas fa-times" style={{ fontSize: '12px' }}></i>
                         </button>
                       </span>
                     );
@@ -1386,7 +1445,7 @@ const AdminAddProductPage = () => {
                   value={formData.benefitsHeading}
                   onChange={(e) => setFormData({ ...formData, benefitsHeading: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 outline-none mb-4"
-                  placeholder="Why Buy This Product"
+                  placeholder=" "
                 />
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   Benefits Description
@@ -1433,7 +1492,7 @@ const AdminAddProductPage = () => {
                         className="absolute top-2 right-2 bg-gray-700 text-white p-1.5 rounded-full hover:bg-[var(--color-accent-primary)]"
                         aria-label="Remove main image"
                       >
-                        <FaTimes className="text-sm" />
+                        <i className="fas fa-times" style={{ fontSize: '16px' }}></i>
                       </button>
                     </div>
                   ) : (
@@ -1456,7 +1515,7 @@ const AdminAddProductPage = () => {
                         className="hidden"
                       />
                       <div className="flex flex-col items-center gap-2 text-gray-600">
-                        <FaCloudUploadAlt className="text-3xl text-gray-700" />
+                        <i className="fas fa-cloud-upload-alt text-3xl text-gray-700"></i>
                         <span className="text-xs font-semibold text-center">Drop or click to add images</span>
                       </div>
                     </label>
@@ -1503,7 +1562,7 @@ const AdminAddProductPage = () => {
                                 className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
                                 aria-label="Remove image"
                               >
-                                <FaTimes className="text-xs" />
+                                <i className="fas fa-times" style={{ fontSize: '12px' }}></i>
                               </button>
                             </div>
                           );
@@ -1572,7 +1631,7 @@ const AdminAddProductPage = () => {
                     className={`transform transition-transform ${optionsOpen ? 'rotate-90' : ''
                       }`}
                   >
-                    <FaChevronRight />
+                    <i className="fas fa-chevron-right"></i>
                   </span>
                   <h3 className="text-lg font-bold">Options</h3>
                 </button>
@@ -1582,7 +1641,7 @@ const AdminAddProductPage = () => {
                   className="flex items-center gap-2 bg-[var(--color-accent-primary)] text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-black"
                   aria-label="Add option"
                 >
-                  <FaPlus className="text-sm" />
+                  <i className="fas fa-plus" style={{ fontSize: 'inherit' }}></i>
                   <span className="hidden sm:inline-block">Add Option</span>
                 </button>
               </div>
@@ -1607,10 +1666,11 @@ const AdminAddProductPage = () => {
                               onClick={() => toggleOptionCollapse(optKey)}
                               className="p-1"
                             >
-                              <FaChevronDown
-                                className={`transition-transform ${isOptOpen ? 'rotate-0' : '-rotate-90'
-                                  }`}
-                              />
+                              <i className="fas fa-chevron-down" style={{
+                                display: 'inline-block',
+                                transition: 'transform 0.2s',
+                                transform: isOptOpen ? 'rotateZ(0deg)' : 'rotateZ(-90deg)'
+                              }}></i>
                             </button>
                             <input
                               type="text"
@@ -1628,7 +1688,7 @@ const AdminAddProductPage = () => {
                             className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-100 transition"
                             aria-label="Remove option"
                           >
-                            <FaTrashAlt />
+                            <i className="fas fa-trash-alt"></i>
                           </button>
                         </div>
 
@@ -1676,7 +1736,7 @@ const AdminAddProductPage = () => {
                                     className="text-gray-700 hover:text-gray-900 font-bold p-0.5 rounded-full hover:bg-gray-100 transition"
                                     aria-label={`Remove value ${v}`}
                                   >
-                                    <FaMinus className="text-sm" />
+                                    <i className="fas fa-minus" style={{ fontSize: 'inherit' }}></i>
                                   </button>
                                 </span>
                               ))}
@@ -1716,7 +1776,7 @@ const AdminAddProductPage = () => {
                       className={`transform transition-transform ${variantsOpen ? 'rotate-90' : ''
                         }`}
                     >
-                      <FaChevronRight />
+                      <i className="fas fa-chevron-right"></i>
                     </span>
                     <h3 className="text-lg font-bold">
                       Variants ({formData.variants.length})
@@ -1739,7 +1799,7 @@ const AdminAddProductPage = () => {
                     {/* Search and Group Controls */}
                     <div className="flex items-center justify-between gap-4 mb-4">
                       <div className="relative flex-1">
-                        <FaSearch className="absolute left-3 top-3 text-gray-400" />
+                        <i className="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                         <input
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -1806,7 +1866,7 @@ const AdminAddProductPage = () => {
                                       className={`p-2 ${isGroupOpen ? 'rotate-90' : ''}`}
                                       aria-expanded={isGroupOpen}
                                     >
-                                      <FaChevronRight />
+                                      <i className="fas fa-chevron-right"></i>
                                     </button>
                                     <div>
                                       <div className="text-lg font-bold">{grp}</div>
@@ -1899,7 +1959,7 @@ const AdminAddProductPage = () => {
                                       className="flex items-center gap-2 bg-[var(--color-accent-primary)] text-white px-3 py-1 rounded text-sm font-medium hover:bg-black transition"
                                       aria-label="Add variant to group"
                                     >
-                                      <FaPlus className="text-xs" />
+                                      <i className="fas fa-plus text-xs"></i>
                                       <span className="hidden sm:inline-block">Add Variant</span>
                                     </button>
                                   </div>
@@ -2028,7 +2088,7 @@ const AdminAddProductPage = () => {
                                             className="absolute top-2 right-2 text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition"
                                             aria-label="Delete variant"
                                           >
-                                            <FaTrashAlt className="text-sm" />
+                                            <i className="fas fa-trash text-sm"></i>
                                           </button>
                                         </div>
                                       );
@@ -2091,7 +2151,7 @@ const AdminAddProductPage = () => {
                 disabled={loading || Boolean(comparePriceError)}
                 className="flex items-center gap-2 px-6 py-3 bg-black hover:bg-gray-900 text-white rounded-lg font-semibold transition disabled:opacity-50"
               >
-                <FaCheck /> {loading ? (isEditing ? 'Saving...' : 'Saving...') : (isEditing ? 'Save Draft' : 'Save Draft')}
+                <i className="fas fa-check"></i> {loading ? (isEditing ? 'Saving...' : 'Saving...') : (isEditing ? 'Save Draft' : 'Save Draft')}
               </button>
             ) : (
               <button
@@ -2099,7 +2159,7 @@ const AdminAddProductPage = () => {
                 disabled={loading || Boolean(comparePriceError)}
                 className="flex items-center gap-2 px-6 py-3 bg-[var(--color-accent-primary)] hover:bg-black text-white rounded-lg font-semibold transition disabled:opacity-50"
               >
-                <FaCheck /> {loading ? (isEditing ? 'Saving...' : 'Publishing...') : (isEditing ? 'Save' : 'Publish')}
+                <i className="fas fa-check"></i> {loading ? (isEditing ? 'Saving...' : 'Publishing...') : (isEditing ? 'Save' : 'Publish')}
               </button>
             )}
           </div>

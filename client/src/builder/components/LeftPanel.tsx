@@ -13,25 +13,24 @@ import { ControlRenderer } from './ControlRenderer';
 import { LayoutSelector } from './LayoutSelector';
 import { StructureSelector } from './StructureSelector';
 import { Navigator } from './Navigator';
-import { FaBox, FaClipboard, FaCog, FaPlus, FaChevronDown, FaChevronRight, FaCopy, FaTrash, FaHeading, FaFileAlt, FaMousePointer, FaImage, FaVideo, FaMinus, FaArrowsAlt, FaHeart, FaList } from 'react-icons/fa';
 
-// Icon mapping for widget types - returns React Icon Component
-const getWidgetIconComponent = (iconName: string): React.ReactNode => {
-    const iconMap: Record<string, React.ReactNode> = {
-        'Heart': <FaHeart />,
-        'List': <FaList />,
-        'Star': <FaHeading />,
-        'Box': <FaBox />,
-        'Text': <FaFileAlt />,
-        'Button': <FaMousePointer />,
-        'Image': <FaImage />,
-        'Video': <FaVideo />,
-        'Divider': <FaMinus />,
-        'Spacer': <FaArrowsAlt />,
-        'Heading': <FaHeading />,
+// Icon mapping for widget types - returns Font Awesome class name
+const getWidgetIconComponent=(iconName: string): string => {
+    const iconMap: Record<string, string>={
+        'Heart': 'fas fa-heart',
+        'List': 'fas fa-list',
+        'Star': 'fas fa-heading',
+        'Box': 'fas fa-box',
+        'Text': 'fas fa-file-alt',
+        'Button': 'fas fa-mouse-pointer',
+        'Image': 'fas fa-image',
+        'Video': 'fas fa-video',
+        'Divider': 'fas fa-minus',
+        'Spacer': 'fas fa-arrows-alt',
+        'Heading': 'fas fa-heading',
     };
-    return iconMap[iconName] || <FaBox />;
-}; 
+    return iconMap[iconName]||'fas fa-box';
+};
 
 interface LeftPanelProps {
     selectedNodeId: string|null;
@@ -206,8 +205,11 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
     };
 
     const handleStyleChange=(styleProp: string, value: any) => {
-        if (!selectedNodeId) return;if (currentDevice==='desktop') {updateNodeStyle?.(selectedNodeId, { [styleProp]: value });
-        } else {updateNodeResponsiveStyle?.(selectedNodeId, currentDevice, styleProp, value);
+        if (!selectedNodeId) return;
+        if (currentDevice==='desktop') {
+            updateNodeStyle?.(selectedNodeId, { [styleProp]: value });
+        } else {
+            updateNodeResponsiveStyle?.(selectedNodeId, currentDevice, { [styleProp]: value });
         }
     };
 
@@ -217,14 +219,14 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
         if (currentDevice==='desktop') {
             updateNodeAdvanced?.(selectedNodeId, { [advProp]: value });
         } else {
-            updateNodeResponsiveAdvanced?.(selectedNodeId, currentDevice, advProp, value);
+            updateNodeResponsiveAdvanced?.(selectedNodeId, currentDevice, { [advProp]: value });
         }
     };
 
     return (
         <div className="left-panel h-full flex flex-col overflow-hidden bg-white">
             {/* Main Tab Buttons */}
-            <div className="flex border-b border-gray-200 bg-gray-50 flex-shrink-0">
+            <div className="flex border-b border-gray-200 bg-gray-50 shrink-0">
                 <button
                     onClick={() => setActiveTab('library')}
                     className={`flex-1 px-3 py-3 text-sm font-medium transition border-b-2 flex flex-col  items-center justify-center gap-2 ${activeTab==='library'
@@ -232,7 +234,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                         :'text-gray-600 border-transparent hover:text-gray-900'
                         }`}
                 >
-                    <FaBox />
+                    <i className="fas fa-box"></i>
                     <span>Library</span>
                 </button>
                 <button
@@ -242,7 +244,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                         :'text-gray-600 border-transparent hover:text-gray-900'
                         }`}
                 >
-                    <FaClipboard />
+                    <i className="fas fa-clipboard"></i>
                     <span>Structure</span>
                 </button>
                 <button
@@ -252,7 +254,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                         :'text-gray-600 border-transparent hover:text-gray-900'
                         }`}
                 >
-                    <FaCog />
+                    <i className="fas fa-cog"></i>
                     <span>Inspector</span>
                 </button>
             </div>
@@ -268,7 +270,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                             onClick={handleAddSection}
                             className="w-full mb-4 px-4 py-3 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2 shadow-md"
                         >
-                            <FaPlus />
+                            <i className="fas fa-plus"></i>
                             <span>Add Section</span>
                         </button>
 
@@ -279,7 +281,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                                     onClick={() => toggleCategory(category)}
                                     className="w-full flex items-center gap-2 px-2 py-2 mb-2 bg-gray-100 hover:bg-gray-200 rounded text-sm font-semibold text-gray-700 transition"
                                 >
-                                    {expandedCategories.has(category)? <FaChevronDown size={12} />:<FaChevronRight size={12} />}
+                                    {expandedCategories.has(category)? <i className="fas fa-chevron-down text-xs"></i>:<i className="fas fa-chevron-right text-xs"></i>}
                                     <span>{category}</span>
                                 </button>
 
@@ -297,7 +299,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                                                 }}
                                                 className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-white border border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded text-sm transition cursor-move"
                                             >
-                                                <span className="text-xl text-blue-600">{getWidgetIconComponent(widget.icon)}</span>
+                                                <i className={`text-xl text-blue-600 ${getWidgetIconComponent(widget.icon)}`}></i>
                                                 <span className="font-medium text-gray-700 text-center">{widget.name}</span>
                                             </button>
                                         ))}
@@ -332,14 +334,14 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                                                     className="text-gray-400 hover:text-gray-700 hover:bg-gray-50 p-1.5 rounded transition"
                                                     title="Duplicate element"
                                                 >
-                                                    <FaCopy />
+                                                    <i className="fas fa-copy"></i>
                                                 </button>
                                                 <button
                                                     onClick={handleDeleteNode}
                                                     className="text-black hover:text-gray-700 hover:bg-gray-100 p-1.5 rounded transition"
                                                     title="Delete element"
                                                 >
-                                                    <FaTrash />
+                                                    <i className="fas fa-trash"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -351,18 +353,20 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                                             <p className="text-xs text-gray-600 mb-2">Hierarchy</p>
                                             <button
                                                 onClick={() => {
-                                                    const parentNode=rootNode? findNode(rootNode, selectedNodeId):null;
-                                                    if (parentNode) {
-                                                        let parentId=null;
-                                                        const findParent=(node: any) => {
-                                                            if (node.children?.find((c: any) => c.id===selectedNodeId)) {
-                                                                parentId=node.id;
-                                                                return true;
-                                                            }
-                                                            return node.children?.some((c: any) => findParent(c));
-                                                        };
-                                                        if (rootNode) findParent(rootNode);
-                                                        if (parentId) onSelectNode(parentId);
+                                                    if (selectedNodeId) {
+                                                        const parentNode=findNode(selectedNodeId);
+                                                        if (parentNode) {
+                                                            let parentId=null;
+                                                            const findParent=(node: any) => {
+                                                                if (node.children?.find((c: any) => c.id===selectedNodeId)) {
+                                                                    parentId=node.id;
+                                                                    return true;
+                                                                }
+                                                                return node.children?.some((c: any) => findParent(c));
+                                                            };
+                                                            if (rootNode) findParent(rootNode);
+                                                            if (parentId) onSelectNode(parentId);
+                                                        }
                                                     }
                                                 }}
                                                 className="w-full text-left px-2 py-2 bg-white border border-amber-300 rounded text-xs font-medium text-amber-700 hover:bg-amber-100 transition"
@@ -479,7 +483,7 @@ export const LeftPanel: React.FC<LeftPanelProps>=({
                             ):(
                                 <div className="text-center py-8">
                                     <p className="text-gray-900 text-sm flex items-center justify-center gap-2">
-                                        <FaChevronRight />
+                                        <i className="fas fa-chevron-right"></i>
                                         <span>Select an element on canvas to edit</span>
                                     </p>
                                 </div>

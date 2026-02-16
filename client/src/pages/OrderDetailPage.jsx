@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaCheck, FaTruck, FaCreditCard, FaDownload } from 'react-icons/fa';
+
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -548,7 +548,7 @@ const OrderDetailPage = () => {
               className="px-6 py-2.5 rounded-lg font-semibold text-white hover:opacity-90 transition duration-300 flex items-center justify-center gap-2"
               style={{ backgroundColor: 'var(--color-accent-primary)' }}
             >
-              <FaDownload /> Download PDF
+              <i className="fas fa-download"></i> Download PDF
             </button>
             <Link to="/order-lookup" className="px-6 py-2.5 rounded-lg font-semibold text-white hover:opacity-90 transition duration-300 text-center" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
               ← Back to Order Lookup
@@ -605,7 +605,7 @@ const OrderDetailPage = () => {
           }}>
             <div className="flex items-center gap-2 mb-4">
               <div className="p-2 rounded" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}>
-                <FaTruck style={{ color: 'white' }} size={18} />
+                <i className="fas fa-truck" style={{ color: 'white', fontSize: '18px' }}></i>
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text-primary)]">Shipping Address</h3>
             </div>
@@ -628,7 +628,7 @@ const OrderDetailPage = () => {
           }}>
             <div className="flex items-center gap-2 mb-4">
               <div className="p-2 rounded" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}>
-                <FaCreditCard style={{ color: 'white' }} size={18} />
+                <i className="fas fa-credit-card" style={{ color: 'white', fontSize: '18px' }}></i>
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text-primary)]">Billing Address</h3>
             </div>

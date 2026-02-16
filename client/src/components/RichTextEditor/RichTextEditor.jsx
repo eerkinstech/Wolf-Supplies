@@ -3,21 +3,6 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
-import {
-  FaBold,
-  FaItalic,
-  FaList,
-  FaListOl,
-  FaCode,
-  FaUndoAlt,
-  FaRedoAlt,
-  FaAlignLeft,
-  FaAlignCenter,
-  FaAlignRight,
-  FaAlignJustify,
-  FaLink,
-  FaUnlink,
-} from 'react-icons/fa';
 import './RichTextEditor.css';
 
 const RichTextEditor = ({ value = '', onChange = () => { } }) => {
@@ -27,7 +12,9 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        link: false, // Disable built-in link to avoid duplicates
+      }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
@@ -72,7 +59,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive('bold'))}
           title="Bold (Ctrl+B)"
         >
-          <FaBold className="text-sm" />
+          <i className="fas fa-bold text-sm"></i>
         </button>
 
         <button
@@ -82,7 +69,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive('italic'))}
           title="Italic (Ctrl+I)"
         >
-          <FaItalic className="text-sm" />
+          <i className="fas fa-italic text-sm"></i>
         </button>
 
         <div className="w-px bg-gray-300 mx-1"></div>
@@ -161,7 +148,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive('bulletList'))}
           title="Bullet List"
         >
-          <FaList className="text-sm" />
+          <i className="fas fa-list text-sm"></i>
         </button>
 
         <button
@@ -170,7 +157,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive('orderedList'))}
           title="Ordered List"
         >
-          <FaListOl className="text-sm" />
+          <i className="fas fa-list-ol text-sm"></i>
         </button>
 
         <div className="w-px bg-gray-300 mx-1"></div>
@@ -182,7 +169,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive('codeBlock'))}
           title="Code Block"
         >
-          <FaCode className="text-sm" />
+          <i className="fas fa-code text-sm"></i>
         </button>
 
         <div className="w-px bg-gray-300 mx-1"></div>
@@ -194,7 +181,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive({ textAlign: 'left' }))}
           title="Align Left"
         >
-          <FaAlignLeft className="text-sm" />
+          <i className="fas fa-align-left text-sm"></i>
         </button>
 
         <button
@@ -203,7 +190,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive({ textAlign: 'center' }))}
           title="Align Center"
         >
-          <FaAlignCenter className="text-sm" />
+          <i className="fas fa-align-center text-sm"></i>
         </button>
 
         <button
@@ -212,7 +199,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive({ textAlign: 'right' }))}
           title="Align Right"
         >
-          <FaAlignRight className="text-sm" />
+          <i className="fas fa-align-right text-sm"></i>
         </button>
 
         <button
@@ -221,7 +208,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(editor.isActive({ textAlign: 'justify' }))}
           title="Justify"
         >
-          <FaAlignJustify className="text-sm" />
+          <i className="fas fa-align-justify text-sm"></i>
         </button>
 
         <div className="w-px bg-gray-300 mx-1"></div>
@@ -294,7 +281,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
               className={buttonClass(editor.isActive('link'))}
               title="Add Link"
             >
-              <FaLink className="text-sm" />
+              <i className="fas fa-link text-sm"></i>
             </button>
 
             <button
@@ -304,7 +291,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
               className={buttonClass(false)}
               title="Remove Link"
             >
-              <FaUnlink className="text-sm" />
+              <i className="fas fa-link-slash text-sm"></i>
             </button>
           </>
         )}
@@ -319,7 +306,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(false)}
           title="Undo (Ctrl+Z)"
         >
-          <FaUndoAlt className="text-sm" />
+          <i className="fas fa-arrow-rotate-left text-sm"></i>
         </button>
 
         <button
@@ -329,7 +316,7 @@ const RichTextEditor = ({ value = '', onChange = () => { } }) => {
           className={buttonClass(false)}
           title="Redo (Ctrl+Y)"
         >
-          <FaRedoAlt className="text-sm" />
+          <i className="fas fa-arrow-rotate-right text-sm"></i>
         </button>
       </div>
 

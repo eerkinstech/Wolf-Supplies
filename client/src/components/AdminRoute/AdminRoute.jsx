@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaSpinner, FaLock } from 'react-icons/fa';
+
 
 /**
  * AdminRoute Component - Protects admin-only routes with authentication and role-based access
@@ -19,7 +19,7 @@ const AdminRoute = ({ children }) => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <FaSpinner className="animate-spin text-4xl text-gray-700 mx-auto mb-4" />
+          <i className="fas fa-spinner animate-spin text-4xl text-gray-700 block mx-auto mb-4"></i>
           <p className="text-gray-600">Verifying access...</p>
         </div>
       </div>
@@ -36,7 +36,7 @@ const AdminRoute = ({ children }) => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-black">
         <div className="text-center p-8 bg-white rounded-lg shadow-xl">
-          <FaLock className="text-5xl text-black mx-auto mb-4" />
+          <i className="fas fa-lock text-5xl text-black block mx-auto mb-4"></i>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Access Denied</h1>
           <p className="text-gray-600 mb-6">
             You do not have permission to access this page. Only administrators can access this area.

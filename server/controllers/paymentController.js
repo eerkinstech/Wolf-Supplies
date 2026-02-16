@@ -1,10 +1,10 @@
-import Stripe from 'stripe';
-import Order from '../models/Order.js';
-import Coupon from '../models/Coupon.js';
-import dotenv from 'dotenv';
-import crypto from 'crypto';
-import { sendOrderConfirmationEmail, sendOrderNotificationToAdmin, sendOrderWithPDF } from '../utils/emailService.js';
-import { generateOrderPDF } from '../utils/pdfGenerator.js';
+const Stripe = require('stripe');
+const Order = require('../models/Order.js');
+const Coupon = require('../models/Coupon.js');
+const dotenv = require('dotenv');
+const crypto = require('crypto');
+const { sendOrderConfirmationEmail, sendOrderNotificationToAdmin, sendOrderWithPDF  } = require('../utils/emailService.js');
+const { generateOrderPDF  } = require('../utils/pdfGenerator.js');
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ if (STRIPE_KEY) {
 const SERVER_BASE = process.env.SERVER_URL || process.env.VITE_API_URL || process.env.CLIENT_URL;
 
 // Create an order and Stripe Checkout session (guest or authenticated users)
-export const createCheckoutSession = async (req, res, next) => {
+const createCheckoutSession = async (req, res, next) => {
     try {
         if (!stripe) return res.status(500).json({ message: 'Stripe is not configured on the server. Set STRIPE_SECRET_KEY in environment.' });
         const user = req.user; // optional - can be null for guest users
@@ -251,7 +251,7 @@ export const createCheckoutSession = async (req, res, next) => {
 };
 
 // Create PaymentIntent for in-page Stripe Elements flow
-export const createPaymentIntent = async (req, res, next) => {
+const createPaymentIntent = async (req, res, next) => {
     try {
         if (!stripe) return res.status(500).json({ message: 'Stripe is not configured on the server.' });
         const user = req.user; // Optional - can be null for guest users
@@ -435,7 +435,7 @@ const incrementCouponUsage = async (orderId) => {
 };
 
 // Stripe webhook handler (expects raw body)
-export const webhookHandler = async (req, res) => {
+const webhookHandler = async (req, res) => {
     if (!stripe) return res.status(500).send('Stripe not configured on server.');
     const sig = req.headers['stripe-signature'];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -538,12 +538,12 @@ export const webhookHandler = async (req, res) => {
     res.json({ received: true });
 };
 
-export const getStripeStatus = (req, res) => {
+const getStripeStatus = (req, res) => {
     const envKey = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KEY || '';
     const configured = !!stripe && !!envKey;
     const preview = envKey ? `${envKey.slice(0, 8)}...${envKey.slice(-4)}` : null;
     return res.json({ configured, keyPreview: preview });
 };
 
-export default { createCheckoutSession, webhookHandler, getStripeStatus };
+module.exports = { createCheckoutSession, webhookHandler, getStripeStatus, createPaymentIntent };
 

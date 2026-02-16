@@ -7,8 +7,8 @@
  * Run: node server/migrations/fixContactFormFlag.js
  */
 
-import mongoose from 'mongoose';
-import ContactSubmission from '../models/ContactSubmission.js';
+const mongoose = require('mongoose');
+const ContactSubmission = require('../models/ContactSubmission.js');
 
 const fixContactFormFlag = async () => {
   try {

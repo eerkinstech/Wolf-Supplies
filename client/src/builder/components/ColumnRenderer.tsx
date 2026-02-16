@@ -15,7 +15,7 @@ interface ColumnNodeProps {
     isSelected?: boolean;
     onSelect?: (nodeId: string) => void;
     cssStyle: Record<string, any>;
-    className: string;
+    _className?: string;
     onClick: (e: React.MouseEvent) => void;
 }
 
@@ -31,7 +31,7 @@ const WIDGET_DEFAULTS: Record<string, Record<string, any>>={
     iconList: { items: [] }
 };
 
-export const ColumnRenderer: React.FC<ColumnNodeProps>=({ node, device, isSelected, onSelect, cssStyle, className, onClick }) => {
+export const ColumnRenderer: React.FC<ColumnNodeProps>=({ node, device, isSelected, onSelect, cssStyle, _className, onClick }) => {
     const [isDragOver, setIsDragOver]=useState(false);
     const context=useContext(ElementorBuilderContext) as any;
     const mergedAdvanced=advancedMerge(node, device);

@@ -4,7 +4,6 @@ import { removeFromCart, updateCartItem, clearCart, syncCart, clearServerCart } 
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import CartItem from '../components/Cart/CartItem';
 import CartSummary from '../components/Cart/CartSummary';
@@ -79,10 +78,10 @@ const CartPage = () => {
 
     try {
       const API = import.meta.env.VITE_API_URL || '';
-      
+
       // Extract product IDs from cart items
       const productIds = items.map(item => item.product);
-      
+
       const response = await fetch(`${API}/api/coupons/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,7 +149,7 @@ const CartPage = () => {
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <FaShoppingCart className="text-4xl text-[var(--color-accent-primary)]" />
+            <i className="fas fa-shopping-cart text-4xl text-[var(--color-accent-primary)]"></i>
             <h1 className="text-5xl md:text-6xl font-bold text-[var(--color-text-primary)]">Shopping Cart</h1>
           </div>
           <p className="text-xl text-[var(--color-text-light)]">
@@ -160,14 +159,14 @@ const CartPage = () => {
 
         {items.length === 0 ? (
           <div className="text-center py-24 bg-[var(--color-bg-secondary)] rounded-3xl shadow-lg border-2 border-[var(--color-border-light)]">
-            <FaShoppingCart className="text-8xl text-[var(--color-text-muted)] mx-auto mb-6" />
+            <i className="fas fa-shopping-cart text-8xl text-[var(--color-text-muted)] mx-auto mb-6 block"></i>
             <p className="text-3xl font-bold text-[var(--color-text-primary)] mb-4">Your cart is empty</p>
             <p className="text-xl text-[var(--color-text-light)] mb-12">Add some items to your cart to get started!</p>
             <Link
               to="/products"
               className="inline-flex items-center gap-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white px-10 py-4 rounded-lg font-bold text-lg transition duration-300 shadow-lg"
             >
-              <FaArrowLeft /> Continue Shopping
+              <i className="fas fa-arrow-left"></i> Continue Shopping
             </Link>
           </div>
         ) : (

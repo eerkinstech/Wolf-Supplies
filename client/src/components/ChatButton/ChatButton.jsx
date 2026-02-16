@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaComments, FaTimes, FaEdit } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
 
 const ChatButton = () => {
@@ -91,7 +91,8 @@ const ChatButton = () => {
                     localStorage.setItem('chatUnreadCount', unreadFromAdmin);
                 }
             }
-        } catch (error) {}
+        } catch (error) {
+        }
     };
 
     // Check unread messages immediately
@@ -107,9 +108,11 @@ const ChatButton = () => {
                         msg => msg.sender === 'admin' && !msg.isRead
                     ).length;
                     setUnreadCount(unreadFromAdmin);
-                    localStorage.setItem('chatUnreadCount', unreadFromAdmin);}
+                    localStorage.setItem('chatUnreadCount', unreadFromAdmin);
+                }
             }
-        } catch (error) {}
+        } catch (error) {
+        }
     };
 
     // Check unread messages in background
@@ -127,10 +130,12 @@ const ChatButton = () => {
                     ).length;
                     setUnreadCount(unreadFromAdmin);
                     localStorage.setItem('chatUnreadCount', unreadFromAdmin);
-                    if (unreadFromAdmin > 0) {}
+                    if (unreadFromAdmin > 0) {
+                    }
                 }
             }
-        } catch (error) {}
+        } catch (error) {
+        }
     };
 
     const handleStartChat = (e) => {
@@ -188,7 +193,8 @@ const ChatButton = () => {
                 email: trimmedEmail,
                 message: trimmedMessage,
                 subject: 'Chat Support'
-            };const response = await fetch(`${API}/api/chat`, {
+            };
+            const response = await fetch(`${API}/api/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -196,7 +202,8 @@ const ChatButton = () => {
                 body: JSON.stringify(payload)
             });
 
-            const responseData = await response.json();if (!response.ok) {
+            const responseData = await response.json();
+            if (!response.ok) {
                 throw new Error(responseData.message || `Server error: ${response.status}`);
             }
 
@@ -208,7 +215,8 @@ const ChatButton = () => {
             } else {
                 throw new Error('Invalid response from server');
             }
-        } catch (error) {toast.error(error.message || 'Failed to send message');
+        } catch (error) {
+            toast.error(error.message || 'Failed to send message');
         } finally {
             setSending(false);
         }
@@ -278,7 +286,7 @@ const ChatButton = () => {
                                     title="Edit name and email"
                                     aria-label="Edit info"
                                 >
-                                    <FaEdit className="text-sm" />
+                                    <i className="fas fa-edit text-sm"></i>
                                 </button>
                             )}
                             <button
@@ -286,7 +294,7 @@ const ChatButton = () => {
                                 className="text-white hover:bg-[var(--color-accent-light)] rounded-full p-1 transition duration-300"
                                 aria-label="Close chat"
                             >
-                                <FaTimes className="text-lg" />
+                                <i className="fas fa-times text-lg"></i>
                             </button>
                         </div>
                     </div>
@@ -423,9 +431,9 @@ const ChatButton = () => {
                 }}
             >
                 {isChatOpen ? (
-                    <FaTimes className="text-2xl" />
+                    <i className="fas fa-times text-2xl"></i>
                 ) : (
-                    <FaComments className="text-2xl" />
+                    <i className="fas fa-comments text-2xl"></i>
                 )}
 
                 {/* Unread Message Badge */}

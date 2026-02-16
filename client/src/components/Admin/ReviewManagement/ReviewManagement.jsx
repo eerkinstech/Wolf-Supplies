@@ -1,12 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-    FaCheck,
-    FaTimes,
-    FaSpinner,
-    FaStar,
-    FaRegStar,
-    FaStarHalfAlt,
-} from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || '';
@@ -498,11 +490,11 @@ toast.error('Failed to fetch reviews');
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             if (rating >= i) {
-                stars.push(<FaStar key={i} className="text-yellow-400" />);
+                stars.push(<i key={i} className="fas fa-star text-yellow-400"></i>);
             } else if (rating >= i - 0.5) {
-                stars.push(<FaStarHalfAlt key={i} className="text-yellow-400" />);
+                stars.push(<i key={i} className="fas fa-star-half text-yellow-400"></i>);
             } else {
-                stars.push(<FaRegStar key={i} className="text-yellow-400" />);
+                stars.push(<i key={i} className="far fa-star text-yellow-400"></i>);
             }
         }
         return stars;
@@ -675,7 +667,7 @@ toast.error('Failed to fetch reviews');
             {/* Loading State */}
             {loading && (
                 <div className="flex justify-center items-center py-12">
-                    <FaSpinner className="text-4xl animate-spin" style={{ color: 'var(--color-accent-primary)' }} />
+                    <i className="fas fa-spinner text-4xl animate-spin" style={{ color: 'var(--color-accent-primary)' }}></i>
                 </div>
             )}
 
@@ -769,11 +761,11 @@ toast.error('Failed to fetch reviews');
                                             >
                                                 {review.isApproved ? (
                                                     <>
-                                                        <FaTimes /> Unverify
+                                                        <i className="fas fa-times"></i> Unverify
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <FaCheck /> Verify
+                                                        <i className="fas fa-check"></i> Verify
                                                     </>
                                                 )}
                                             </button>

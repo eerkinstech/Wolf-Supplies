@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Control, MediaPickerValue } from '../controls/types/index';
-import RichTextEditor from '../../components/RichTextEditor/RichTextEditor';
+import RichTextEditor from '../../context/ElementorBuilderContext';
 
 /**
  * ControlRenderer - Renders individual controls based on type
@@ -896,9 +896,11 @@ const MediaPickerControl: React.FC<MediaPickerControlProps>=({
         // Extract URL from response - could be nested in asset object or direct
         const uploadedUrl=data.asset?.url||data.url||data.path||file.name;
         onChange(uploadedUrl);
-      } else {alert('Upload failed. Please try again.');
+      } else {
+alert('Upload failed. Please try again.');
       }
-    } catch (error) {alert('Upload error. Please try again.');
+    } catch (error) {
+alert('Upload error. Please try again.');
     } finally {
       setIsUploading(false);
     }
@@ -1013,7 +1015,7 @@ const MediaPickerControl: React.FC<MediaPickerControlProps>=({
 
       {showLibrary&&(
         <MediaLibraryModal
-          onSelect={(assetId, type) => {
+          onSelect={(assetId, _type) => {
             onChange(assetId as string);
             setShowLibrary(false);
           }}

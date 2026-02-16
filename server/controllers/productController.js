@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import Product from '../models/Product.js';
-import Category from '../models/Category.js';
-import Settings from '../models/Settings.js';
+const mongoose = require('mongoose');
+const Product = require('../models/Product.js');
+const Category = require('../models/Category.js');
+const Settings = require('../models/Settings.js');
 
 // Normalize benefits to an HTML string. Accepts:
 // - HTML string (leave as-is)
@@ -30,7 +30,7 @@ const normalizeBenefitsToHtml = (val) => {
   return '';
 };
 // GET /api/products?search=&category=&page=&limit=
-export const getProducts = async (req, res) => {
+const getProducts = async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 20;
   const keyword = req.query.search
@@ -46,7 +46,7 @@ export const getProducts = async (req, res) => {
   res.json({ products, page, pages: Math.ceil(count / limit) });
 };
 
-export const getProductById = async (req, res) => {
+const getProductById = async (req, res) => {
   try {
     // Support fetching by Mongo _id or by slug (route may pass either `id` or `slug` param)
     const identifier = req.params.id || req.params.slug;
@@ -109,7 +109,7 @@ export const getProductById = async (req, res) => {
   }
 };
 
-export const createProduct = async (req, res) => {
+const createProduct = async (req, res) => {
   try {
     // Accept both JSON body arrays or JSON-stringified values from forms
     const {
@@ -217,7 +217,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const updateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
@@ -304,7 +304,7 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-export const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) return res.status(404).json({ message: 'Product not found' });
   await Product.deleteOne({ _id: req.params.id });
@@ -312,7 +312,7 @@ export const deleteProduct = async (req, res) => {
 };
 
 // POST /api/products/:id/reviews - add a review for a product
-export const createProductReview = async (req, res) => {
+const createProductReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
     const product = await Product.findById(req.params.id);
@@ -355,7 +355,7 @@ export const createProductReview = async (req, res) => {
 };
 
 // PATCH /api/products/:id/reviews/:index - approve/disapprove a review
-export const updateReviewApprovalStatus = async (req, res) => {
+const updateReviewApprovalStatus = async (req, res) => {
   try {
     const { isApproved } = req.body;
     const product = await Product.findById(req.params.id);
@@ -384,7 +384,7 @@ export const updateReviewApprovalStatus = async (req, res) => {
 };
 
 // DELETE /api/products/:id/reviews/:index - delete a review
-export const deleteProductReview = async (req, res) => {
+const deleteProductReview = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
@@ -409,7 +409,7 @@ export const deleteProductReview = async (req, res) => {
 };
 
 // POST /api/products/import - Import products from CSV
-export const importProducts = async (req, res) => {
+const importProducts = async (req, res) => {
   try {
     const { products: productsData } = req.body;
 
@@ -748,3 +748,15 @@ export const importProducts = async (req, res) => {
   }
 };
 
+
+module.exports = {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  createProductReview,
+  updateReviewApprovalStatus,
+  deleteProductReview,
+  importProducts,
+};

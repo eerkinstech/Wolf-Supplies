@@ -4,8 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, syncCart } from '../../../redux/slices/cartSlice';
 import { useAuth } from '../../../context/AuthContext';
 import toast from 'react-hot-toast';
-import { FaStarHalfAlt, FaStar ,FaRegStar } from 'react-icons/fa';
-import { FiStar } from 'react-icons/fi';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -109,11 +107,11 @@ const ProductCard = ({ product }) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (rating >= i) {
-        stars.push(<FaStar key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`fas fa-star ${sizeClass} text-yellow-400`}></i>);
       } else if (rating >= i - 0.5) {
-        stars.push(<FaStarHalfAlt key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`fas fa-star-half-alt ${sizeClass} text-yellow-400`}></i>);
       } else {
-        stars.push(<FaRegStar key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`far fa-star ${sizeClass} text-yellow-400`}></i>);
       }
     }
     return stars;

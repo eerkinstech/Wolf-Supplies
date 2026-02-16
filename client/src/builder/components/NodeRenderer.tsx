@@ -69,7 +69,7 @@ export const NodeRenderer: React.FC<NodeRendererProps>=({
                     isSelected={isSelected}
                     onSelect={onSelect}
                     cssStyle={nodeStyle}
-                    className={className}
+                    _className={className}
                     onClick={handleClick}
                 />
             );
@@ -82,7 +82,7 @@ export const NodeRenderer: React.FC<NodeRendererProps>=({
                     isSelected={isSelected}
                     onSelect={onSelect}
                     cssStyle={nodeStyle}
-                    className={className}
+                    _className={className}
                     onClick={handleClick}
                 />
             );

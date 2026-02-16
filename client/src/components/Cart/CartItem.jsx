@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTrash, FaBox, FaTag, FaCheck } from 'react-icons/fa';
+
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -65,7 +65,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
                 <div className="grid grid-cols-2 gap-3">
                   {item.selectedSize && (
                     <div className="flex items-center gap-2">
-                      <FaBox className="text-sm" style={{ color: 'var(--color-accent-primary)' }} />
+                      <i className="fas fa-box text-sm" style={{ color: 'var(--color-accent-primary)' }}></i>
                       <span className="text-sm">
                         <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Size:</span>
                         <span className="ml-1" style={{ color: 'var(--color-text-secondary)' }}>{item.selectedSize}</span>
@@ -74,7 +74,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
                   )}
                   {item.selectedColor && (
                     <div className="flex items-center gap-2">
-                      <FaTag className="text-sm" style={{ color: 'var(--color-accent-primary)' }} />
+                      <i className="fas fa-tag text-sm" style={{ color: 'var(--color-accent-primary)' }}></i>
                       <span className="text-sm">
                         <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Color:</span>
                         <span className="ml-1" style={{ color: 'var(--color-text-secondary)' }}>{item.selectedColor}</span>
@@ -83,7 +83,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
                   )}
                   {item.selectedVariants && Object.entries(item.selectedVariants).filter(([_, v]) => v).map(([key, value]) => (
                     <div key={key} className="flex items-center gap-2">
-                      <FaCheck className="text-sm" style={{ color: 'var(--color-accent-primary)' }} />
+                      <i className="fas fa-check text-sm" style={{ color: 'var(--color-accent-primary)' }}></i>
                       <span className="text-sm">
                         <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{key}:</span>
                         <span className="ml-1" style={{ color: 'var(--color-text-secondary)' }}>{value}</span>
@@ -135,7 +135,8 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
             onClick={() => {
               try {
                 if (typeof onRemove === 'function') onRemove(item._id);
-              } catch (err) {}
+              } catch (err) {
+}
             }}
             className="w-16 sm:w-auto px-4 py-2 font-semibold flex items-center justify-center gap-2 transition duration-300 rounded-lg"
             style={{
@@ -147,7 +148,7 @@ const CartItem = ({ item, onRemove, onUpdateQuantity, index, isLast }) => {
             }
             onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
           >
-            <FaTrash className="text-sm" />
+            <i className="fas fa-trash text-sm"></i>
           </button>
         </div>
       </div>

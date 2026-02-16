@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProductCard from '../ProductCard/ProductCard';
-import { FaChevronRight } from 'react-icons/fa';
+
 
 const RelatedProducts = ({ currentProductId, currentCategory }) => {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const RelatedProducts = ({ currentProductId, currentCategory }) => {
           onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
         >
           View All {currentCategory} Products
-          <FaChevronRight className="text-sm" />
+          <i className="fas fa-chevron-right text-sm"></i>
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getAllOrders,
   getUserOrders,
   getOrderById,
@@ -16,8 +16,8 @@ import {
   updateOrderShipping,
   updateOrderBilling,
   resendOrderPDF,
-} from '../controllers/orderController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/orderController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -44,5 +44,5 @@ router.put('/:id/billing', protect, admin, updateOrderBilling); // Update billin
 router.post('/:id/resend-pdf', protect, admin, resendOrderPDF); // Resend order PDF to customer
 router.put('/:id', protect, admin, updateOrderStatus); // Generic update for status
 
-export default router;
+module.exports = router;
 

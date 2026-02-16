@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronLeft, FaChevronRight, FaShoppingCart, FaArrowDown } from 'react-icons/fa';
+
 
 const SliderComponent = ({ content = {} }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -83,7 +83,7 @@ const SliderComponent = ({ content = {} }) => {
                                 <h2 className="text-3xl md:text-5xl font-bold mb-4">{slide.title}</h2>
                                 <p className="text-lg md:text-2xl mb-8">{slide.description}</p>
                                 <button className="bg-gray-800 hover:bg-black text-white px-8 py-3 rounded-lg font-bold transition flex items-center gap-2 mx-auto">
-                                    <FaShoppingCart /> Shop Now
+                                    <i className="fas fa-shopping-cart"></i> Shop Now
                                 </button>
                             </div>
                         </div>
@@ -96,7 +96,7 @@ const SliderComponent = ({ content = {} }) => {
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full transition"
                     aria-label="Previous slide"
                 >
-                    <FaChevronLeft size={24} />
+                    <i className="fas fa-chevron-left" style={{ fontSize: '24px' }}></i>
                 </button>
 
                 <button
@@ -104,7 +104,7 @@ const SliderComponent = ({ content = {} }) => {
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full transition"
                     aria-label="Next slide"
                 >
-                    <FaChevronRight size={24} />
+                    <i className="fas fa-chevron-right" style={{ fontSize: '24px' }}></i>
                 </button>
 
                 {/* Dots */}
@@ -127,7 +127,7 @@ const SliderComponent = ({ content = {} }) => {
                 onClick={handleScrollDown}
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce text-white"
             >
-                <FaArrowDown size={24} />
+                <i className="fas fa-arrow-down" style={{ fontSize: '24px' }}></i>
             </button>
         </div>
     );

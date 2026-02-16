@@ -1,12 +1,12 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getAllPolicies,
   getPolicy,
   createPolicy,
   updatePolicy,
   deletePolicy
-} from '../controllers/policyController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/policyController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -25,5 +25,5 @@ router.patch('/:id', protect, admin, updatePolicy);
 // Delete policy (admin)
 router.delete('/:id', protect, admin, deletePolicy);
 
-export default router;
+module.exports = router;
 

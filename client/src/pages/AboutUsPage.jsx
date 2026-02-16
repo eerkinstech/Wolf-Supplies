@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useMetaTags from '../hooks/useMetaTags';
-import { FaArrowLeft, FaStar, FaCheck, FaUsers, FaGlobeEurope, FaTrophy, FaLeaf } from 'react-icons/fa';
+
 import wolfLogo from '../assets/Wolf Supplies LTD.png';
 
 // Load images from src/assets using Vite glob and pick those that mention "warehouse".
@@ -43,7 +43,7 @@ const AboutUsPage = () => {
       <div className="bg-[var(--color-accent-primary)] text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:text-gray-100 w-fit">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <h1 className="text-5xl md:text-6xl font-bold mb-4">About Wolf Supplies LTD</h1>
           <p className="text-xl text-gray-100">Your Trusted Online Shopping Destination</p>
@@ -87,7 +87,7 @@ const AboutUsPage = () => {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-lg p-8 border-l-4 border-[var(--color-accent-primary)]">
               <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-3">
-                <FaCheck className="text-[var(--color-accent-primary)] text-2xl" />
+                <i className="fas fa-check" style={{ color: 'var(--color-accent-primary)', fontSize: '24px' }}></i>
                 Our Mission
               </h3>
               <p className="text-[var(--color-text-light)] leading-relaxed">
@@ -96,7 +96,7 @@ const AboutUsPage = () => {
             </div>
             <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-lg p-8 border-l-4 border-[var(--color-accent-primary)]">
               <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4 flex items-center gap-3">
-                <FaTrophy className="text-[var(--color-accent-primary)] text-2xl" />
+                <i className="fas fa-trophy" style={{ color: 'var(--color-accent-primary)', fontSize: '24px' }}></i>
                 Our Vision
               </h3>
               <p className="text-[var(--color-text-light)] leading-relaxed">
@@ -112,25 +112,24 @@ const AboutUsPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: FaUsers,
+                icon: 'fas fa-users',
                 title: 'Responsive Service',
                 desc: 'We respond to customer inquiries during business hours (Monday-Friday, 9 AM - 6 PM GMT).'
               },
               {
-                icon: FaCheck,
+                icon: 'fas fa-check',
                 title: 'Quality & Integrity',
                 desc: 'We maintain the highest standards of quality products and honest business practices.'
               },
               {
-                icon: FaLeaf,
+                icon: 'fas fa-leaf',
                 title: 'Sustainability',
                 desc: 'We are committed to environmentally responsible practices and ethical sourcing.'
               }
             ].map((value, idx) => {
-              const IconComponent = value.icon;
               return (
                 <div key={idx} className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
-                  <IconComponent className="text-4xl text-gray-400 mx-auto mb-4" />
+                  <i className={`${value.icon} text-4xl text-gray-400 mx-auto mb-4` } style={{ display: 'block' }}></i>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
                   <p className="text-gray-700">{value.desc}</p>
                 </div>
@@ -144,15 +143,14 @@ const AboutUsPage = () => {
           <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">By The Numbers</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { number: 'Free', label: 'UK Shipping', icon: FaStar },
-              { number: '31', label: 'Day Returns', icon: FaUsers },
-              { number: '2-4', label: 'Day Delivery', icon: FaGlobeEurope },
-              { number: 'Secure', label: 'Payments', icon: FaCheck }
+              { number: 'Free', label: 'UK Shipping', icon: 'fas fa-star' },
+              { number: '31', label: 'Day Returns', icon: 'fas fa-users' },
+              { number: '2-4', label: 'Day Delivery', icon: 'fas fa-globe-europe' },
+              { number: 'Secure', label: 'Payments', icon: 'fas fa-check' }
             ].map((stat, idx) => {
-              const IconComponent = stat.icon;
               return (
                 <div key={idx} className="bg-white rounded-lg p-6 text-center border-2 border-gray-200">
-                  <IconComponent className="text-3xl text-gray-400 mx-auto mb-3" />
+                  <i className={`${stat.icon} text-3xl text-gray-400 mx-auto mb-3`} style={{ display: 'block' }}></i>
                   <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.number}</h3>
                   <p className="text-gray-700 font-semibold">{stat.label}</p>
                 </div>

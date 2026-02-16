@@ -6,10 +6,10 @@ interface IconWidgetProps {
     device?: 'desktop'|'tablet'|'mobile';
     isEditing?: boolean;
     onEdit?: () => void;
-    cssStyle?: Record<string, any>;
+    __cssStyle?: Record<string, any>;
 }
 
-export const IconWidget: React.FC<IconWidgetProps>=({ node, device='desktop', isEditing, onEdit, cssStyle={} }) => {
+export const IconWidget: React.FC<IconWidgetProps>=({ node, device='desktop', isEditing, onEdit, __cssStyle={} }) => {
     const [isHovered, setIsHovered] = useState(false);
     
     // Get icon from props

@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  FaEdit,
-  FaTrash,
-  FaPlus,
-  FaSpinner,
-  FaSearch,
-  FaTimes,
-} from 'react-icons/fa';
 import toast from 'react-hot-toast';
 // AddProductForm component removed in favor of full-page editor
 import { useDispatch, useSelector } from 'react-redux';
@@ -605,7 +597,7 @@ const ProductManagement = () => {
             onClick={() => navigate('/admin/products/add')}
             className="flex items-center gap-2 bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-lg font-semibold transition duration-300"
           >
-            <FaPlus /> Add Product
+            <i className="fas fa-plus"></i> Add Product
           </button>
         </div>
       </div>
@@ -636,7 +628,7 @@ const ProductManagement = () => {
         {/* Search Bar */}
         <div className="relative w-80">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-            <FaSearch className="text-sm" />
+            <i className="fas fa-search text-sm"></i>
           </div>
           <input
             type="text"
@@ -651,7 +643,7 @@ const ProductManagement = () => {
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition"
               aria-label="Clear search"
             >
-              <FaTimes className="text-sm" />
+              <i className="fas fa-times text-sm"></i>
             </button>
           )}
         </div>
@@ -702,7 +694,7 @@ const ProductManagement = () => {
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
-          <FaSpinner className="text-4xl text-gray-700 animate-spin" />
+          <i className="fas fa-spinner animate-spin text-4xl text-gray-700"></i>
         </div>
       )}
 
@@ -802,13 +794,13 @@ const ProductManagement = () => {
                           onClick={() => handleOpenModal(product)}
                           className="text-gray-700 hover:text-gray-800 transition"
                         >
-                          <FaEdit />
+                          <i className="fas fa-edit"></i>
                         </button>
                         <button
                           onClick={() => handleDelete(product._id)}
                           className="text-red-600 hover:text-red-800 transition"
                         >
-                          <FaTrash />
+                          <i className="fas fa-trash"></i>
                         </button>
                       </td>
                     </tr>

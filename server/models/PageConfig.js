@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 // Node schema - matches the builder's node structure
 const nodeSchema = new mongoose.Schema({
@@ -77,5 +77,5 @@ pageConfigSchema.pre('save', function () {
   this.updatedAt = Date.now();
 });
 
-export default mongoose.model('PageConfig', pageConfigSchema);
+module.exports = mongoose.model('PageConfig', pageConfigSchema);
 

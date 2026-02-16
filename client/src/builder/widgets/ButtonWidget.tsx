@@ -12,8 +12,8 @@ interface ButtonWidgetProps {
 export const ButtonWidget: React.FC<ButtonWidgetProps>=({ node, device='desktop', isEditing, onEdit, cssStyle={} }) => {
     const text=node.props?.text||'Click Me';
     const icon=node.props?.icon||'';
-    const link=node.props?.link||'#';
-    const style=node.props?.style||'primary';
+    const __link=node.props?.link||'#';
+    const __style=node.props?.style||'primary';
     const [isHovering, setIsHovering]=React.useState(false);
 
     // Helper function to get responsive value with fallback

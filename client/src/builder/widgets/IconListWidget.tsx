@@ -6,10 +6,10 @@ interface IconListWidgetProps {
     device?: 'desktop'|'tablet'|'mobile';
     isEditing?: boolean;
     onEdit?: () => void;
-    cssStyle?: Record<string, any>;
+    _cssStyle?: Record<string, any>;
 }
 
-export const IconListWidget: React.FC<IconListWidgetProps>=({ node, device='desktop', isEditing, onEdit, cssStyle={} }) => {
+export const IconListWidget: React.FC<IconListWidgetProps>=({ node, device='desktop', isEditing, onEdit, _cssStyle={} }) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     
     // Get items from props
@@ -19,7 +19,7 @@ export const IconListWidget: React.FC<IconListWidgetProps>=({ node, device='desk
         { id: '3', icon: 'fas fa-heart', heading: 'Item 3', text: 'Description text', link: '', openNewTab: false },
     ];
     const iconPosition=node.props?.iconPosition||node.style?.iconPosition||'left';
-    const gap=node.style?.gap||'16px';
+    const __gap=node.style?.gap||'16px';
 
     // Helper function to get responsive value
     const getResponsiveValue=(propName: string, defaultVal: any) => {

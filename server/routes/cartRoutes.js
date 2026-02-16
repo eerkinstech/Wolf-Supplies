@@ -1,6 +1,6 @@
-import express from 'express';
-import { getCart, updateCart, clearCart } from '../controllers/cartController.js';
-import { protect } from '../middleware/authMiddleware.js';
+const express = require('express');
+const { getCart, updateCart, clearCart } = require('../controllers/cartController.js');
+const { protect } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -9,5 +9,5 @@ router.get('/', getCart);
 router.post('/', updateCart);
 router.delete('/', clearCart);
 
-export default router;
+module.exports = router;
 

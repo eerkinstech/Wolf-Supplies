@@ -4,7 +4,7 @@ import useMetaTags from '../hooks/useMetaTags';
 import { fetchCategories, setSearchQuery, clearSearchQuery } from '../redux/slices/categorySlice';
 import CategoryCard from '../components/Categories/CategoryCard/CategoryCard';
 import CategoryFilter from '../components/Categories/CategoryFilter/CategoryFilter';
-import { FaSpinner } from 'react-icons/fa';
+
 
 const CategoriesPage = () => {
   const dispatch = useDispatch();
@@ -82,7 +82,7 @@ const CategoriesPage = () => {
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <div className="text-center">
-              <FaSpinner className="text-6xl text-[var(--color-text-light)] animate-spin mx-auto mb-4" />
+              <i className="fas fa-spinner animate-spin" style={{ fontSize: '64px', color: 'var(--color-text-light)', display: 'block', marginBottom: '16px' }}></i>
               <p className="text-xl text-[var(--color-text-light)]">Loading categories...</p>
             </div>
           </div>

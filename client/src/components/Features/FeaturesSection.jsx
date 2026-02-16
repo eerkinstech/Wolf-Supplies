@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiTruck, FiLock, FiHeadphones, FiRotateCcw } from 'react-icons/fi';
 
 const FeaturesSection = () => {
     const features = [
@@ -8,7 +7,7 @@ const FeaturesSection = () => {
             id: 1,
             title: 'Return & Refund',
             subtitle: '31 Days Return & Refund',
-            icon: FiRotateCcw,
+            icon: 'fas fa-undo',
             color: 'text-[var(--color-accent-primary)]',
             link: '/policies/returns-refund',
         },
@@ -16,7 +15,7 @@ const FeaturesSection = () => {
             id: 2,
             title: 'Free Shipping',
             subtitle: '2 - 4 business Days',
-            icon: FiTruck,
+            icon: 'fas fa-truck',
             color: 'text-[var(--color-accent-primary)]',
             link: '/policies/shipping',
         },
@@ -24,7 +23,7 @@ const FeaturesSection = () => {
             id: 3,
             title: 'Secure Payment',
             subtitle: 'We Ensure Secure Payment',
-            icon: FiLock,
+            icon: 'fas fa-lock',
             color: 'text-[var(--color-accent-primary)]',
             link: '/payment-options',
         },
@@ -32,7 +31,7 @@ const FeaturesSection = () => {
             id: 4,
             title: 'Customer Support',
             subtitle: 'Mon - Fri 9:00 AM To 6:00 PM',
-            icon: FiHeadphones,
+            icon: 'fas fa-headphones',
             color: 'text-[var(--color-accent-primary)]',
             link: '/contact',
         },
@@ -43,7 +42,6 @@ const FeaturesSection = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {features.map((feature) => {
-                        const IconComponent = feature.icon;
                         return (
                             <Link
                                 key={feature.id}
@@ -55,9 +53,7 @@ const FeaturesSection = () => {
                                 >
                                     <div className="flex-shrink-0">
                                         {/* Icon */}
-
-                                        <IconComponent className={`${feature.color} text-3xl`} />
-
+                                        <i className={`${feature.icon} ${feature.color} text-3xl`}></i>
                                     </div>
                                     <div className="flex-1 pt-1">
                                         {/* Title */}

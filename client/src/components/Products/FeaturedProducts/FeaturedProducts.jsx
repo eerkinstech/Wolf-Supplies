@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from '../../../redux/slices/productSlice';
 import ProductCard from '../ProductCard/ProductCard';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
 
 const FeaturedProducts = ({
     category = '',
@@ -254,7 +254,7 @@ const FeaturedProducts = ({
                             className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
                             aria-label="Previous products"
                         >
-                            <FaChevronLeft className="text-lg" />
+                            <i className="fas fa-chevron-left text-lg"></i>
                         </button>
 
                         {/* Grid Container - Full Width */}
@@ -281,7 +281,7 @@ const FeaturedProducts = ({
                             className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
                             aria-label="Next products"
                         >
-                            <FaChevronRight className="text-lg" />
+                            <i className="fas fa-chevron-right text-lg"></i>
                         </button>
                     </div>
                 )}

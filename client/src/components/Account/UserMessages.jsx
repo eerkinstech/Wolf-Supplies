@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { FaPaperPlane, FaCheck, FaClock } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
 
 const UserMessages = () => {
@@ -38,7 +38,8 @@ const UserMessages = () => {
                     setError(data.message || 'Failed to load conversation');
                     setConversation(null);
                 }
-            } catch (err) {setError('Failed to load conversation');
+            } catch (err) {
+setError('Failed to load conversation');
                 setConversation(null);
             } finally {
                 setLoading(false);
@@ -100,7 +101,8 @@ const UserMessages = () => {
                     setConversation(refreshData.data || null);
                 }
             }, 500);
-        } catch (error) {toast.error('Failed to send message');
+        } catch (error) {
+toast.error('Failed to send message');
         } finally {
             setSendingMessage(false);
         }
@@ -148,7 +150,7 @@ const UserMessages = () => {
             {!conversation ? (
                 <div className="p-8 text-center">
                     <div className="mb-4">
-                        <FaClock size={32} className="mx-auto text-gray-400 mb-3" />
+                        <i className="fas fa-clock text-4xl text-gray-400 block mb-3"></i>
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">No Messages Yet</h3>
                         <p className="text-gray-600 mb-6">Start a conversation with our support team</p>
                     </div>
@@ -180,7 +182,7 @@ const UserMessages = () => {
                                         >
                                             {msg.sender === 'admin' && (
                                                 <p className="text-xs font-semibold mb-1 flex items-center gap-1">
-                                                    <FaCheck size={10} className="text-green-600" /> Support Team
+                                                    <i className="fas fa-check text-green-600" style={{ fontSize: '8px' }}></i> Support Team
                                                 </p>
                                             )}
                                             <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
@@ -216,7 +218,7 @@ const UserMessages = () => {
                                     disabled={sendingMessage || !message.trim()}
                                     className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition text-sm whitespace-nowrap h-fit"
                                 >
-                                    <FaPaperPlane size={14} />
+                                    <i className="fas fa-paper-plane" style={{ fontSize: '14px' }}></i>
                                     {sendingMessage ? 'Sending...' : 'Send'}
                                 </button>
                             </div>

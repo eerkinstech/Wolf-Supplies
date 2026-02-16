@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { FaArrowLeft, FaHeart, FaTrash, FaShoppingCart, FaStar } from 'react-icons/fa';
+
 import { removeFromWishlist, addToWishlist, fetchWishlist, addItemToServer, removeItemFromServer, clearWishlistServer } from '../redux/slices/wishlistSlice';
 import { addToCart, syncCart } from '../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
@@ -127,10 +127,13 @@ const WishlistPage = () => {
     return sorted;
   };
 
-  const handleRemoveFromWishlist = (itemOrId) => {// itemOrId can be string id or the item object
-    if (typeof itemOrId === 'string') {dispatch(removeItemFromServer(itemOrId)).then(() => {
+  const handleRemoveFromWishlist = (itemOrId) => {
+// itemOrId can be string id or the item object
+    if (typeof itemOrId === 'string') {
+dispatch(removeItemFromServer(itemOrId)).then(() => {
         toast.success('Removed from wishlist');
-      }).catch((err) => {toast.error('Failed to remove from wishlist');
+      }).catch((err) => {
+toast.error('Failed to remove from wishlist');
       });
     } else if (itemOrId && typeof itemOrId === 'object') {
       // For snapshot items, productId is stored in _id field
@@ -138,13 +141,17 @@ const WishlistPage = () => {
       let productId = null;
       if (itemOrId.__isSnapshot) {
         // Snapshot item: _id contains the product ID
-        productId = itemOrId._id;} else {
+        productId = itemOrId._id;
+} else {
         // Regular product item
-        productId = itemOrId.productId || itemOrId._id || (itemOrId.product && (itemOrId.product._id || itemOrId.product));}
+        productId = itemOrId.productId || itemOrId._id || (itemOrId.product && (itemOrId.product._id || itemOrId.product));
+}
       
-      const variantId = itemOrId.variantId || (itemOrId.snapshot && itemOrId.snapshot.variantId) || null;dispatch(removeItemFromServer({ productId, variantId })).then(() => {
+      const variantId = itemOrId.variantId || (itemOrId.snapshot && itemOrId.snapshot.variantId) || null;
+dispatch(removeItemFromServer({ productId, variantId })).then(() => {
         toast.success('Removed from wishlist');
-      }).catch((err) => {toast.error('Failed to remove from wishlist');
+      }).catch((err) => {
+toast.error('Failed to remove from wishlist');
       });
     }
   };
@@ -211,7 +218,8 @@ const WishlistPage = () => {
       if (confirmClear) {
         dispatch(clearWishlistServer()).then(() => {
           toast.success('Wishlist cleared');
-        }).catch((err) => {toast.error('Failed to clear wishlist');
+        }).catch((err) => {
+toast.error('Failed to clear wishlist');
         });
       }
     }
@@ -220,12 +228,15 @@ const WishlistPage = () => {
   // Load server wishlist when authenticated (ensures freshest data)
   React.useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {dispatch(fetchWishlist());
+    if (token) {
+dispatch(fetchWishlist());
     }
   }, [dispatch]);
 
   // Log current wishlist items for debugging
-  React.useEffect(() => {wishlistItems.forEach((item, idx) => {});
+  React.useEffect(() => {
+wishlistItems.forEach((item, idx) => {
+});
   }, [wishlistItems]);
 
   const sortedItems = getSortedItems();
@@ -236,10 +247,10 @@ const WishlistPage = () => {
       <div className="text-white py-12 md:py-16" style={{ backgroundColor: 'var(--color-accent-primary)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 w-fit">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <div className="flex items-center gap-3">
-            <FaHeart className="text-3xl" />
+            <i className="fas fa-heart" style={{ fontSize: '32px' }}></i>
             <div>
               <h1 className="text-5xl md:text-6xl font-bold">My Wishlist</h1>
               <p className="text-xl mt-2">
@@ -307,7 +318,7 @@ const WishlistPage = () => {
                     onMouseEnter={(e) => (e.target.style.opacity = '0.8')}
                     onMouseLeave={(e) => (e.target.style.opacity = '1')}
                   >
-                    <FaTrash /> Clear All
+                    <i className="fas fa-trash"></i> Clear All
                   </button>
                 </div>
               </div>
@@ -355,7 +366,7 @@ const WishlistPage = () => {
                                   onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-accent-light)')}
                                   onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
                                 >
-                                  <FaShoppingCart /> Add to Cart
+                                    <i className="fas fa-shopping-cart"></i> Add to Cart
                                 </button>
                               ) : (
                                 <button
@@ -379,7 +390,7 @@ const WishlistPage = () => {
                                 onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-border-light)')}
                                 onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-bg-section)')}
                               >
-                                <FaTrash /> Remove
+                                <i className="fas fa-trash"></i> Remove
                               </button>
 
                               <Link to={`/product/${getProductSlug(item)}`} className="ml-auto inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2" style={{
@@ -409,7 +420,7 @@ const WishlistPage = () => {
                             onMouseLeave={(e) => (e.target.style.backgroundColor = 'white')}
                             aria-label={`Remove ${item.name} from wishlist`}
                           >
-                            <FaTrash />
+                            <i className="fas fa-trash"></i>
                           </button>
                         </div>
                       )}
@@ -446,7 +457,7 @@ const WishlistPage = () => {
                     onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = 'var(--color-accent-light)')}
                     onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
                   >
-                    <FaShoppingCart /> Move All to Cart
+                    <i className="fas fa-shopping-cart"></i> Move All to Cart
                   </button>
                 </div>
 

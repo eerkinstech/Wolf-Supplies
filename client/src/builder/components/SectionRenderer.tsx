@@ -13,20 +13,20 @@ interface SectionNodeProps {
     isSelected?: boolean;
     onSelect?: (nodeId: string) => void;
     cssStyle: Record<string, any>;
-    className: string;
+    _className?: string;
     onClick: (e: React.MouseEvent) => void;
 }
 
-export const SectionRenderer: React.FC<SectionNodeProps>=({ node, device, isSelected, onSelect, cssStyle, className, onClick }) => {
+export const SectionRenderer: React.FC<SectionNodeProps>=({ node, device, isSelected, onSelect, cssStyle, _className, onClick }) => {
     const mergedAdvanced=advancedMerge(node, device);
     const mergedStyle=styleMerge(node, device);
 
     // Get responsive numColumns
-    let numColumns=node.props?.numColumns||2;
+    let _responseNumColumns=node.props?.numColumns||2;
     if (node.responsive&&device&&node.responsive[device]) {
         const deviceResponsive=node.responsive[device] as any;
         if (deviceResponsive?.props?.numColumns) {
-            numColumns=deviceResponsive.props.numColumns;
+            _responseNumColumns=deviceResponsive.props.numColumns;
         }
     }
 

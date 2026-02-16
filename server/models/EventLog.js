@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const eventLogSchema = new mongoose.Schema({
   guestId: { type: String, required: true, index: true }, // UUID for guest tracking
@@ -28,5 +28,5 @@ eventLogSchema.index({ guestId: 1, eventType: 1, createdAt: -1 });
 
 const EventLog = mongoose.model('EventLog', eventLogSchema);
 
-export default EventLog;
+module.exports = EventLog;
 

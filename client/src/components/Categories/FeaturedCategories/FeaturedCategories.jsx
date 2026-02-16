@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategories } from '../../../redux/slices/categorySlice';
 import CategoryCard from '../CategoryCard/CategoryCard';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
 
 const FeaturedCategories = ({
     categoryNames = [],
@@ -234,7 +234,7 @@ const FeaturedCategories = ({
                             className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
                             aria-label="Previous categories"
                         >
-                            <FaChevronLeft className="text-lg" />
+                            <i className="fas fa-chevron-left text-lg"></i>
                         </button>
 
                         {/* Grid Container - Full Width */}
@@ -261,7 +261,7 @@ const FeaturedCategories = ({
                             className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-full transition duration-300 shadow-xl hover:shadow-2xl hover:scale-110 z-20"
                             aria-label="Next categories"
                         >
-                            <FaChevronRight className="text-lg" />
+                            <i className="fas fa-chevron-right text-lg"></i>
                         </button>
 
                         {/* Carousel Indicators */}

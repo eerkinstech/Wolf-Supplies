@@ -1,13 +1,13 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getPageConfig,
   savePageConfig,
   getAllPageConfigs,
   updatePageSection,
   deletePageSection,
   togglePagePublish
-} from '../controllers/pageConfigController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/pageConfigController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -29,5 +29,5 @@ router.delete('/:pageName/section/:sectionId', protect, admin, deletePageSection
 // Toggle page publish status (admin only)
 router.patch('/:pageName/publish', protect, admin, togglePagePublish);
 
-export default router;
+module.exports = router;
 

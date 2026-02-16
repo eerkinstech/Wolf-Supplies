@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+
 import toast from 'react-hot-toast';
 
 const OrderLookupPage = () => {
@@ -29,7 +29,8 @@ const OrderLookupPage = () => {
 
       // Order found, navigate to order detail page
       navigate(`/order/${orderId}`);
-    } catch (err) {toast.error(err.message || 'Order not found. Please check the order ID and try again.');
+    } catch (err) {
+toast.error(err.message || 'Order not found. Please check the order ID and try again.');
     } finally {
       setLoading(false);
     }
@@ -67,7 +68,7 @@ const OrderLookupPage = () => {
                   className="px-6 py-3 rounded-lg font-bold text-white transition duration-300 flex items-center gap-2 disabled:opacity-50"
                   style={{ backgroundColor: 'var(--color-accent-primary)' }}
                 >
-                  <FaSearch />
+                  <i className="fas fa-search"></i>
                   {loading ? 'Searching...' : 'Search'}
                 </button>
               </div>

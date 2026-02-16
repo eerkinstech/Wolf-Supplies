@@ -35,7 +35,6 @@ interface DividerProps {
 }
 
 const Divider: React.FC<DividerProps>=({
-    id,
     isEditing=false,
     isSelected=false,
     style={},

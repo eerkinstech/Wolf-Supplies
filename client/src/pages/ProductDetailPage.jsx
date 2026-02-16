@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 import { fetchProductById, fetchProductBySlug } from '../redux/slices/productSlice';
 import useMetaTags from '../hooks/useMetaTags';
 import { addToCart, syncCart } from '../redux/slices/cartSlice';
 import { addToWishlist, removeFromWishlist, addItemToServer, removeItemFromServer } from '../redux/slices/wishlistSlice';
-import { FaStar, FaRegStar, FaStarHalfAlt, FaSpinner, FaSearchPlus, FaArrowLeft, FaArrowRight, FaShoppingCart, FaCheck, FaHeart, FaShareAlt, FaTruck, FaUndoAlt, FaArrowAltCircleLeft, FaSync, FaArrowUp, FaArrowDown, FaBox, FaLock } from 'react-icons/fa';
-import { GiShield } from 'react-icons/gi';
+
 import toast from 'react-hot-toast';
 import RelatedProducts from '../components/Products/RelatedProducts/RelatedProducts';
 import Reviews from '../components/Products/Reviews/Reviews';
@@ -80,6 +80,58 @@ const ProductDetailPage = () => {
     url: typeof window !== 'undefined' ? window.location.href : '',
   });
 
+  // Inject JSON-LD structured data for Google Merchant Center
+  useEffect(() => {
+    if (!product) return;
+
+    const jsonLdSchema = {
+      '@context': 'https://schema.org/',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description?.replace(/<[^>]*>/g, '') || product.name,
+      image: product.images?.filter(img => img) || [],
+      sku: product.variantCombinations?.[0]?.sku || `WOLF-${product._id}`,
+      brand: {
+        '@type': 'Brand',
+        name: product.categories?.[0]?.name || 'Wolf Supplies'
+      },
+      offers: {
+        '@type': 'Offer',
+        url: typeof window !== 'undefined' ? window.location.href : '',
+        priceCurrency: 'GBP',
+        price: product.price?.toString(),
+        availability: (product.inStock || product.stock > 0)
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+        itemCondition: 'https://schema.org/NewCondition'
+      },
+      ...(product.rating > 0 && {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: product.rating?.toString(),
+          reviewCount: product.numReviews?.toString() || '0'
+        }
+      })
+    };
+
+    // Create or update script tag for JSON-LD
+    let scriptTag = document.querySelector('script[type="application/ld+json"][data-product-schema]');
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.type = 'application/ld+json';
+      scriptTag.setAttribute('data-product-schema', 'true');
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify(jsonLdSchema);
+
+    // Cleanup function to remove the script tag when component unmounts
+    return () => {
+      if (scriptTag && scriptTag.parentNode) {
+        scriptTag.parentNode.removeChild(scriptTag);
+      }
+    };
+  }, [product]);
+
   // Fetch review approval settings
   useEffect(() => {
     const fetchSettings = async () => {
@@ -88,7 +140,8 @@ const ProductDetailPage = () => {
         if (!response.ok) throw new Error('Failed to fetch settings');
         const data = await response.json();
         setRequireReviewApproval(data.requireReviewApproval !== false);
-      } catch (error) {}
+      } catch (error) {
+      }
     };
     fetchSettings();
   }, [API]);
@@ -335,11 +388,11 @@ const ProductDetailPage = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (rating >= i) {
-        stars.push(<FaStar key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`fas fa-star ${sizeClass} text-yellow-400`}></i>);
       } else if (rating >= i - 0.5) {
-        stars.push(<FaStarHalfAlt key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`fas fa-star-half ${sizeClass} text-yellow-400`}></i>);
       } else {
-        stars.push(<FaRegStar key={i} className={`${sizeClass} text-yellow-400`} />);
+        stars.push(<i key={i} className={`far fa-star ${sizeClass} text-yellow-400`}></i>);
       }
     }
     return stars;
@@ -498,7 +551,8 @@ const ProductDetailPage = () => {
       try {
         const resultAction = await dispatch(syncCart(newItems));
         // resultAction.payload contains normalized returned items when fulfilled
-      } catch (err) {toast.error('Failed to save cart to server');
+      } catch (err) {
+        toast.error('Failed to save cart to server');
       }
 
       const variantText = Object.entries(selectedVariants)
@@ -574,7 +628,7 @@ const ProductDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-[var(--color-bg-section)]">
-        <FaSpinner className="text-6xl text-[var(--color-text-light)] animate-spin" />
+        <i className="fas fa-spinner text-6xl text-[var(--color-text-light)] animate-spin"></i>
       </div>
     );
   }
@@ -655,6 +709,24 @@ const ProductDetailPage = () => {
 
   const variantOptions = getVariantOptions();
 
+  // Helper: Check if benefits has actual content (not just HTML tags)
+  const hasBenefitsContent = () => {
+    if (!product.benefits) return false;
+    if (typeof product.benefits === 'string') {
+      // Remove HTML tags and check if there's actual text content
+      const textContent = product.benefits.replace(/<[^>]*>/g, '').trim();
+      return textContent.length > 0;
+    }
+    if (Array.isArray(product.benefits)) {
+      return product.benefits.some(item => {
+        if (!item) return false;
+        const textContent = String(item).replace(/<[^>]*>/g, '').trim();
+        return textContent.length > 0;
+      });
+    }
+    return false;
+  };
+
   // Submit review (requires authenticated user)
   const submitReview = async (reviewData) => {
     if (!token) {
@@ -685,7 +757,8 @@ const ProductDetailPage = () => {
       // Refresh using the product _id when available
       if (product && product._id) dispatch(fetchProductById(product._id));
       else dispatch(fetchProductById(prodId));
-    } catch (err) {scrollPositionRef.current = 0; // Reset on error
+    } catch (err) {
+      scrollPositionRef.current = 0; // Reset on error
       throw err;
     }
   };
@@ -745,7 +818,8 @@ const ProductDetailPage = () => {
                                 src={getImgSrc(img)}
                                 alt={`Thumbnail ${idx + 1}`}
                                 className="w-full h-full object-contain"
-                                onError={(e) => {e.target.style.opacity = '0';
+                                onError={(e) => {
+                                  e.target.style.opacity = '0';
                                 }}
                               />
                             </button>
@@ -779,7 +853,8 @@ const ProductDetailPage = () => {
                         src={getImgSrc(currentDisplayImage)}
                         alt={product.name}
                         className="w-full h-full object-contain group-hover:scale-105 transition duration-500"
-                        onError={(e) => {e.target.style.opacity = '0';
+                        onError={(e) => {
+                          e.target.style.opacity = '0';
                         }}
                       />
                     ) : (
@@ -803,7 +878,7 @@ const ProductDetailPage = () => {
                           className="absolute left-4 top-1/2 -translate-y-1/2 bg-[var(--color-accent-primary)] bg-opacity-70 hover:bg-opacity-100 text-white p-3 rounded-full transition-all z-10 shadow-lg flex items-center justify-center"
                           aria-label="Previous image"
                         >
-                          <FaArrowLeft className="text-lg" />
+                          <i className="fas fa-arrow-left text-lg"></i>
                         </button>
                         <button
                           onClick={(e) => {
@@ -817,7 +892,7 @@ const ProductDetailPage = () => {
                           className="absolute right-4 top-1/2 -translate-y-1/2 bg-[var(--color-accent-primary)] bg-opacity-70 hover:bg-opacity-100 text-white p-3 rounded-full transition-all z-10 shadow-lg flex items-center justify-center"
                           aria-label="Next image"
                         >
-                          <FaArrowRight className="text-lg" />
+                          <i className="fas fa-arrow-right text-lg"></i>
                         </button>
                       </>
                     )}
@@ -968,7 +1043,7 @@ const ProductDetailPage = () => {
                   disabled={!isAvailable}
                   className={`flex-1 px-8 py-4 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-3 text-lg shadow-lg ${isAvailable ? 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white' : 'bg-[var(--color-border-light)] text-[var(--color-text-light)] cursor-not-allowed'}`}
                 >
-                  <FaShoppingCart /> {isAvailable ? 'Add to Cart' : 'Sold Out'}
+                  <i className="fas fa-shopping-cart"></i> {isAvailable ? 'Add to Cart' : 'Sold Out'}
                 </button>
               </div>
 
@@ -983,7 +1058,7 @@ const ProductDetailPage = () => {
                 disabled={!isAvailable}
                 className={`w-full px-8 py-4 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-3 text-lg shadow-lg ${isAvailable ? 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white' : 'bg-[var(--color-border-light)] text-[var(--color-text-light)] cursor-not-allowed'}`}
               >
-                <FaCheck /> {isAvailable ? 'Buy Now' : 'Sold Out'}
+                <i className="fas fa-check"></i> {isAvailable ? 'Buy Now' : 'Sold Out'}
               </button>
 
               {/* Selected Options Summary */}
@@ -1035,13 +1110,13 @@ const ProductDetailPage = () => {
                     : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-light)] text-white'
                     }`}
                 >
-                  <FaHeart /> {isInWishlist ? 'Saved' : 'Save'}
+                  <i className="fas fa-heart"></i> {isInWishlist ? 'Saved' : 'Save'}
                 </button>
                 <button
                   onClick={handleShare}
                   className="py-3 px-4 rounded-lg font-bold bg-[var(--color-accent-primary)] text-white hover:bg-[var(--color-accent-light)] transition duration-300 flex items-center justify-center gap-2"
                 >
-                  <FaShareAlt /> Share
+                  <i className="fas fa-share"></i> Share
                 </button>
               </div>
             </div>
@@ -1050,7 +1125,7 @@ const ProductDetailPage = () => {
             <div className="grid grid-cols-1 gap-0 bg-[var(--color-bg-primary)] border border-[var(--color-border-light)] rounded-lg overflow-hidden">
               {/* Shipping Info */}
               <div className="flex gap-4 items-center p-6 border-b border-[var(--color-border-light)]">
-                <div className="text-3xl text-[var(--color-accent-primary)] flex-shrink-0"><FaTruck /></div>
+                <div className="text-3xl text-[var(--color-accent-primary)] flex-shrink-0"><i className="fas fa-truck"></i></div>
                 <div>
                   <p className="font-bold text-[var(--color-text-primary)] text-sm leading-tight">Free Shipping: 2-4 Business Days</p>
                   <p className="text-[var(--color-text-light)] text-xs mt-1">Ships within the United Kingdom only. <Link to="/policies/shipping" className="text-[var(--color-accent-primary)] hover:underline font-semibold">See details →</Link></p>
@@ -1059,7 +1134,7 @@ const ProductDetailPage = () => {
 
               {/* Returns Info */}
               <div className="flex gap-4 items-center p-6 border-b border-[var(--color-border-light)]">
-                <div className="text-3xl text-[var(--color-accent-primary)] flex-shrink-0"><FaBox /></div>
+                <div className="text-3xl text-[var(--color-accent-primary)] flex-shrink-0"><i className="fas fa-box"></i></div>
                 <div>
                   <p className="font-bold text-[var(--color-text-primary)] text-sm leading-tight">31 Days Return & Refunds Policy</p>
                   <p className="text-[var(--color-text-light)] text-xs mt-1">Full refund within 31 days of purchase.
@@ -1069,7 +1144,7 @@ const ProductDetailPage = () => {
 
               {/* Payment Methods */}
               <div className="flex gap-4 items-center p-6">
-                <div className="text-3xl text-[var(--color-accent-primary)] flex-shrink-0"><FaLock /></div>
+                <div className="text-3xl text-[var(--color-accent-primary)] flex-shrink-0"><i className="fas fa-lock"></i></div>
                 <div className="flex-1">
                   <div className="">
                     <img
@@ -1083,29 +1158,26 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Key Benefits (dynamic when available) */}
-            <div className="bg-[var(--color-bg-section)] p-6 rounded-xl border-l-4 border-[var(--color-accent-primary)]">
-              <h3 className="font-bold text-lg text-[var(--color-text-primary)] mb-4">{product.benefitsHeading || 'Why Buy This Product?'}</h3>
-              {product.benefits && typeof product.benefits === 'string' && product.benefits.trim() ? (
-                <div
-                  className="prose prose-sm max-w-none text-[var(--color-text-light)]"
-                  dangerouslySetInnerHTML={{ __html: product.benefits }}
-                />
-              ) : product.benefits && Array.isArray(product.benefits) && product.benefits.length > 0 ? (
-                <ul className="space-y-2 text-[var(--color-text-light)]">
-                  {product.benefits.map((b, i) => (
-                    <li key={i} className="flex items-center gap-3"><FaCheck className="text-[var(--color-accent-primary)]" /> {b}</li>
-                  ))}
-                </ul>
-              ) : (
-                <ul className="space-y-2 text-[var(--color-text-light)]">
-                  <li className="flex items-center gap-3"><FaCheck className="text-[var(--color-accent-primary)]" /> Premium quality & authentic products</li>
-                  <li className="flex items-center gap-3"><FaCheck className="text-[var(--color-accent-primary)]" /> Competitive pricing with great value</li>
-                  <li className="flex items-center gap-3"><FaCheck className="text-[var(--color-accent-primary)]" /> Trusted by 100K+ customers</li>
-                  <li className="flex items-center gap-3"><FaCheck className="text-[var(--color-accent-primary)]" /> Expert customer support team</li>
-                </ul>
-              )}
-            </div>
+            {/* Key Benefits (dynamic when available) - Only show if content exists */}
+            {hasBenefitsContent() && (
+              <div className="bg-[var(--color-bg-section)] p-6 rounded-xl border-l-4 border-[var(--color-accent-primary)]">
+                <h3 className="font-bold text-lg text-[var(--color-text-primary)] mb-4">{product.benefitsHeading || 'Why Buy This Product?'}</h3>
+                {typeof product.benefits === 'string' ? (
+                  <div
+                    className="prose prose-sm max-w-none text-[var(--color-text-light)]"
+                    dangerouslySetInnerHTML={{ __html: product.benefits }}
+                  />
+                ) : Array.isArray(product.benefits) ? (
+                  <ul className="space-y-2 text-[var(--color-text-light)]">
+                    {product.benefits.map((b, i) =>
+                      b && String(b).trim() ? (
+                        <li key={i} className="flex items-center gap-3"><i className="fas fa-check text-[var(--color-accent-primary)]"></i> {b}</li>
+                      ) : null
+                    )}
+                  </ul>
+                ) : null}
+              </div>
+            )}
           </div>
         </div>
 
@@ -1197,7 +1269,8 @@ const ProductDetailPage = () => {
                     src={getImgSrc(displayImages[zoomImageIndex])}
                     alt={`${product.name} zoom`}
                     className="w-full h-full object-contain"
-                    onError={(e) => {e.target.style.opacity = '0';
+                    onError={(e) => {
+                      e.target.style.opacity = '0';
                     }}
                   />
 
@@ -1222,7 +1295,7 @@ const ProductDetailPage = () => {
                       className="bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-section)] text-[var(--color-text-primary)] rounded-full p-3 shadow-lg transition"
                       aria-label="Previous image"
                     >
-                      <FaArrowLeft size={18} />
+                      <i className="fas fa-arrow-left" style={{ fontSize: '18px' }}></i>
                     </button>
                     <div className="bg-[var(--color-accent-primary)] bg-opacity-60 text-white px-4 py-2 rounded-full flex items-center justify-center min-w-20">
                       <span className="font-semibold">{zoomImageIndex + 1} / {displayImages.length}</span>
@@ -1235,7 +1308,7 @@ const ProductDetailPage = () => {
                       className="bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-section)] text-[var(--color-text-primary)] rounded-full p-3 shadow-lg transition"
                       aria-label="Next image"
                     >
-                      <FaArrowRight size={18} />
+                      <i className="fas fa-arrow-right" style={{ fontSize: '18px' }}></i>
                     </button>
                   </div>
                 )}
@@ -1257,7 +1330,8 @@ const ProductDetailPage = () => {
                       transformOrigin: `${(zoomMousePos.x / (zoomImageRef.current?.offsetWidth || 1)) * 100}% ${(zoomMousePos.y / (zoomImageRef.current?.offsetHeight || 1)) * 100}%`,
                       transition: 'transform 0.1s ease-out'
                     }}
-                    onError={(e) => {e.target.style.opacity = '0';
+                    onError={(e) => {
+                      e.target.style.opacity = '0';
                     }}
                   />
 

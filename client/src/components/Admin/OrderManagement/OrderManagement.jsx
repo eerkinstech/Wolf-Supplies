@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaFile, FaSpinner, FaSync } from 'react-icons/fa';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders } from '../../../redux/slices/orderSlice';
 import toast from 'react-hot-toast';
@@ -202,7 +202,7 @@ const OrderManagement = () => {
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
-          <FaSpinner className="text-4xl text-gray-700 animate-spin" />
+          <i className="fas fa-spinner animate-spin text-4xl text-gray-700"></i>
         </div>
       )}
 
@@ -283,7 +283,7 @@ const OrderManagement = () => {
                 className="text-gray-700 hover:text-indigo-800 flex items-center gap-2"
                 title="Refresh orders"
               >
-                <FaSync /> Refresh
+                <i className="fas fa-sync"></i> Refresh
               </button>
               <button
                 onClick={async () => {
@@ -315,7 +315,7 @@ const OrderManagement = () => {
                 className="px-3 py-1 bg-red-600 text-white rounded flex items-center gap-2"
                 title="Delete selected fulfilled+delivered"
               >
-                {bulkLoading ? <FaSpinner className="animate-spin" /> : 'Delete Selected'}
+                {bulkLoading ? <i className="fas fa-spinner animate-spin"></i> : 'Delete Selected'}
               </button>
             </div>
           </div>
@@ -395,7 +395,7 @@ const OrderManagement = () => {
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
-                          <button onClick={() => setModalOrder(order)} className="px-3 py-1 bg-gray-800 text-white rounded text-sm"> <FaFile /> </button>
+                          <button onClick={() => setModalOrder(order)} className="px-3 py-1 bg-gray-800 text-white rounded text-sm"> <i className="fas fa-file"></i> </button>
 
                         </div>
                       </td>

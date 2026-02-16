@@ -1,12 +1,12 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getAllPages,
   getPage,
   createPage,
   updatePage,
   deletePage
-} from '../controllers/pageController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/pageController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -25,5 +25,5 @@ router.patch('/:id', protect, admin, updatePage);
 // Delete page (admin)
 router.delete('/:id', protect, admin, deletePage);
 
-export default router;
+module.exports = router;
 

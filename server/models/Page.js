@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const pageSchema = new mongoose.Schema(
     {
@@ -43,5 +43,5 @@ const pageSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.model('Page', pageSchema);
+module.exports = mongoose.model('Page', pageSchema);
 

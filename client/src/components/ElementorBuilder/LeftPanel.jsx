@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
+
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 import BLOCK_REGISTRY from '../BlockBuilder/BlockRegistry';
 import Inspector from '../../builder/components/Inspector';
@@ -21,7 +21,7 @@ const LeftPanel = () => {
           className="p-2 bg-gray-800 text-white rounded hover:bg-black transition"
           title="Add new section"
         >
-          <FaPlus />
+          <i className="fas fa-plus"></i>
         </button>
       </div>
 

@@ -6,7 +6,7 @@
 import React, { useState, useContext } from 'react';
 import { Node } from '../controls/types/index';
 import ElementorBuilderContext from '../../context/ElementorBuilderContext';
-import { FaChevronDown, FaChevronRight, FaLayerGroup, FaColumns, FaBoxes, FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 interface NavigatorProps {
     onSelectNode?: (nodeId: string) => void;
@@ -39,13 +39,13 @@ export const Navigator: React.FC<NavigatorProps>=({
     const getNodeIcon=(node: Node) => {
         switch (node.kind) {
             case 'section':
-                return <FaLayerGroup className="text-black" />;
+                return <i className="fas fa-layer-group text-black"></i>;
             case 'column':
-                return <FaColumns className="text-blue-600" />;
+                return <i className="fas fa-columns text-blue-600"></i>;
             case 'widget':
-                return <FaBoxes className="text-gray-400" />;
+                return <i className="fas fa-boxes text-gray-400"></i>;
             default:
-                return <FaBoxes />;
+                return <i className="fas fa-boxes"></i>;
         }
     };
 
@@ -98,9 +98,9 @@ export const Navigator: React.FC<NavigatorProps>=({
                             className="flex items-center justify-center w-4 h-4 text-gray-600 hover:text-gray-900"
                         >
                             {isExpanded? (
-                                <FaChevronDown size={12} />
+                                <i className="fas fa-chevron-down" style={{ fontSize: '12px' }}></i>
                             ):(
-                                <FaChevronRight size={12} />
+                                <i className="fas fa-chevron-right" style={{ fontSize: '12px' }}></i>
                             )}
                         </button>
                     ):(
@@ -130,9 +130,9 @@ export const Navigator: React.FC<NavigatorProps>=({
                         title={isHidden? 'Show element':'Hide element'}
                     >
                         {isHidden? (
-                            <FaEyeSlash size={14} />
+                            <i className="fas fa-eye-slash" style={{ fontSize: '14px' }}></i>
                         ):(
-                            <FaEye size={14} />
+                            <i className="fas fa-eye" style={{ fontSize: '14px' }}></i>
                         )}
                     </button>
                 </div>
@@ -153,7 +153,7 @@ export const Navigator: React.FC<NavigatorProps>=({
         <div className="navigator h-full flex flex-col overflow-hidden bg-white">
             {/* Header */}
             <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                <FaLayerGroup className="text-gray-600" size={16} />
+                <i className="fas fa-layer-group text-gray-600" style={{ fontSize: '16px' }}></i>
                 <h3 className="text-sm font-semibold text-gray-800">Structure</h3>
             </div>
 
@@ -161,7 +161,7 @@ export const Navigator: React.FC<NavigatorProps>=({
             <div className="flex-1 overflow-y-auto">
                 {rootNode.children&&rootNode.children.length>0? (
                     <div className="p-2">
-                        {rootNode.children.map((node: Node) => renderNode(node))}
+                        {(rootNode.children as any[]).map((node: any) => renderNode(node as Node))}
                     </div>
                 ):(
                     <div className="p-4 text-center text-gray-900 text-sm">

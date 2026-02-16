@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
+
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -78,17 +78,17 @@ const AuthFlipPage = () => {
                                         <div>
                                             <label className="text-sm font-semibold text-gray-700">Email</label>
                                             <div className="relative mt-1">
-                                                <FaEnvelope className="absolute left-3 top-3.5 text-gray-400" />
+                                                <i className="fas fa-envelope absolute left-3 top-3.5 text-gray-400"></i>
                                                 <input name="email" value={loginData.email} onChange={handleLoginChange} className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-700 focus:ring-1 focus:ring-gray-700 placeholder-gray-600 transition" placeholder="Enter your email" />
                                             </div>
                                         </div>
                                         <div>
                                             <label className="text-sm font-semibold text-gray-700">Password</label>
                                             <div className="relative mt-1">
-                                                <FaLock className="absolute left-3 top-3.5 text-gray-400" />
+                                                <i className="fas fa-lock absolute left-3 top-3.5 text-gray-400"></i>
                                                 <input name="password" type={showLoginPwd ? 'text' : 'password'} value={loginData.password} onChange={handleLoginChange} className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-700 focus:ring-1 focus:ring-gray-700 placeholder-gray-600 transition" placeholder="Enter your password" />
                                                 <button type="button" onClick={() => setShowLoginPwd(!showLoginPwd)} className="absolute right-3 top-3.5 text-gray-900 hover:text-black">
-                                                    {showLoginPwd ? <FaEyeSlash /> : <FaEye />}
+                                                    {showLoginPwd ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                                                 </button>
                                             </div>
                                         </div>
@@ -147,7 +147,7 @@ const AuthFlipPage = () => {
                                         <div>
                                             <label className="text-sm font-semibold text-gray-200">Full Name</label>
                                             <div className="relative mt-1">
-                                                <FaUser className="absolute left-3 top-3.5 text-white/70" />
+                                                <i className="fas fa-user absolute left-3 top-3.5 text-white/70"></i>
                                                 <input name="name" value={regData.name} onChange={handleRegChange} className="w-full pl-10 pr-4 py-3 bg-white/20 border border-gray-400/30 rounded-xl 
   focus:outline-none focus:bg-white/30 focus:border-gray-300 
   text-white placeholder-gray-200 transition" placeholder="Enter your full name" />
@@ -156,7 +156,7 @@ const AuthFlipPage = () => {
                                         <div>
                                             <label className="text-sm font-semibold text-gray-200">Email</label>
                                             <div className="relative mt-1">
-                                                <FaEnvelope className="absolute left-3 top-3.5 text-white/70" />
+                                                <i className="fas fa-envelope absolute left-3 top-3.5 text-white/70"></i>
                                                 <input name="email" value={regData.email} onChange={handleRegChange} className="w-full pl-10 pr-4 py-3 bg-white/20 border border-emerald-400/30 rounded-xl 
   focus:outline-none focus:bg-white/30 focus:border-emerald-200 
   text-white placeholder-black transition" placeholder="Email address" />
@@ -166,20 +166,20 @@ const AuthFlipPage = () => {
                                             <div className='w-1/2'>
                                                 <label className="text-sm font-semibold text-gray-200">Password</label>
                                                 <div className="relative mt-1">
-                                                    <FaLock className="absolute left-3 top-3.5 text-white/70" />
+                                                    <i className="fas fa-lock absolute left-3 top-3.5 text-white/70"></i>
                                                     <input name="password" type={showRegPwd ? 'text' : 'password'} value={regData.password} onChange={handleRegChange} className="w-full pl-10 pr-8 py-3 bg-white/20 border border-gray-400/30 rounded-xl focus:outline-none focus:bg-white/30 focus:border-gray-300 text-white placeholder-gray-200 transition" placeholder="Password" />
                                                     <button type="button" onClick={() => setShowRegPwd(!showRegPwd)} className="absolute right-2 top-3.5 text-white/70 hover:text-white">
-                                                        {showRegPwd ? <FaEyeSlash /> : <FaEye />}
+                                                        {showRegPwd ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                                                     </button>
                                                 </div>
                                             </div>
                                             <div className='w-1/2'>
                                                 <label className="text-sm font-semibold text-gray-200">Confirm</label>
                                                 <div className="relative mt-1">
-                                                    <FaLock className="absolute left-3 top-3.5 text-white/70" />
+                                                    <i className="fas fa-lock absolute left-3 top-3.5 text-white/70"></i>
                                                     <input name="confirmPassword" type={showRegConfirm ? 'text' : 'password'} value={regData.confirmPassword} onChange={handleRegChange} className="w-full pl-10 pr-8 py-3 bg-white/20 border border-gray-400/30 rounded-xl focus:outline-none focus:bg-white/30 focus:border-gray-300 text-white placeholder-gray-200 transition" placeholder="Confirm" />
                                                     <button type="button" onClick={() => setShowRegConfirm(!showRegConfirm)} className="absolute right-2 top-3.5 text-white/70 hover:text-white">
-                                                        {showRegConfirm ? <FaEyeSlash /> : <FaEye />}
+                                                        {showRegConfirm ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}
                                                     </button>
                                                 </div>
                                             </div>

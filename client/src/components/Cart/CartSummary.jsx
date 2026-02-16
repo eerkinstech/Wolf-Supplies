@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaBox, FaTruck, FaCheck, FaTimes, FaTag } from 'react-icons/fa';
+
 import { Link } from 'react-router-dom';
 
 const CartSummary = ({
@@ -26,13 +26,13 @@ const CartSummary = ({
   return (
     <div className="rounded-2xl shadow-lg border p-8 sticky top-24 space-y-8" style={{ backgroundColor: 'var(--color-bg-section)', borderColor: 'var(--color-border-light)' }}>
       <h2 className="text-3xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-        <FaBox style={{ color: 'var(--color-accent-primary)' }} /> Order Summary
+        <i className="fas fa-box" style={{ color: 'var(--color-accent-primary)' }}></i> Order Summary
       </h2>
 
       {/* Shipping Info - always free */}
       <div className="border-l-4 p-6 rounded-xl" style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-accent-primary)' }}>
         <div className="flex items-center gap-3 mb-2">
-          <FaTruck className="text-xl" style={{ color: 'var(--color-accent-primary)' }} />
+          <i className="fas fa-truck text-xl" style={{ color: 'var(--color-accent-primary)' }}></i>
           <p className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>Free Shipping</p>
         </div>
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Shipping is free for all orders</p>
@@ -59,7 +59,7 @@ const CartSummary = ({
         {(discountAmount || 0) > 0 && (
           <div className="flex justify-between text-base items-center pt-2" style={{ borderTopColor: 'var(--color-border-light)', borderTopWidth: '1px' }}>
             <span className="font-medium flex items-center gap-2" style={{ color: 'var(--color-accent-primary)' }}>
-              <FaTag className="text-sm" /> Discount
+              <i className="fas fa-tag text-sm"></i> Discount
             </span>
             <span className="font-semibold" style={{ color: 'var(--color-accent-primary)' }}>-£{(discountAmount || 0).toFixed(2)}</span>
           </div>
@@ -109,7 +109,7 @@ const CartSummary = ({
             onMouseEnter={(e) => e.target.style.opacity = '0.7'}
             onMouseLeave={(e) => e.target.style.opacity = '1'}
           >
-            <FaTimes />
+            <i className="fas fa-times"></i>
           </button>
         </div>
       )}
@@ -137,7 +137,7 @@ const CartSummary = ({
           onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-accent-light)')}
           onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-accent-primary)')}
         >
-          <FaCheck /> Proceed to Checkout
+          <i className="fas fa-check"></i> Proceed to Checkout
         </button>
 
         <button
@@ -160,15 +160,15 @@ const CartSummary = ({
       {/* Trust Badges */}
       {/* <div className="bg-gray-50 p-4 rounded-xl space-y-3">
         <div className="flex items-center gap-2 text-sm text-gray-700">
-          <FaCheck className="text-gray-400" />
+          <i className="fas fa-check text-gray-400"></i>
           <span>Secure checkout</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-700">
-          <FaTruck className="text-gray-400" />
+          <i className="fas fa-truck text-gray-400"></i>
           <span>Fast 2-4 day shipping</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-700">
-          <FaCheck className="text-gray-400" />
+          <i className="fas fa-check text-gray-400"></i>
           <span>30-day returns</span>
         </div>
       </div> */}

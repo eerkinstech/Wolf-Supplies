@@ -10,8 +10,13 @@ const GUEST_ID_KEY = 'guestId';
  * (The actual persistent ID comes from the httpOnly cookie set by the server)
  */
 export const getGuestId = () => {
-  const guestId = localStorage.getItem(GUEST_ID_KEY);
-  return guestId;
+  try {
+    const guestId = localStorage.getItem(GUEST_ID_KEY);
+    return guestId;
+  } catch (err) {
+    console.warn('[Guest ID] localStorage access failed:', err.message);
+    return null;
+  }
 };
 
 /**
@@ -20,23 +25,44 @@ export const getGuestId = () => {
  */
 export const saveGuestId = (guestId) => {
   if (!guestId) return;
-  localStorage.setItem(GUEST_ID_KEY, guestId);};
+  try {
+    localStorage.setItem(GUEST_ID_KEY, guestId);
+    console.log('[Guest ID] Saved:', guestId);
+  } catch (err) {
+    console.warn('[Guest ID] Failed to save:', err.message);
+  }
+};
 
 /**
  * Clear the guestId from localStorage
  * (Note: httpOnly cookie will still exist on server until expiry or cleared)
  */
 export const clearGuestId = () => {
-  localStorage.removeItem(GUEST_ID_KEY);};
+  try {
+    localStorage.removeItem(GUEST_ID_KEY);
+    console.log('[Guest ID] Cleared');
+  } catch (err) {
+    console.warn('[Guest ID] Failed to clear:', err.message);
+  }
+};
 
 /**
  * Restore guestId - called on app init
  * Checks localStorage and ensures it's in sync with server cookie
  */
 export const restoreGuestId = () => {
-  const guestId = getGuestId();
-  if (guestId) {}
-  return guestId;
+  try {
+    const guestId = getGuestId();
+    if (guestId) {
+      console.log('[Guest ID] Restored from localStorage:', guestId);
+    } else {
+      console.log('[Guest ID] No existing guestId found, server will create one');
+    }
+    return guestId;
+  } catch (err) {
+    console.error('[Guest ID] Failed to restore:', err.message);
+    return null;
+  }
 };
 
 /**

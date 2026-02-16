@@ -1,7 +1,7 @@
-import Policy from '../models/Policy.js';
+const Policy = require('../models/Policy.js');
 
 // Get all policies
-export const getAllPolicies = async (req, res) => {
+const getAllPolicies = async (req, res) => {
     try {
         const policies = await Policy.find({ isPublished: true }).select('_id title slug description');
         res.status(200).json({ policies, success: true });
@@ -11,7 +11,7 @@ export const getAllPolicies = async (req, res) => {
 };
 
 // Get single policy
-export const getPolicy = async (req, res) => {
+const getPolicy = async (req, res) => {
     try {
         const { slug } = req.params;
         const policy = await Policy.findOne({ slug });
@@ -23,7 +23,7 @@ export const getPolicy = async (req, res) => {
 };
 
 // Create policy (admin)
-export const createPolicy = async (req, res) => {
+const createPolicy = async (req, res) => {
     try {
         const { title, slug, description, content, metaDescription, metaKeywords } = req.body;
 
@@ -44,7 +44,7 @@ export const createPolicy = async (req, res) => {
 };
 
 // Update policy (admin)
-export const updatePolicy = async (req, res) => {
+const updatePolicy = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
@@ -59,7 +59,7 @@ export const updatePolicy = async (req, res) => {
 };
 
 // Delete policy (admin)
-export const deletePolicy = async (req, res) => {
+const deletePolicy = async (req, res) => {
     try {
         const { id } = req.params;
         const policy = await Policy.findByIdAndDelete(id);
@@ -69,5 +69,13 @@ export const deletePolicy = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Error deleting policy', error: err.message });
     }
+};
+
+module.exports = {
+    getAllPolicies,
+    getPolicy,
+    createPolicy,
+    updatePolicy,
+    deletePolicy
 };
 

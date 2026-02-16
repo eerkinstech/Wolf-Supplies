@@ -1,9 +1,9 @@
-import NewsletterSubscription from '../models/NewsletterSubscription.js';
+const NewsletterSubscription = require('../models/NewsletterSubscription');
 
 /**
  * Subscribe to newsletter
  */
-export const subscribeNewsletter = async (req, res) => {
+const subscribeNewsletter = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -66,7 +66,7 @@ export const subscribeNewsletter = async (req, res) => {
 /**
  * Get all newsletter subscriptions (Admin only)
  */
-export const getNewsletterSubscriptions = async (req, res) => {
+const getNewsletterSubscriptions = async (req, res) => {
   try {
     const { status = 'subscribed', limit = 50, skip = 0 } = req.query;
 
@@ -100,7 +100,7 @@ export const getNewsletterSubscriptions = async (req, res) => {
 /**
  * Get single newsletter subscription
  */
-export const getNewsletterSubscription = async (req, res) => {
+const getNewsletterSubscription = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -129,7 +129,7 @@ export const getNewsletterSubscription = async (req, res) => {
 /**
  * Unsubscribe from newsletter
  */
-export const unsubscribeNewsletter = async (req, res) => {
+const unsubscribeNewsletter = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -173,7 +173,7 @@ export const unsubscribeNewsletter = async (req, res) => {
 /**
  * Update newsletter subscription status (Admin only)
  */
-export const updateNewsletterStatus = async (req, res) => {
+const updateNewsletterStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -218,7 +218,7 @@ export const updateNewsletterStatus = async (req, res) => {
 /**
  * Delete newsletter subscription (Admin only)
  */
-export const deleteNewsletterSubscription = async (req, res) => {
+const deleteNewsletterSubscription = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -247,7 +247,7 @@ export const deleteNewsletterSubscription = async (req, res) => {
 /**
  * Get newsletter statistics (Admin only)
  */
-export const getNewsletterStats = async (req, res) => {
+const getNewsletterStats = async (req, res) => {
   try {
     const total = await NewsletterSubscription.countDocuments();
     const subscribed = await NewsletterSubscription.countDocuments({ status: 'subscribed' });
@@ -271,5 +271,15 @@ export const getNewsletterStats = async (req, res) => {
       message: error.message || 'Error fetching statistics'
     });
   }
+};
+
+module.exports = {
+  subscribeNewsletter,
+  getNewsletterSubscriptions,
+  getNewsletterSubscription,
+  unsubscribeNewsletter,
+  updateNewsletterStatus,
+  deleteNewsletterSubscription,
+  getNewsletterStats
 };
 

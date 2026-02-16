@@ -3,13 +3,13 @@ import { Node } from '../controls/types/index';
 
 interface SpacerWidgetProps {
   node: Node;
-  device?: 'desktop'|'tablet'|'mobile';
+  _device?: 'desktop'|'tablet'|'mobile';
   isEditing?: boolean;
   onEdit?: () => void;
-  cssStyle?: Record<string, any>;
+  __cssStyle?: Record<string, any>;
 }
 
-export const SpacerWidget: React.FC<SpacerWidgetProps>=({ node, isEditing, onEdit, cssStyle={} }) => {
+export const SpacerWidget: React.FC<SpacerWidgetProps>=({ node, _device='desktop', isEditing, onEdit, __cssStyle={} }) => {
   const height=node.props?.height||20;
 
   return (

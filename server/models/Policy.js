@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const policySchema = new mongoose.Schema(
     {
@@ -39,5 +39,5 @@ const policySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.model('Policy', policySchema);
+module.exports = mongoose.model('Policy', policySchema);
 

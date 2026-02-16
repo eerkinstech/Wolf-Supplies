@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useMetaTags from '../../hooks/useMetaTags';
-import { FaLock, FaArrowLeft, FaEnvelope, FaPhone } from 'react-icons/fa';
+
 
 const PoliciesPrivacyPage = () => {
   // Set up meta tags for SEO
@@ -18,10 +18,10 @@ const PoliciesPrivacyPage = () => {
       <div className="text-white py-12 md:py-16" style={{ backgroundColor: 'var(--color-accent-primary, #a5632a)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 mb-4 hover:opacity-80 w-fit transition duration-300">
-            <FaArrowLeft /> Back to Home
+            <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <div className="flex items-center gap-4 mb-4">
-            <FaLock className="text-4xl" />
+            <i className="fas fa-lock text-4xl"></i>
             <h1 className="text-4xl md:text-5xl font-bold">Privacy Policy</h1>
           </div>
           <p className="text-white text-lg">Your Data Protection & Privacy Rights - GDPR Compliant</p>
@@ -178,8 +178,8 @@ const PoliciesPrivacyPage = () => {
             Contact our Data Protection Officer:
           </p>
           <div className="space-y-2" style={{ color: 'var(--color-text-secondary, #3a3a3a)' }}>
-            <p><FaEnvelope className="inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }} /> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>sales@wolfsuppliesltd.co.uk</a></p>
-            <p><FaPhone className="inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }} /> Phone: <a href="tel:+447398998101" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>+44 7398 998101</a></p>
+            <p><i className="fas fa-envelope inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }}></i> Email: <a href="mailto:sales@wolfsuppliesltd.co.uk" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>sales@wolfsuppliesltd.co.uk</a></p>
+            <p><i className="fas fa-phone inline mr-2" style={{ color: 'var(--color-accent-primary, #a5632a)' }}></i> Phone: <a href="tel:+447398998101" className="hover:underline" style={{ color: 'var(--color-accent-primary, #a5632a)' }}>+44 7398 998101</a></p>
           </div>
         </div>
 

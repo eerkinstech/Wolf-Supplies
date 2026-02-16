@@ -1,13 +1,11 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
-import User from './models/User.js';
-import Category from './models/Category.js';
-import Product from './models/Product.js';
-import Page from './models/Page.js';
-import Policy from './models/Policy.js';
-
-dotenv.config();
+const mongoose = require('mongoose');
+require('dotenv').config();
+const bcrypt = require('bcryptjs');
+const User = require('./models/User.js');
+const Category = require('./models/Category.js');
+const Product = require('./models/Product.js');
+const Page = require('./models/Page.js');
+const Policy = require('./models/Policy.js');
 
 const seedDB = async () => {
   try {

@@ -1,7 +1,5 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-
-dotenv.config();
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -32,24 +30,23 @@ const colors = {
   border: '#dddddd',
 };
 
-/**
- * SEND ORDER CONFIRMATION EMAIL TO CUSTOMER
- * 
- * Format: HTML email with professional layout
- * Sent To: Customer email address (contactDetails.email)
- * Sent When: Immediately after order creation (on checkout completion)
- * Used By: paymentController.js - createCheckoutSession() & createPaymentIntent()
- * 
- * Contents:
- * - Order confirmation with Order ID and date
- * - Customer contact details (Name, Email, Phone)
- * - Shipping and Billing addresses (2-column layout)
- * - Complete itemized order with variants (Product, Size, Color, SKU, Qty, Price)
- * - Order summary with breakdown (Subtotal, Shipping, Tax, Discount, Total)
- * - Important banner with order keeping information
- * - Company contact footer
- */
-export const sendOrderConfirmationEmail = async (order) => {
+// SEND ORDER CONFIRMATION EMAIL TO CUSTOMER
+// 
+// Format: HTML email with professional layout
+// Sent To: Customer email address (contactDetails.email)
+// Sent When: Immediately after order creation (on checkout completion)
+// Used By: paymentController.js - createCheckoutSession() & createPaymentIntent()
+// 
+// Contents:
+// - Order confirmation with Order ID and date
+// - Customer contact details (Name, Email, Phone)
+// - Shipping and Billing addresses (2-column layout)
+// - Complete itemized order with variants (Product, Size, Color, SKU, Qty, Price)
+// - Order summary with breakdown (Subtotal, Shipping, Tax, Discount, Total)
+// - Important banner with order keeping information
+// - Company contact footer
+
+const sendOrderConfirmationEmail = async (order) => {
   try {
     const {
       orderId,
@@ -264,24 +261,23 @@ export const sendOrderConfirmationEmail = async (order) => {
   }
 };
 
-/**
- * SEND ORDER NOTIFICATION EMAIL TO ADMIN
- * 
- * Format: HTML email with professional layout
- * Sent To: Admin email address (ADMIN_EMAIL environment variable)
- * Sent When: Immediately after order creation (on checkout completion)
- * Used By: paymentController.js - createCheckoutSession() & createPaymentIntent()
- * 
- * Contents:
- * - New order alert with Order ID and date
- * - Customer information (Name, Email, Phone, Payment Method)
- * - Shipping and Billing addresses (2-column layout - Ship To / Bill To)
- * - Complete itemized order with variants (Product, Variants, Qty, Price, Total)
- * - Order summary with totals (Items, Shipping, Tax, Grand Total)
- * - Call-to-action to log into admin panel
- * - Company footer
- */
-export const sendOrderNotificationToAdmin = async (order) => {
+// SEND ORDER NOTIFICATION EMAIL TO ADMIN
+// 
+// Format: HTML email with professional layout
+// Sent To: Admin email address (ADMIN_EMAIL environment variable)
+// Sent When: Immediately after order creation (on checkout completion)
+// Used By: paymentController.js - createCheckoutSession() & createPaymentIntent()
+// 
+// Contents:
+// - New order alert with Order ID and date
+// - Customer information (Name, Email, Phone, Payment Method)
+// - Shipping and Billing addresses (2-column layout - Ship To / Bill To)
+// - Complete itemized order with variants (Product, Variants, Qty, Price, Total)
+// - Order summary with totals (Items, Shipping, Tax, Grand Total)
+// - Call-to-action to log into admin panel
+// - Company footer
+
+const sendOrderNotificationToAdmin = async (order) => {
   try {
     const {
       orderId,
@@ -459,24 +455,23 @@ export const sendOrderNotificationToAdmin = async (order) => {
   }
 };
 
-/**
- * SEND ORDER STATUS UPDATE EMAIL TO CUSTOMER
- * 
- * Format: HTML email with status-colored header
- * Sent To: Customer email address (contactDetails.email)
- * Sent When: Whenever order status is changed by admin (fulfillment or delivery)
- * Used By: orderController.js - updateOrderStatus(), updateOrderDelivery(), updateOrderRefund(), updateOrderFulfillment()
- * 
- * Contents:
- * - Status update banner with color-coded background
- * - Current order status section showing BOTH fulfillment and delivery status
- * - Order summary cards (Order ID, Total Amount, Number of Items)
- * - List of items in the order (Product names with quantities)
- * - Meaningful status descriptions explaining what each status means
- * - Call-to-action with support contact information
- * - Company footer
- */
-export const sendOrderStatusUpdateEmail = async (order, newStatus) => {
+// SEND ORDER STATUS UPDATE EMAIL TO CUSTOMER
+// 
+// Format: HTML email with status-colored header
+// Sent To: Customer email address (contactDetails.email)
+// Sent When: Whenever order status is changed by admin (fulfillment or delivery)
+// Used By: orderController.js - updateOrderStatus(), updateOrderDelivery(), updateOrderRefund(), updateOrderFulfillment()
+// 
+// Contents:
+// - Status update banner with color-coded background
+// - Current order status section showing BOTH fulfillment and delivery status
+// - Order summary cards (Order ID, Total Amount, Number of Items)
+// - List of items in the order (Product names with quantities)
+// - Meaningful status descriptions explaining what each status means
+// - Call-to-action with support contact information
+// - Company footer
+
+const sendOrderStatusUpdateEmail = async (order, newStatus) => {
   try {
     const { orderId, contactDetails, orderItems, totalPrice, fulfillmentStatus, deliveryStatus } = order;
 
@@ -602,31 +597,30 @@ export const sendOrderStatusUpdateEmail = async (order, newStatus) => {
   }
 };
 
-/**
- * SEND ORDER INVOICE WITH PDF ATTACHMENT
- * 
- * Format: HTML email with PDF invoice attachment
- * Sent To: Customer email address (contactDetails.email)
- * Sent When: After successful payment (on payment completion via Stripe webhook)
- * Used By: paymentController.js - webhookHandler() for payment_intent.succeeded events
- *          Also used by: orderController.js - resendOrderPDF() for manual admin resend
- * 
- * Contents:
- * - Professional order invoice header
- * - Personal greeting to customer
- * - PDF attachment notification with file name (Invoice_[OrderID].pdf)
- * - Support contact information
- * - Company footer
- * 
- * Attachment Details:
- * - PDF filename: Invoice_[OrderID].pdf
- * - PDF content: Generated by pdfGenerator.js using Puppeteer
- * - PDF layout: Matches OrderDetailPage.jsx design with professional styling
- * - PDF includes: Order details, contact info, shipping/billing addresses, itemized list, totals, status
- * 
- * Note: PDF is generated server-side and attached as buffer (not as URL/link)
- */
-export const sendOrderWithPDF = async (order, pdfBuffer) => {
+// SEND ORDER INVOICE WITH PDF ATTACHMENT
+// 
+// Format: HTML email with PDF invoice attachment
+// Sent To: Customer email address (contactDetails.email)
+// Sent When: After successful payment (on payment completion via Stripe webhook)
+// Used By: paymentController.js - webhookHandler() for payment_intent.succeeded events
+//          Also used by: orderController.js - resendOrderPDF() for manual admin resend
+// 
+// Contents:
+// - Professional order invoice header
+// - Personal greeting to customer
+// - PDF attachment notification with file name (Invoice_[OrderID].pdf)
+// - Support contact information
+// - Company footer
+// 
+// Attachment Details:
+// - PDF filename: Invoice_[OrderID].pdf
+// - PDF content: Generated by pdfGenerator.js using Puppeteer
+// - PDF layout: Matches OrderDetailPage.jsx design with professional styling
+// - PDF includes: Order details, contact info, shipping/billing addresses, itemized list, totals, status
+// 
+// Note: PDF is generated server-side and attached as buffer (not as URL/link)
+
+const sendOrderWithPDF = async (order, pdfBuffer) => {
   try {
     const { contactDetails, orderId, fulfillmentStatus, deliveryStatus } = order;
 
@@ -697,7 +691,7 @@ export const sendOrderWithPDF = async (order, pdfBuffer) => {
   }
 };
 
-export default {
+module.exports = {
   sendOrderConfirmationEmail,
   sendOrderNotificationToAdmin,
   sendOrderStatusUpdateEmail,

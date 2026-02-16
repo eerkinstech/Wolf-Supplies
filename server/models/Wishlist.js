@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const { Schema, model } = mongoose;
 
@@ -15,5 +15,5 @@ const WishlistSchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
-export default model('Wishlist', WishlistSchema);
+module.exports = model('Wishlist', WishlistSchema);
 

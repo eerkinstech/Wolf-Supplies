@@ -1,5 +1,5 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
     subscribeNewsletter,
     getNewsletterSubscriptions,
     getNewsletterSubscription,
@@ -7,8 +7,8 @@ import {
     updateNewsletterStatus,
     deleteNewsletterSubscription,
     getNewsletterStats
-} from '../controllers/newsletterController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/newsletterController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -23,5 +23,5 @@ router.get('/:id', protect, admin, getNewsletterSubscription);
 router.patch('/:id/status', protect, admin, updateNewsletterStatus);
 router.delete('/:id', protect, admin, deleteNewsletterSubscription);
 
-export default router;
+module.exports = router;
 

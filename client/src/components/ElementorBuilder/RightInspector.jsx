@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 import BLOCK_REGISTRY from '../BlockBuilder/BlockRegistry';
 
@@ -72,7 +72,7 @@ const RightInspector = () => {
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition text-left"
               >
                 <span className="font-semibold text-gray-800">Style</span>
-                {expandedSections.has('style') ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+                {expandedSections.has('style') ? <i className="fas fa-chevron-up" style={{ fontSize: '14px' }}></i> : <i className="fas fa-chevron-down" style={{ fontSize: '14px' }}></i>}
               </button>
 
               {expandedSections.has('style') && (
@@ -300,7 +300,7 @@ const RightInspector = () => {
                   className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition text-left"
                 >
                   <span className="font-semibold text-gray-800">Properties</span>
-                  {expandedSections.has('props') ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+                  {expandedSections.has('props') ? <i className="fas fa-chevron-up" style={{ fontSize: '14px' }}></i> : <i className="fas fa-chevron-down" style={{ fontSize: '14px' }}></i>}
                 </button>
 
                 {expandedSections.has('props') && (
@@ -400,7 +400,7 @@ const RightInspector = () => {
                   className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition text-left"
                 >
                   <span className="font-semibold text-gray-800">Widget Properties</span>
-                  {expandedSections.has('basicProps') ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+                  {expandedSections.has('basicProps') ? <i className="fas fa-chevron-up" style={{ fontSize: '14px' }}></i> : <i className="fas fa-chevron-down" style={{ fontSize: '14px' }}></i>}
                 </button>
 
                 {expandedSections.has('basicProps') && (

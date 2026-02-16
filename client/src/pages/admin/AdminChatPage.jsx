@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { FaSearch, FaCircle, FaPaperPlane, FaTimes, FaComments, FaEnvelope, FaBullhorn } from 'react-icons/fa';
+
 import AdminLayout from '../../components/Admin/AdminLayout/AdminLayout';
 
 const AdminChatPage = () => {
@@ -58,7 +58,8 @@ const AdminChatPage = () => {
 
             if (!response.ok) throw new Error('Failed to fetch conversations');
 
-            const data = await response.json();// Smart filtering: Check if conversation has both contact form and chat messages
+            const data = await response.json();
+            // Smart filtering: Check if conversation has both contact form and chat messages
             const chatConversationsOnly = (data.data || []).filter(conv => {
                 const messages = conv.messages || [];
 
@@ -83,18 +84,24 @@ const AdminChatPage = () => {
 
                 // 4. Otherwise (only contact form or no messages) → Don't show in Chat Tab
                 return false;
-            });setConversations(chatConversationsOnly);
+            });
+            setConversations(chatConversationsOnly);
             setLoading(false);
 
             // Calculate unread count for each conversation
             const newUnreadCount = {};
-            chatConversationsOnly.forEach(conv => {const unreadMessages = (conv.messages || []).filter(
-                    msg => {return msg.sender === 'user' && !msg.isRead;
+            chatConversationsOnly.forEach(conv => {
+                const unreadMessages = (conv.messages || []).filter(
+                    msg => {
+                        return msg.sender === 'user' && !msg.isRead;
                     }
                 ).length;
                 if (unreadMessages > 0) {
-                    newUnreadCount[conv._id] = unreadMessages;} else {}
-            });setUnreadCount(newUnreadCount);
+                    newUnreadCount[conv._id] = unreadMessages;
+                } else {
+                }
+            });
+            setUnreadCount(newUnreadCount);
 
             // Only auto-select first conversation on initial load
             if (isInitialLoadRef.current && !selectedConversation && chatConversationsOnly && chatConversationsOnly.length > 0) {
@@ -102,7 +109,8 @@ const AdminChatPage = () => {
                 fetchConversationById(chatConversationsOnly[0]);
                 isInitialLoadRef.current = false;
             }
-        } catch (error) {toast.error('Failed to load conversations');
+        } catch (error) {
+            toast.error('Failed to load conversations');
             setLoading(false);
         }
     };
@@ -135,7 +143,8 @@ const AdminChatPage = () => {
                 }
                 return updated;
             });
-        } catch (error) {toast.error('Failed to load conversation');
+        } catch (error) {
+            toast.error('Failed to load conversation');
         }
     };
 
@@ -185,7 +194,8 @@ const AdminChatPage = () => {
             toast.success('Message sent');
             setMessage('');
             fetchConversationById(selectedConversation.conversationId);
-        } catch (error) {toast.error(error.message || 'Failed to send message');
+        } catch (error) {
+            toast.error(error.message || 'Failed to send message');
         } finally {
             setSendingMessage(false);
         }
@@ -200,7 +210,8 @@ const AdminChatPage = () => {
 
             if (!response.ok) throw new Error('Failed to fetch contact submissions');
 
-            const data = await response.json();// Contact Tab: Shows ALL contact form submissions as SAVED RECORDS
+            const data = await response.json();
+            // Contact Tab: Shows ALL contact form submissions as SAVED RECORDS
             // Even if user later sends chat messages, the original contact record stays here
             // This serves as an archive/reference of the initial inquiry
             const contactFormOnly = (data.data || []).filter(submission => {
@@ -219,8 +230,10 @@ const AdminChatPage = () => {
                 if (submission.fromContactForm === false) return false;
 
                 return false;
-            });setContacts(contactFormOnly);
-        } catch (error) {toast.error('Failed to load contact submissions');
+            });
+            setContacts(contactFormOnly);
+        } catch (error) {
+            toast.error('Failed to load contact submissions');
         }
     };
 
@@ -235,7 +248,8 @@ const AdminChatPage = () => {
 
             const data = await response.json();
             setNewsletters(data.data || []);
-        } catch (error) {toast.error('Failed to load newsletter subscriptions');
+        } catch (error) {
+            toast.error('Failed to load newsletter subscriptions');
         }
     };
 
@@ -267,7 +281,8 @@ const AdminChatPage = () => {
             fetchConversations();
 
             toast.success('Contact moved to chat successfully');
-        } catch (error) {toast.error('Failed to move contact to chat');
+        } catch (error) {
+            toast.error('Failed to move contact to chat');
         }
     };
 
@@ -314,7 +329,7 @@ const AdminChatPage = () => {
                             borderBottomColor: activeTab === 'chat' ? 'var(--color-accent-primary)' : 'transparent'
                         }}
                     >
-                        <FaComments size={18} />
+                        <i className="fas fa-comments" style={{ fontSize: '18px' }}></i>
                         Chat
                     </button>
                     <button
@@ -325,7 +340,7 @@ const AdminChatPage = () => {
                             borderBottomColor: activeTab === 'contact' ? 'var(--color-accent-primary)' : 'transparent'
                         }}
                     >
-                        <FaEnvelope size={18} />
+                        <i className="fas fa-envelope" style={{ fontSize: '18px' }}></i>
                         Contact
                     </button>
                     <button
@@ -336,7 +351,7 @@ const AdminChatPage = () => {
                             borderBottomColor: activeTab === 'newsletter' ? 'var(--color-accent-primary)' : 'transparent'
                         }}
                     >
-                        <FaBullhorn size={18} />
+                        <i className="fas fa-bullhorn" style={{ fontSize: '18px' }}></i>
                         Newsletter
                     </button>
                 </div>
@@ -352,7 +367,7 @@ const AdminChatPage = () => {
                                 <div className="p-4" style={{ borderColor: 'var(--color-border-light)', borderBottomWidth: '1px' }}>
                                     <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Support Chat</h1>
                                     <div className="relative">
-                                        <FaSearch className="absolute left-3 top-3" style={{ color: 'var(--color-text-light)' }} />
+                                        <i className="fas fa-search absolute left-3 top-3" style={{ color: 'var(--color-text-light)' }}></i>
                                         <input
                                             type="text"
                                             placeholder="Search conversations..."
@@ -407,7 +422,7 @@ const AdminChatPage = () => {
                                                 )}
                                                 <div className="flex items-start gap-3">
                                                     <div className={`flex-shrink-0 mt-1 ${conv.lastMessageSender === 'admin' ? 'text-green-500' : (unreadCount[conv._id] || 0) > 0 ? 'text-red-500' : 'text-blue-500'}`}>
-                                                        <FaCircle size={12} />
+                                                        <i className="fas fa-circle" style={{ fontSize: '12px' }}></i>
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between gap-2">
@@ -459,7 +474,7 @@ const AdminChatPage = () => {
                                                     style={{ color: '#dc2626' }}
                                                     title="Close chat"
                                                 >
-                                                    <FaTimes size={24} />
+                                                    <i className="fas fa-times" style={{ fontSize: '24px' }}></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -510,7 +525,7 @@ const AdminChatPage = () => {
                                                         onMouseEnter={(e) => !e.target.disabled && (e.target.style.filter = 'brightness(1.1)')}
                                                         onMouseLeave={(e) => !e.target.disabled && (e.target.style.filter = 'brightness(1)')}
                                                     >
-                                                        <FaPaperPlane size={14} />
+                                                        <i className="fas fa-paper-plane" style={{ fontSize: '14px' }}></i>
                                                         {sendingMessage ? 'Sending...' : 'Send Message'}
                                                     </button>
                                                     <button
@@ -530,7 +545,7 @@ const AdminChatPage = () => {
                                 ) : (
                                     <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
                                         <div className="text-center">
-                                            <FaComments size={64} className="mx-auto mb-6" style={{ color: 'var(--color-accent-primary)', opacity: 0.3 }} />
+                                            <i className="fas fa-comments mx-auto mb-6" style={{ fontSize: '64px', color: 'var(--color-accent-primary)', opacity: 0.3 }}></i>
                                             <p className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>No Conversation Selected</p>
                                             <p style={{ color: 'var(--color-text-light)', maxWidth: '400px' }}>
                                                 Select a conversation from the list on the left to start chatting with customers
@@ -548,7 +563,7 @@ const AdminChatPage = () => {
                             {contacts.length === 0 ? (
                                 <div className="flex-1 flex items-center justify-center">
                                     <div className="text-center" style={{ color: 'var(--color-text-light)' }}>
-                                        <FaEnvelope size={64} className="mx-auto mb-4" style={{ color: 'var(--color-accent-primary)' }} />
+                                        <i className="fas fa-envelope mx-auto mb-4" style={{ fontSize: '64px', color: 'var(--color-accent-primary)' }}></i>
                                         <p className="text-xl font-semibold">No Contact Submissions</p>
                                         <p className="text-sm mt-2">Contact form submissions will appear here</p>
                                     </div>
@@ -613,7 +628,7 @@ const AdminChatPage = () => {
                             {newsletters.length === 0 ? (
                                 <div className="flex-1 flex items-center justify-center">
                                     <div className="text-center" style={{ color: 'var(--color-text-light)' }}>
-                                        <FaBullhorn size={64} className="mx-auto mb-4" style={{ color: 'var(--color-accent-primary)' }} />
+                                        <i className="fas fa-bullhorn mx-auto mb-4" style={{ fontSize: '64px', color: 'var(--color-accent-primary)' }}></i>
                                         <p className="text-xl font-semibold">No Newsletter Subscribers</p>
                                         <p className="text-sm mt-2">Newsletter subscriptions will appear here</p>
                                     </div>

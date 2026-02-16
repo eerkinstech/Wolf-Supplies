@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaEdit } from 'react-icons/fa';
+
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 
 /**
@@ -20,7 +20,7 @@ const ElementorEditButton = ({ pageName = 'home' }) => {
       title={`Edit ${pageName} page`}
       aria-label="Edit page"
     >
-      <FaEdit size={20} />
+      <i className="fas fa-edit" style={{ fontSize: '20px' }}></i>
     </button>
   );
 };

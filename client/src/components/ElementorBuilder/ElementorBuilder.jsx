@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FaSave, FaTimes } from 'react-icons/fa';
+
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 import toast from 'react-hot-toast';
 import BuilderLayout from '../../builder/components/BuilderLayout';

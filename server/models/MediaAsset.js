@@ -2,7 +2,7 @@
  * MediaAsset Model - Store uploaded images and videos
  */
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const mediaAssetSchema = new mongoose.Schema(
   {
@@ -100,5 +100,5 @@ mediaAssetSchema.query.active = function () {
   return this.where({ deletedAt: null });
 };
 
-export default mongoose.model('MediaAsset', mediaAssetSchema);
+module.exports = mongoose.model('MediaAsset', mediaAssetSchema);
 

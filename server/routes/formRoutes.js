@@ -1,5 +1,5 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
     submitContactForm,
     submitChatMessage,
     moveContactToChat,
@@ -18,8 +18,8 @@ import {
     getUserMessages,
     getContactSubmissionById,
     deleteContactSubmission
-} from '../controllers/formController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} = require('../controllers/formController.js');
+const { protect, admin } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
@@ -52,5 +52,5 @@ router.patch('/contact/:id/respond', protect, admin, respondToContact);
 router.post('/contact/:id/user-reply', addUserReply);
 router.delete('/contact/:id', protect, admin, deleteContactSubmission);
 
-export default router;
+module.exports = router;
 

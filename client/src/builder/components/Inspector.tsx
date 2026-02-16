@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowLeft, FaTimes, FaDesktop, FaTabletAlt, FaMobileAlt, FaUndo, FaCopy } from 'react-icons/fa';
+
 import { useElementorBuilder } from '../../context/ElementorBuilderContext';
 import { getLayoutSchema } from '../controls/layoutSchemas';
 import { getCustomSchema } from '../controls/customSchemas';
@@ -19,20 +19,22 @@ interface InspectorProps {
  * Inspector - 3-tab Elementor-like inspector (CONTENT / STYLE / ADVANCED)
  * Renders controls for any node: layout (section/container/column) or widget
  */
-export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) => {const {
-    getSelectedNode,
-    updateNodeProps,
-    updateNodeStyle,
-    updateNodeAdvanced,
-    updateNodeResponsiveStyle,
-    updateNodeResponsiveAdvanced,
-    clearResponsiveStyle,
-    clearResponsiveAdvanced,
-    deleteNode,
-    duplicateNodeAction,
-    currentDevice,
-    setCurrentDevice
-  }=useElementorBuilder();
+export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) => {
+  const builderContext=useElementorBuilder();
+  const {
+    getSelectedNode=() => null,
+    updateNodeProps=() => {},
+    updateNodeStyle=() => {},
+    updateNodeAdvanced=() => {},
+    updateNodeResponsiveStyle=() => {},
+    updateNodeResponsiveAdvanced=() => {},
+    clearResponsiveStyle=() => {},
+    clearResponsiveAdvanced=() => {},
+    deleteNode=() => {},
+    duplicateNodeAction=() => {},
+    currentDevice='desktop',
+    setCurrentDevice=() => {}
+  }=(builderContext||{}) as any;
 
   const [activeTab, setActiveTab]=useState<InspectorTab>('content');
 
@@ -91,7 +93,7 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
       <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50">
         <div className="flex items-center gap-2 flex-1">
           <button onClick={onBack} className="p-1 hover:bg-gray-200 rounded" title="Back">
-            <FaArrowLeft size={16} />
+            <i className="fas fa-arrow-left" style={{ fontSize: '16px' }}></i>
           </button>
           <div>
             <p className="text-xs text-gray-900">Element</p>
@@ -104,14 +106,14 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
             className="p-1 text-gray-400 hover:bg-gray-50 rounded"
             title="Duplicate"
           >
-            <FaCopy size={16} />
+            <i className="fas fa-copy" style={{ fontSize: '16px' }}></i>
           </button>
           <button
             onClick={handleDeleteNode}
             className="p-1 text-black hover:bg-gray-100 rounded"
             title="Delete"
           >
-            <FaTimes size={16} />
+            <i className="fas fa-times" style={{ fontSize: '16px' }}></i>
           </button>
         </div>
       </div>
@@ -147,9 +149,9 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
                 }`}
               title={dev}
             >
-              {dev==='desktop'&&<FaDesktop size={12} />}
-              {dev==='tablet'&&<FaTabletAlt size={12} />}
-              {dev==='mobile'&&<FaMobileAlt size={12} />}
+              {dev==='desktop'&&<i className="fas fa-desktop" style={{ fontSize: '12px' }}></i>}
+              {dev==='tablet'&&<i className="fas fa-tablet" style={{ fontSize: '12px' }}></i>}
+              {dev==='mobile'&&<i className="fas fa-mobile" style={{ fontSize: '12px' }}></i>}
               <span className="capitalize">{dev}</span>
             </button>
           ))}
@@ -186,7 +188,8 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
             {schema.style.length===0? (
               <p className="text-xs text-gray-900 text-center py-4">No style controls</p>
             ):(
-              schema.style.map((control) => {// Get base desktop value
+              schema.style.map((control) => {
+                // Get base desktop value
                 const desktopValue=selectedNode.style?.[control.name];
 
                 // Get device-specific override
@@ -212,8 +215,12 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
                         <ControlRenderer
                           control={control}
                           value={displayValue}
-                          onChange={(value) => {const device=currentDeviceRef.current;if (device==='desktop') {updateNodeStyle(selectedNodeId, { [control.name]: value });
-                            } else {updateNodeResponsiveStyle(selectedNodeId, device, control.name, value);
+                          onChange={(value) => {
+                            const device=currentDeviceRef.current;
+                            if (device==='desktop') {
+                              updateNodeStyle(selectedNodeId, { [control.name]: value });
+                            } else {
+                              updateNodeResponsiveStyle(selectedNodeId, device, control.name, value);
                             }
                           }}
                         />
@@ -227,7 +234,7 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
                           className="mt-2 p-1 text-amber-600 hover:bg-amber-100 rounded opacity-0 group-hover:opacity-100 transition"
                           title="Reset to desktop value"
                         >
-                          <FaUndo size={14} />
+                          <i className="fas fa-undo" style={{ fontSize: '14px' }}></i>
                         </button>
                       )}
                     </div>
@@ -283,7 +290,7 @@ export const Inspector: React.FC<InspectorProps>=({ selectedNodeId, onBack }) =>
                           className="mt-2 p-1 text-amber-600 hover:bg-amber-100 rounded opacity-0 group-hover:opacity-100 transition"
                           title="Reset to desktop value"
                         >
-                          <FaUndo size={14} />
+                          <i className="fas fa-undo" style={{ fontSize: '14px' }}></i>
                         </button>
                       )}
                     </div>

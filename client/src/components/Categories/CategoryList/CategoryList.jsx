@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronRight } from 'react-icons/fa';
+
 
 const API = import.meta.env.VITE_API_URL || '';
 const getImgSrc = (img) => {
@@ -39,7 +39,7 @@ const CategoryList = ({ categories, isSubcategory = false }) => {
                     <p className="text-xs text-gray-900">{category.description}</p>
                   </div>
                 </div>
-                <FaChevronRight className="text-gray-400 group-hover:text-gray-700 transition duration-300 transform group-hover:translate-x-1" />
+                <i className="fas fa-chevron-right text-gray-400 group-hover:text-gray-700 transition duration-300 transform group-hover:translate-x-1"></i>
               </div>
             </Link>
           ))

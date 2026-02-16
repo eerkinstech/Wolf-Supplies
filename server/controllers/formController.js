@@ -1,11 +1,11 @@
-import ContactSubmission from '../models/ContactSubmission.js';
+const ContactSubmission = require('../models/ContactSubmission');
 
 // ===== CHAT SUPPORT HANDLERS =====
 
 /**
  * User submits contact form
  */
-export const submitContactForm = async (req, res) => {
+const submitContactForm = async (req, res) => {
   try {
     const { name, email, phone, subject, message } = req.body;
 
@@ -91,7 +91,7 @@ export const submitContactForm = async (req, res) => {
 /**
  * User sends message through chat button (NOT contact form)
  */
-export const submitChatMessage = async (req, res) => {
+const submitChatMessage = async (req, res) => {
   try {
     const { name, email, phone, subject, message } = req.body;
 
@@ -178,7 +178,7 @@ export const submitChatMessage = async (req, res) => {
  * Move contact form submission to chat (convert fromContactForm: true to false)
  * Admin can now reply and it will show in Chat tab
  */
-export const moveContactToChat = async (req, res) => {
+const moveContactToChat = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -213,7 +213,7 @@ export const moveContactToChat = async (req, res) => {
 /**
  * Admin sends message to user
  */
-export const sendAdminMessage = async (req, res) => {
+const sendAdminMessage = async (req, res) => {
   try {
     const { userEmail, message, senderName } = req.body;
     const adminId = req.user._id;
@@ -295,7 +295,7 @@ export const sendAdminMessage = async (req, res) => {
 /**
  * Get all conversations for admin
  */
-export const getConversations = async (req, res) => {
+const getConversations = async (req, res) => {
   try {
     const { status = 'active', search = '', page = 1, limit = 20, assignedTo } = req.query;
 
@@ -347,7 +347,7 @@ export const getConversations = async (req, res) => {
 /**
  * Get single conversation with all messages
  */
-export const getConversationById = async (req, res) => {
+const getConversationById = async (req, res) => {
   try {
     const { conversationId } = req.params;
 
@@ -402,7 +402,7 @@ export const getConversationById = async (req, res) => {
 /**
  * Get user's conversations and messages
  */
-export const getUserConversations = async (req, res) => {
+const getUserConversations = async (req, res) => {
   try {
     const { email } = req.query;
 
@@ -450,7 +450,7 @@ export const getUserConversations = async (req, res) => {
 /**
  * Assign conversation to admin
  */
-export const assignConversation = async (req, res) => {
+const assignConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { adminId } = req.body;
@@ -492,7 +492,7 @@ export const assignConversation = async (req, res) => {
 /**
  * Close conversation
  */
-export const closeConversation = async (req, res) => {
+const closeConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
 
@@ -526,7 +526,7 @@ export const closeConversation = async (req, res) => {
 /**
  * Delete conversation
  */
-export const deleteConversation = async (req, res) => {
+const deleteConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
 
@@ -548,7 +548,7 @@ export const deleteConversation = async (req, res) => {
 /**
  * Delete single message from conversation
  */
-export const deleteMessage = async (req, res) => {
+const deleteMessage = async (req, res) => {
   try {
     const { conversationId, messageId } = req.params;
 
@@ -591,18 +591,38 @@ export const deleteMessage = async (req, res) => {
 
 // ===== BACKWARD COMPATIBILITY ALIASES =====
 
-export const getContactSubmissions = getConversations;
-export const respondToContact = sendAdminMessage;
-export const addUserReply = submitContactForm;
-export const getUserMessages = getUserConversations;
+const getContactSubmissions = getConversations;
+const respondToContact = sendAdminMessage;
+const addUserReply = submitContactForm;
+const getUserMessages = getUserConversations;
 
-export const getContactSubmissionById = async (req, res) => {
+const getContactSubmissionById = async (req, res) => {
   req.params.conversationId = req.params.id;
   return getConversationById(req, res);
 };
 
-export const deleteContactSubmission = async (req, res) => {
+const deleteContactSubmission = async (req, res) => {
   req.params.conversationId = req.params.id;
   return deleteConversation(req, res);
+};
+
+module.exports = {
+  submitContactForm,
+  submitChatMessage,
+  moveContactToChat,
+  sendAdminMessage,
+  getConversations,
+  getConversationById,
+  getUserConversations,
+  assignConversation,
+  closeConversation,
+  deleteConversation,
+  deleteMessage,
+  getContactSubmissions,
+  respondToContact,
+  addUserReply,
+  getUserMessages,
+  getContactSubmissionById,
+  deleteContactSubmission
 };
 

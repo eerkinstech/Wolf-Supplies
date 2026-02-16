@@ -104,7 +104,8 @@ export const ImageWidget: React.FC<ImageWidgetProps>=({ node, device='desktop', 
             alt={alt}
             style={imageStyle}
             onLoad={handleImageLoad}
-            onError={(e) => {setImageError(true);
+            onError={(_e) => {
+setImageError(true);
                 setIsLoading(false);
             }}
         />

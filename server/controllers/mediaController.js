@@ -2,19 +2,20 @@
  * Media Controller - Handle media uploads, listing, and serving
  */
 
-import fs from 'fs';
-import path from 'path';
-import MediaAsset from '../models/MediaAsset.js';
-import { getImageDimensions } from '../utils/mediaUtils.js';
+const fs = require('fs');
+const path = require('path');
+const MediaAsset = require('../models/MediaAsset');
+const { getImageDimensions } = require('../utils/mediaUtils');
 
 // ============================================================================
 // UPLOAD - POST /api/media/upload
 // ============================================================================
 
-export const uploadMedia = async (req, res) => {
+const uploadMedia = async (req, res) => {
   try {
     // Multer middleware should have processed the file
-    const file = req.file;if (!file) {
+    const file = req.file;
+if (!file) {
       return res.status(400).json({ error: 'No file provided' });
     }
 
@@ -53,7 +54,8 @@ export const uploadMedia = async (req, res) => {
 
     // Update URL with actual asset ID
     asset.url = `/api/media/serve/${asset._id}`;
-    await asset.save();res.json({
+    await asset.save();
+res.json({
       success: true,
       asset: {
         _id: asset._id,
@@ -79,7 +81,7 @@ export const uploadMedia = async (req, res) => {
 // LIST - GET /api/media (with pagination, search, filter)
 // ============================================================================
 
-export const getMediaAssets = async (req, res) => {
+const getMediaAssets = async (req, res) => {
   try {
     const {
       page = 1,
@@ -143,7 +145,7 @@ export const getMediaAssets = async (req, res) => {
 // GET ASSET - GET /api/media/:id
 // ============================================================================
 
-export const getMediaAsset = async (req, res) => {
+const getMediaAsset = async (req, res) => {
   try {
     const { id } = req.params;
     const asset = await MediaAsset.findById(id).active();
@@ -179,7 +181,7 @@ export const getMediaAsset = async (req, res) => {
 // SERVE - GET /api/media/serve/:id (serve actual file)
 // ============================================================================
 
-export const serveMedia = async (req, res) => {
+const serveMedia = async (req, res) => {
   try {
     const { id } = req.params;
     const { thumbnail } = req.query;
@@ -221,7 +223,7 @@ export const serveMedia = async (req, res) => {
 // DELETE - DELETE /api/media/:id (soft delete)
 // ============================================================================
 
-export const deleteMedia = async (req, res) => {
+const deleteMedia = async (req, res) => {
   try {
     const { id } = req.params;
     const asset = await MediaAsset.findById(id).active();
@@ -254,4 +256,12 @@ export const deleteMedia = async (req, res) => {
 function generateAssetId() {
   return `asset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
+
+module.exports = {
+  uploadMedia,
+  getMediaAssets,
+  getMediaAsset,
+  serveMedia,
+  deleteMedia
+};
 

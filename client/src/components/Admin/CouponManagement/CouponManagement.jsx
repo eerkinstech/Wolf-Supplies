@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaTimes, FaSpinner, FaSync, FaExclamationTriangle } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || '';
@@ -87,10 +86,10 @@ const CouponManagement = () => {
             return <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold">Inactive</span>;
         }
         if (isExpiredByDate(coupon)) {
-            return <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"><FaExclamationTriangle /> Expired</span>;
+            return <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"><i className="fas fa-exclamation-triangle"></i> Expired</span>;
         }
         if (isExpiredByUsage(coupon)) {
-            return <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"><FaExclamationTriangle /> Limit Reached</span>;
+            return <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"><i className="fas fa-exclamation-triangle"></i> Limit Reached</span>;
         }
         return <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">Active</span>;
     };
@@ -217,7 +216,7 @@ const CouponManagement = () => {
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition"
                         title="Refresh coupon list"
                     >
-                        <FaSync className={loading ? 'animate-spin' : ''} /> Refresh
+                        <i className="fas fa-sync"></i> Refresh
                     </button>
                     <button
                         onClick={() => {
@@ -226,7 +225,7 @@ const CouponManagement = () => {
                         }}
                         className="flex items-center gap-2 bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-lg font-semibold transition"
                     >
-                        <FaPlus /> Create Coupon
+                        <i className="fas fa-plus"></i> Create Coupon
                     </button>
                 </div>
             </div>
@@ -234,7 +233,7 @@ const CouponManagement = () => {
             {/* Search Bar */}
             <div className="mb-6 relative w-80">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                    <FaSearch className="text-sm" />
+                    <i className="fas fa-search text-sm"></i>
                 </div>
                 <input
                     type="text"
@@ -248,7 +247,7 @@ const CouponManagement = () => {
                         onClick={() => setSearchQuery('')}
                         className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                     >
-                        <FaTimes className="text-sm" />
+                        <i className="fas fa-times text-sm"></i>
                     </button>
                 )}
             </div>
@@ -256,7 +255,7 @@ const CouponManagement = () => {
             {/* Loading State */}
             {loading && (
                 <div className="flex justify-center items-center py-12">
-                    <FaSpinner className="text-4xl text-gray-700 animate-spin" />
+                    <i className="fas fa-spinner animate-spin text-4xl text-gray-700"></i>
                 </div>
             )}
 
@@ -324,14 +323,14 @@ const CouponManagement = () => {
                                                     className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 hover:bg-blue-200 transition rounded-md"
                                                     title="Edit coupon"
                                                 >
-                                                    <FaEdit size={14} />
+                                                    <i className="fas fa-edit" style={{ fontSize: '14px' }}></i>
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(coupon._id)}
                                                     className="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-700 hover:bg-red-200 transition rounded-md"
                                                     title="Delete coupon"
                                                 >
-                                                    <FaTrash size={14} />
+                                                    <i className="fas fa-trash" style={{ fontSize: '14px' }}></i>
                                                 </button>
                                             </div>
                                         </td>
